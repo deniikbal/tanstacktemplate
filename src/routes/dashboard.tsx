@@ -7,6 +7,8 @@ import {
 import { authClient } from "@/lib/auth-client"
 import { useEffect } from 'react'
 
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
+
 export const Route = createFileRoute('/dashboard')({
   component: DashboardLayout,
 })
@@ -21,7 +23,7 @@ function DashboardLayout() {
     }
   }, [session, isPending, navigate])
 
-  if (isPending) return <div>Loading...</div>
+  if (isPending) return <LoadingSpinner />
   if (!session) return null
 
   const userData = {

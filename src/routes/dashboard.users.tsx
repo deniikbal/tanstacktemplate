@@ -57,6 +57,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export const Route = createFileRoute('/dashboard/users')({
   component: UsersPage,
@@ -152,7 +153,7 @@ function UsersPage() {
                   setPageSize(val)
                   setPage(1)
                 }}>
-                  <SelectTrigger className="w-[70px] bg-white h-9 border-slate-200">
+                  <SelectTrigger className="w-[70px] bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500">
                     <SelectValue placeholder="10" />
                   </SelectTrigger>
                   <SelectContent>
@@ -196,7 +197,7 @@ function UsersPage() {
                 setRoleFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="w-[120px] bg-white h-9 border-slate-200">
+                <SelectTrigger className="w-[120px] bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500">
                   <SelectValue placeholder="Role" />
                 </SelectTrigger>
                 <SelectContent>
@@ -222,11 +223,25 @@ function UsersPage() {
               </TableHeader>
               <TableBody>
                 {isPending ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-32 text-center text-slate-500 italic">
-                      Memuat data...
-                    </TableCell>
-                  </TableRow>
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell className="px-6 py-2">
+                        <Skeleton className="h-5 w-[150px] bg-slate-200" />
+                      </TableCell>
+                      <TableCell className="px-6 py-2">
+                        <Skeleton className="h-5 w-[200px] bg-slate-200" />
+                      </TableCell>
+                      <TableCell className="px-6 py-2">
+                        <Skeleton className="h-5 w-[60px] rounded-full bg-slate-200" />
+                      </TableCell>
+                      <TableCell className="px-6 py-2">
+                        <Skeleton className="h-4 w-[80px] bg-slate-200" />
+                      </TableCell>
+                      <TableCell className="px-6 py-2 text-right">
+                        <Skeleton className="ml-auto h-7 w-7 rounded-sm bg-slate-200" />
+                      </TableCell>
+                    </TableRow>
+                  ))
                 ) : !usersInfo || usersInfo.users.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="h-32 text-center text-slate-500 italic">
@@ -382,6 +397,7 @@ function UsersPage() {
 
 function CreateUserDialog({ onEmailCreated }: { onEmailCreated: () => void }) {
   const [loading, setLoading] = useState(false)
+  const [role, setRole] = useState("user")
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -390,7 +406,6 @@ function CreateUserDialog({ onEmailCreated }: { onEmailCreated: () => void }) {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
     const name = formData.get('name') as string
-    const role = formData.get('role') as string
 
     const { error } = await authClient.admin.createUser({
       email,
@@ -431,15 +446,15 @@ function CreateUserDialog({ onEmailCreated }: { onEmailCreated: () => void }) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="role">Role</Label>
-          <select
-            id="role"
-            name="role"
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            defaultValue="user"
-          >
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
+          <Select value={role} onValueChange={setRole}>
+            <SelectTrigger className="w-full bg-white border-slate-200 shadow-sm focus:ring-emerald-500">
+              <SelectValue placeholder="Pilih Role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="user">User</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <DialogFooter>
           <Button type="submit" disabled={loading}>
@@ -453,13 +468,13 @@ function CreateUserDialog({ onEmailCreated }: { onEmailCreated: () => void }) {
 
 function EditUserForm({ user, onSuccess }: { user: any, onSuccess: () => void }) {
   const [loading, setLoading] = useState(false)
+  const [role, setRole] = useState(user?.role || "user")
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     const formData = new FormData(e.currentTarget)
     const name = formData.get('name') as string
-    const role = formData.get('role') as string
 
     const { error } = await authClient.admin.updateUser({
       userId: user.id,
@@ -490,15 +505,15 @@ function EditUserForm({ user, onSuccess }: { user: any, onSuccess: () => void })
       </div>
       <div className="space-y-2">
         <Label htmlFor="edit-role">Role</Label>
-        <select
-          id="edit-role"
-          name="role"
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          defaultValue={user?.role}
-        >
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
+        <Select value={role} onValueChange={setRole}>
+          <SelectTrigger id="edit-role" className="w-full bg-white border-slate-200 shadow-sm focus:ring-emerald-500">
+            <SelectValue placeholder="Pilih Role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="user">User</SelectItem>
+            <SelectItem value="admin">Admin</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <DialogFooter>
         <Button type="submit" disabled={loading}>
