@@ -330,7 +330,7 @@ function SekolahDialog({ open, onOpenChange, initialData, onSuccess }: {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2 col-span-2">
                             <Label htmlFor="sekolah">Nama Sekolah *</Label>
-                            <Input id="sekolah" name="sekolah" defaultValue={initialData?.sekolah} required placeholder="Contoh: SMP NEGERI 1 MAJALENGKA" />
+                            <Input id="sekolah" name="sekolah" defaultValue={initialData?.sekolah} required placeholder="Contoh: SMP NEGERI 1 BANTARUJEG" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="npsn">NPSN</Label>

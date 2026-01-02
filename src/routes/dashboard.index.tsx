@@ -20,7 +20,7 @@ function DashboardIndexPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard Overview</h1>
         <p className="text-muted-foreground">
-          Ringkasan data pendaftaran terkini SPMB SMANSABA.
+          Ringkasan data pendaftaran terkini SPMB SMAN 1 BANTARUJEG.
         </p>
       </div>
 

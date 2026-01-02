@@ -15,7 +15,7 @@ function LoginPage() {
           {/* <Logo className='gap-3' /> */}
           <div className='flex flex-col items-center text-center'>
             <h1 className='text-3xl font-bold text-slate-900'>Login</h1>
-            <p className='text-slate-500 mt-2'>Selamat datang di aplikasi <span className='font-bold text-slate-900'>SPMB SMANSABA 2025</span></p>
+            <p className='text-slate-500 mt-2'>Selamat datang di aplikasi <span className='font-bold text-slate-900'>SPMB SMAN 1 BANTARUJEG 2026</span></p>
           </div>
         </CardHeader>
         <CardContent className="pt-0">

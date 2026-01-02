@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as PengumumanRouteImport } from './routes/pengumuman'
 import { Route as PendaftarRouteImport } from './routes/pendaftar'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -31,6 +32,11 @@ import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ss
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PengumumanRoute = PengumumanRouteImport.update({
+  id: '/pengumuman',
+  path: '/pengumuman',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PendaftarRoute = PendaftarRouteImport.update({
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/pendaftar': typeof PendaftarRoute
+  '/pengumuman': typeof PengumumanRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/pendaftar': typeof PendaftarRoute
+  '/pengumuman': typeof PengumumanRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
   '/pendaftar': typeof PendaftarRoute
+  '/pengumuman': typeof PengumumanRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/pendaftar'
+    | '/pengumuman'
     | '/signup'
     | '/api/admin-setup'
     | '/dashboard/sekolah'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/pendaftar'
+    | '/pengumuman'
     | '/signup'
     | '/api/admin-setup'
     | '/dashboard/sekolah'
@@ -225,6 +236,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/login'
     | '/pendaftar'
+    | '/pengumuman'
     | '/signup'
     | '/api/admin-setup'
     | '/dashboard/sekolah'
@@ -246,6 +258,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
   PendaftarRoute: typeof PendaftarRoute
+  PengumumanRoute: typeof PengumumanRoute
   SignupRoute: typeof SignupRoute
   ApiAdminSetupRoute: typeof ApiAdminSetupRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pengumuman': {
+      id: '/pengumuman'
+      path: '/pengumuman'
+      fullPath: '/pengumuman'
+      preLoaderRoute: typeof PengumumanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pendaftar': {
@@ -412,6 +432,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
   PendaftarRoute: PendaftarRoute,
+  PengumumanRoute: PengumumanRoute,
   SignupRoute: SignupRoute,
   ApiAdminSetupRoute: ApiAdminSetupRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

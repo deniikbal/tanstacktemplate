@@ -328,7 +328,7 @@ function StudentsPage() {
             <div>
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900">Data Siswa</h1>
                 <p className="text-muted-foreground">
-                    Kelola data peserta didik SPMB SMANSABA di sini.
+                    Kelola data peserta didik SPMB SMAN 1 BANTARUJEG di sini.
                 </p>
             </div>
 

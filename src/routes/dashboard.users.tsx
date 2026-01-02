@@ -138,7 +138,7 @@ function UsersPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Manajemen User</h1>
         <p className="text-muted-foreground">
-          Kelola pengguna aplikasi SPMB SMANSABA di sini.
+          Kelola pengguna aplikasi SPMB SMAN 1 BANTARUJEG di sini.
         </p>
       </div>
 

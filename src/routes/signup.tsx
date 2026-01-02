@@ -13,7 +13,7 @@ function SignupPage() {
       <Card className='z-1 w-full border border-slate-200 shadow-xl sm:max-w-lg bg-white text-slate-900'>
         <CardHeader className='gap-3'>
           <div>
-            <CardTitle className='mb-1.5 text-2xl font-bold'>Sign Up to SPMB SMANSABA</CardTitle>
+            <CardTitle className='mb-1.5 text-2xl font-bold'>Sign Up to SPMB SMAN 1 BANTARUJEG</CardTitle>
             <CardDescription className='text-base text-slate-500'>Mulai pendaftaran Anda di SMAN 1 Bantarujeg hari ini.</CardDescription>
           </div>
         </CardHeader>

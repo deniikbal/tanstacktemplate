@@ -540,7 +540,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
                 {/* Row 2: Birth & Year */}
                 <div className="space-y-1.5">
                     <Label htmlFor="tempatLahir">Tempat Lahir</Label>
-                    <Input id="tempatLahir" name="tempatLahir" defaultValue={initialData.tempatLahir || ''} placeholder="Contoh: Majalengka" />
+                    <Input id="tempatLahir" name="tempatLahir" defaultValue={initialData.tempatLahir || ''} placeholder="Contoh: Bantarujeg" />
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="tanggalLahir">Tanggal Lahir</Label>
