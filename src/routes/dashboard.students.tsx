@@ -156,6 +156,10 @@ function StudentsPage() {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
 
+    // Single Delete State
+    const [studentToDelete, setStudentToDelete] = useState<Student | null>(null)
+    const [isDeleteSingleOpen, setIsDeleteSingleOpen] = useState(false)
+
     const fetchStudents = async () => {
         setIsPending(true)
         try {
@@ -184,16 +188,25 @@ function StudentsPage() {
         return () => clearTimeout(timer)
     }, [page, searchTerm, pageSize])
 
-    const handleDeleteStudent = async (studentId: string) => {
-        if (confirm('Apakah Anda yakin ingin menghapus data siswa ini?')) {
-            try {
-                await deleteStudent({ data: { id: studentId } })
-                toast.success('Data siswa berhasil dihapus')
-                fetchStudents()
-            } catch (error: any) {
-                toast.error(error.message || 'Gagal menghapus data siswa')
-            }
+    const startDeleteStudent = (student: Student) => {
+        setStudentToDelete(student)
+        setIsDeleteSingleOpen(true)
+    }
+
+    const executeDeleteStudent = async () => {
+        if (!studentToDelete) return
+
+        setIsDeleting(true)
+        try {
+            await deleteStudent({ data: { id: studentToDelete.id } })
+            toast.success('Data siswa berhasil dihapus')
+            setIsDeleteSingleOpen(false)
+            setStudentToDelete(null)
+            fetchStudents()
+        } catch (error: any) {
+            toast.error(error.message || 'Gagal menghapus data siswa')
         }
+        setIsDeleting(false)
     }
 
     const handleBulkDelete = async () => {
@@ -462,7 +475,7 @@ function StudentsPage() {
                                                         <DropdownMenuSeparator />
                                                         <DropdownMenuItem
                                                             className="text-destructive focus:text-destructive focus:bg-destructive/10"
-                                                            onClick={() => handleDeleteStudent(s.id)}
+                                                            onClick={() => startDeleteStudent(s)}
                                                         >
                                                             <Trash2 className="mr-2 h-4 w-4" />
                                                             Hapus Siswa
@@ -667,6 +680,33 @@ function StudentsPage() {
                     )}
                 </DialogContent>
             </Dialog>
+
+            {/* Single Delete Confirmation Dialog */}
+            <AlertDialog open={isDeleteSingleOpen} onOpenChange={setIsDeleteSingleOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Hapus Data Siswa?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Apakah Anda yakin ingin menghapus data siswa <span className="font-semibold text-slate-900">{studentToDelete?.nmSiswa}</span>?
+                            <br />
+                            Tindakan ini tidak dapat dibatalkan.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isDeleting}>Batal</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={(e) => {
+                                e.preventDefault()
+                                executeDeleteStudent()
+                            }}
+                            disabled={isDeleting}
+                            className="bg-destructive text-white hover:bg-destructive/90"
+                        >
+                            {isDeleting ? 'Menghapus...' : 'Hapus'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             {/* Bulk Delete Confirmation Dialog */}
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

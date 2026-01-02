@@ -55,3 +55,5 @@ export const verification = pgTable("verification", {
 });
 
 export * from "./student-schema";
+export * from "./pendaftar-schema";
+export * from "./sekolah-schema";

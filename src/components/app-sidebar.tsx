@@ -53,6 +53,14 @@ const data = {
           title: "Data Siswa",
           url: "/dashboard/students",
         },
+        {
+          title: "Data Pendaftar",
+          url: "/pendaftar",
+        },
+        {
+          title: "Data Sekolah",
+          url: "/dashboard/sekolah",
+        },
       ],
     },
   ],
