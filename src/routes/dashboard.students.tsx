@@ -26,7 +26,8 @@ import {
     FileSpreadsheet,
     X,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    GraduationCap
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect, useRef } from 'react'
@@ -44,15 +45,9 @@ import {
     Card,
     CardContent,
     CardHeader,
+    CardTitle,
+    CardDescription,
 } from "@/components/ui/card"
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination"
 import {
     Select,
     SelectContent,
@@ -83,6 +78,7 @@ interface Student {
     id: string
     // Identity
     nmSiswa: string
+    noDaftar: string | null
     nis: string | null
     nisn: string | null
     tempatLahir: string | null
@@ -325,68 +321,81 @@ function StudentsPage() {
 
     return (
         <div className="p-6 space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">Data Siswa</h1>
-                <p className="text-muted-foreground">
-                    Kelola data peserta didik SPMB SMAN 1 BANTARUJEG di sini.
-                </p>
+            {/* Page Header with Icon */}
+            <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-100 rounded-lg">
+                    <GraduationCap className="w-6 h-6 text-emerald-600" />
+                </div>
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-900">Data Siswa</h1>
+                    <p className="text-sm text-slate-500">Kelola data peserta didik SPMB SMAN 1 BANTARUJEG</p>
+                </div>
             </div>
 
-            <Card className="border-slate-200 shadow-sm overflow-hidden py-0 gap-0">
-                <CardHeader className="bg-slate-50/50 py-3 px-6 border-b shadow-sm border-slate-200">
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm text-slate-500">Show</span>
-                                <Select value={pageSize} onValueChange={(val) => {
-                                    setPageSize(val)
-                                    setPage(1)
-                                }}>
-                                    <SelectTrigger className="w-[70px] bg-white h-8 border-slate-200 shadow-sm focus:ring-emerald-500">
-                                        <SelectValue placeholder="10" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="5">5</SelectItem>
-                                        <SelectItem value="10">10</SelectItem>
-                                        <SelectItem value="20">20</SelectItem>
-                                        <SelectItem value="50">50</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleFileSelect}
-                                accept=".xlsx,.xls"
-                                className="hidden"
-                            />
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle className="flex items-center gap-2">
+                            <UserCog className="w-5 h-5 text-emerald-600" />
+                            Daftar Peserta Didik
+                        </CardTitle>
+                        <CardDescription>
+                            Kelola data siswa, import dari Excel, atau hapus data.
+                        </CardDescription>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileSelect}
+                            accept=".xlsx,.xls"
+                            className="hidden"
+                        />
+                        <Button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="bg-emerald-600 hover:bg-emerald-700"
+                        >
+                            <Upload className="w-4 h-4 mr-2" />
+                            Import Excel
+                        </Button>
+                        {selectedIds.length > 0 && (
                             <Button
-                                onClick={() => fileInputRef.current?.click()}
-                                size="sm"
-                                className="h-8 bg-emerald-600 hover:bg-emerald-700 text-xs"
+                                onClick={() => setIsDeleteDialogOpen(true)}
+                                variant="destructive"
                             >
-                                <Upload className="mr-1.5 h-3.5 w-3.5" />
-                                Import Excel
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Hapus ({selectedIds.length})
                             </Button>
-                            {selectedIds.length > 0 && (
-                                <Button
-                                    onClick={() => setIsDeleteDialogOpen(true)}
-                                    size="sm"
-                                    variant="destructive"
-                                    className="h-8 text-xs"
-                                >
-                                    <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-                                    Hapus ({selectedIds.length})
-                                </Button>
-                            )}
+                        )}
+                    </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                    {/* Filter Bar */}
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-4 border-b border-slate-200 bg-slate-50/50">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-slate-500">Show</span>
+                            <Select value={pageSize} onValueChange={(val) => {
+                                setPageSize(val)
+                                setPage(1)
+                            }}>
+                                <SelectTrigger className="w-[70px] bg-white h-8 border-slate-200 shadow-sm focus:ring-emerald-500">
+                                    <SelectValue placeholder="10" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="5">5</SelectItem>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="20">20</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
-                        <div className="flex items-center gap-2 flex-1 md:justify-end max-w-2xl">
-                            <div className="relative w-full max-w-sm">
+                        <div className="flex items-center gap-2 flex-1 md:justify-end max-w-sm">
+                            <div className="relative w-full">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                 <Input
                                     placeholder="Cari siswa..."
-                                    className="pl-9 bg-white h-9 border-slate-200"
+                                    className="pl-9 bg-white h-8 border-slate-200"
                                     value={searchTerm}
                                     onChange={(e) => {
                                         setSearchTerm(e.target.value)
@@ -396,8 +405,7 @@ function StudentsPage() {
                             </div>
                         </div>
                     </div>
-                </CardHeader>
-                <CardContent className="p-0">
+
                     <div className="relative overflow-x-auto">
                         <Table>
                             <TableHeader className="bg-slate-50/50">
@@ -409,6 +417,7 @@ function StudentsPage() {
                                             aria-label="Select all"
                                         />
                                     </TableHead>
+                                    <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">No Daftar</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Nama Lengkap</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">NISN</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Asal Sekolah</TableHead>
@@ -421,6 +430,9 @@ function StudentsPage() {
                                         <TableRow key={i}>
                                             <TableCell className="px-4 py-2">
                                                 <Skeleton className="h-4 w-4 bg-slate-200" />
+                                            </TableCell>
+                                            <TableCell className="px-6 py-2">
+                                                <Skeleton className="h-5 w-[80px] bg-slate-200" />
                                             </TableCell>
                                             <TableCell className="px-6 py-2">
                                                 <Skeleton className="h-5 w-[180px] bg-slate-200" />
@@ -438,7 +450,7 @@ function StudentsPage() {
                                     ))
                                 ) : !studentsInfo || studentsInfo.students.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="h-32 text-center text-slate-500 italic">
+                                        <TableCell colSpan={6} className="h-32 text-center text-slate-500 italic">
                                             Tidak ada data siswa ditemukan.
                                         </TableCell>
                                     </TableRow>
@@ -452,6 +464,7 @@ function StudentsPage() {
                                                     aria-label={`Select ${s.nmSiswa}`}
                                                 />
                                             </TableCell>
+                                            <TableCell className="text-slate-600 px-6 py-2">{s.noDaftar || '-'}</TableCell>
                                             <TableCell className="font-medium text-slate-900 px-6 py-2">{s.nmSiswa || '-'}</TableCell>
                                             <TableCell className="text-slate-600 px-6 py-2">{s.nisn || '-'}</TableCell>
                                             <TableCell className="text-slate-600 px-6 py-2">{s.sekolahAsal || '-'}</TableCell>
@@ -730,7 +743,7 @@ function StudentsPage() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
+        </div >
     )
 }
 

@@ -31,7 +31,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -118,34 +118,49 @@ function SekolahManagement() {
 
     return (
         <div className="p-6 space-y-6">
-            <div className="flex justify-between items-center">
+            {/* Page Header with Icon */}
+            <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-100 rounded-lg">
+                    <Building2 className="w-6 h-6 text-emerald-600" />
+                </div>
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight">Data Sekolah</h1>
-                    <p className="text-muted-foreground text-sm">Kelola database sekolah asal pendaftar.</p>
+                    <h1 className="text-2xl font-bold text-slate-900">Data Sekolah</h1>
+                    <p className="text-sm text-slate-500">Kelola database sekolah asal pendaftar</p>
                 </div>
             </div>
 
             <Card>
-                <CardHeader className="pb-3 text-emerald-800">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                        <Building2 className="h-5 w-5" /> Daftar Sekolah
-                    </CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle className="flex items-center gap-2">
+                            <Building2 className="w-5 h-5 text-emerald-600" />
+                            Daftar Sekolah
+                        </CardTitle>
+                        <CardDescription>
+                            Database sekolah SMP/MTS untuk referensi pendaftaran.
+                        </CardDescription>
+                    </div>
+                    <Button onClick={() => { setEditingSekolah(null); setIsDialogOpen(true) }} className="bg-emerald-600 hover:bg-emerald-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Tambah
+                    </Button>
                 </CardHeader>
-                <CardContent>
-                    <div className="flex flex-col md:flex-row gap-4 pb-6">
-                        <div className="relative flex-1 max-w-md">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <CardContent className="p-0">
+                    {/* Filter Bar */}
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-4 border-b border-slate-200 bg-slate-50/50">
+                        <div className="relative flex-1 max-w-sm">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input
                                 placeholder="Cari sekolah, NPSN, atau kecamatan..."
-                                className="pl-8"
+                                className="pl-9 bg-white h-9 border-slate-200"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
                         <div className="flex gap-2 items-center">
-                            <Filter className="h-4 w-4 text-slate-400 mr-1" />
+                            <Filter className="h-4 w-4 text-slate-400" />
                             <Select value={bentukFilter} onValueChange={setBentukFilter}>
-                                <SelectTrigger className="w-[130px] h-9 text-xs">
+                                <SelectTrigger className="w-[130px] h-9 bg-white border-slate-200">
                                     <SelectValue placeholder="Bentuk" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -155,7 +170,7 @@ function SekolahManagement() {
                                 </SelectContent>
                             </Select>
                             <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                <SelectTrigger className="w-[130px] h-9 text-xs">
+                                <SelectTrigger className="w-[130px] h-9 bg-white border-slate-200">
                                     <SelectValue placeholder="Status" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -164,11 +179,6 @@ function SekolahManagement() {
                                     <SelectItem value="S">Swasta</SelectItem>
                                 </SelectContent>
                             </Select>
-                        </div>
-                        <div className="ml-auto">
-                            <Button onClick={() => { setEditingSekolah(null); setIsDialogOpen(true) }} className="bg-emerald-600 hover:bg-emerald-700 h-9 text-sm">
-                                <Plus className="mr-1.5 h-4 w-4" /> Tambah
-                            </Button>
                         </div>
                     </div>
 

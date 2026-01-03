@@ -11,14 +11,23 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
+import { getActiveTahunAjaran } from '@/lib/server/tahun-ajaran'
 
 export const Route = createFileRoute('/pengumuman')({
     component: AnnouncementPage,
+    loader: async () => {
+        const activeTahun = await getActiveTahunAjaran()
+        return {
+            announcementDate: activeTahun?.tanggalPengumuman || new Date('2026-06-01T08:00:00'),
+            tahunAjaran: activeTahun?.tahun || '2026/2027'
+        }
+    },
 })
 
 function AnnouncementPage() {
-    // Target date for announcement (set to June 1st, 2026)
-    const targetDate = new Date('2026-06-01T08:00:00').getTime()
+    const { announcementDate } = Route.useLoaderData()
+    // Target date for announcement from database
+    const targetDate = new Date(announcementDate).getTime()
 
     const [timeLeft, setTimeLeft] = useState<{
         days: number,

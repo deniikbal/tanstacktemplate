@@ -1,18 +1,27 @@
 import { createServerFn } from '@tanstack/react-start'
 import { db } from '@/lib/db'
 import { student } from '@/lib/db/student-schema'
-import { eq, like, sql, desc, asc, inArray } from 'drizzle-orm'
+import { tahunAjaran } from '@/lib/db/tahun-ajaran-schema'
+import { eq, like, sql, desc, asc, inArray, and } from 'drizzle-orm'
 
 export const getStudents = createServerFn({
     method: 'GET',
 })
-    .inputValidator((d: { limit?: number; offset?: number; search?: string }) => d)
+    .inputValidator((d: { limit?: number; offset?: number; search?: string; tahunAjaran?: string }) => d)
     .handler(async ({ data }) => {
-        const { limit = 10, offset = 0, search } = data
+        const { limit = 10, offset = 0, search, tahunAjaran } = data
 
-        const whereClause = search
-            ? like(student.nmSiswa, `%${search}%`)
-            : undefined
+        const filters = []
+
+        if (search) {
+            filters.push(like(student.nmSiswa, `%${search}%`))
+        }
+
+        if (tahunAjaran && tahunAjaran !== 'semua') {
+            filters.push(eq(student.tahunAjaran, tahunAjaran))
+        }
+
+        const whereClause = filters.length > 0 ? and(...filters) : undefined
 
         const studentsData = await db
             .select()
@@ -173,6 +182,15 @@ export const bulkImportStudents = createServerFn({ method: 'POST' })
             throw new Error('No data to import')
         }
 
+        // Get active tahun ajaran
+        const activeTahun = await db
+            .select({ tahun: tahunAjaran.tahun })
+            .from(tahunAjaran)
+            .where(eq(tahunAjaran.isAktif, true))
+            .limit(1)
+
+        const aktiveTahunAjaran = activeTahun[0]?.tahun || null
+
         let imported = 0
         let failed = 0
 
@@ -199,6 +217,7 @@ export const bulkImportStudents = createServerFn({ method: 'POST' })
                     pekerjaanIbu: row.pekerjaan_ibu || null,
                     nmWali: row.nm_wali || null,
                     pekerjaanWali: row.pekerjaan_wali || null,
+                    tahunAjaran: aktiveTahunAjaran,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 })
@@ -240,6 +259,15 @@ export const importBatchStudents = createServerFn({ method: 'POST' })
             return { imported: 0, failed: 0 }
         }
 
+        // Get active tahun ajaran
+        const activeTahun = await db
+            .select({ tahun: tahunAjaran.tahun })
+            .from(tahunAjaran)
+            .where(eq(tahunAjaran.isAktif, true))
+            .limit(1)
+
+        const aktiveTahunAjaran = activeTahun[0]?.tahun || null
+
         const values = batch.map(row => ({
             id: crypto.randomUUID(),
             nis: row.nis || null,
@@ -258,6 +286,7 @@ export const importBatchStudents = createServerFn({ method: 'POST' })
             pekerjaanIbu: row.pekerjaan_ibu || null,
             nmWali: row.nm_wali || null,
             pekerjaanWali: row.pekerjaan_wali || null,
+            tahunAjaran: aktiveTahunAjaran,
             createdAt: new Date(),
             updatedAt: new Date(),
         }))
@@ -269,4 +298,18 @@ export const importBatchStudents = createServerFn({ method: 'POST' })
             console.error('Batch insert failed:', error)
             return { imported: 0, failed: batch.length }
         }
+    })
+
+// Get distinct tahunAjaran values for filter dropdown
+export const getTahunAjaranStudentOptions = createServerFn({
+    method: 'GET',
+})
+    .handler(async () => {
+        const results = await db
+            .selectDistinct({ tahunAjaran: student.tahunAjaran })
+            .from(student)
+            .where(sql`${student.tahunAjaran} IS NOT NULL`)
+            .orderBy(sql`${student.tahunAjaran} DESC`)
+
+        return results.map(r => r.tahunAjaran).filter(Boolean) as string[]
     })

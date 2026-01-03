@@ -18,7 +18,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardUsersRouteImport } from './routes/dashboard.users'
 import { Route as DashboardStudentsRouteImport } from './routes/dashboard.students'
+import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardSekolahRouteImport } from './routes/dashboard/sekolah'
+import { Route as DashboardPendaftarRouteImport } from './routes/dashboard.pendaftar'
 import { Route as ApiAdminSetupRouteImport } from './routes/api/admin-setup'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
@@ -74,9 +76,19 @@ const DashboardStudentsRoute = DashboardStudentsRouteImport.update({
   path: '/students',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardSekolahRoute = DashboardSekolahRouteImport.update({
   id: '/sekolah',
   path: '/sekolah',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPendaftarRoute = DashboardPendaftarRouteImport.update({
+  id: '/pendaftar',
+  path: '/pendaftar',
   getParentRoute: () => DashboardRoute,
 } as any)
 const ApiAdminSetupRoute = ApiAdminSetupRouteImport.update({
@@ -133,7 +145,9 @@ export interface FileRoutesByFullPath {
   '/pengumuman': typeof PengumumanRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
+  '/dashboard/pendaftar': typeof DashboardPendaftarRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/students': typeof DashboardStudentsRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -153,7 +167,9 @@ export interface FileRoutesByTo {
   '/pengumuman': typeof PengumumanRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
+  '/dashboard/pendaftar': typeof DashboardPendaftarRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/students': typeof DashboardStudentsRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -175,7 +191,9 @@ export interface FileRoutesById {
   '/pengumuman': typeof PengumumanRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
+  '/dashboard/pendaftar': typeof DashboardPendaftarRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
+  '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/students': typeof DashboardStudentsRoute
   '/dashboard/users': typeof DashboardUsersRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -198,7 +216,9 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/signup'
     | '/api/admin-setup'
+    | '/dashboard/pendaftar'
     | '/dashboard/sekolah'
+    | '/dashboard/settings'
     | '/dashboard/students'
     | '/dashboard/users'
     | '/dashboard/'
@@ -218,7 +238,9 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/signup'
     | '/api/admin-setup'
+    | '/dashboard/pendaftar'
     | '/dashboard/sekolah'
+    | '/dashboard/settings'
     | '/dashboard/students'
     | '/dashboard/users'
     | '/dashboard'
@@ -239,7 +261,9 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/signup'
     | '/api/admin-setup'
+    | '/dashboard/pendaftar'
     | '/dashboard/sekolah'
+    | '/dashboard/settings'
     | '/dashboard/students'
     | '/dashboard/users'
     | '/dashboard/'
@@ -336,11 +360,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardStudentsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/sekolah': {
       id: '/dashboard/sekolah'
       path: '/sekolah'
       fullPath: '/dashboard/sekolah'
       preLoaderRoute: typeof DashboardSekolahRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/pendaftar': {
+      id: '/dashboard/pendaftar'
+      path: '/pendaftar'
+      fullPath: '/dashboard/pendaftar'
+      preLoaderRoute: typeof DashboardPendaftarRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/api/admin-setup': {
@@ -410,14 +448,18 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
+  DashboardPendaftarRoute: typeof DashboardPendaftarRoute
   DashboardSekolahRoute: typeof DashboardSekolahRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStudentsRoute: typeof DashboardStudentsRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardPendaftarRoute: DashboardPendaftarRoute,
   DashboardSekolahRoute: DashboardSekolahRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStudentsRoute: DashboardStudentsRoute,
   DashboardUsersRoute: DashboardUsersRoute,
   DashboardIndexRoute: DashboardIndexRoute,

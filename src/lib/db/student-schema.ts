@@ -1,8 +1,9 @@
-import { pgTable, text, timestamp, boolean, date } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, date } from "drizzle-orm/pg-core";
 
 export const student = pgTable("student", {
     // Main Data (tabel_siswa.json)
     id: text("id").primaryKey(),
+    noDaftar: text("no_daftar"), // Nomor pendaftaran
     nis: text("nis"), // JSON: nis
     nisn: text("nisn").unique(), // JSON: nisn
     nmSiswa: text("nm_siswa").notNull(), // JSON: nm_siswa
@@ -35,6 +36,10 @@ export const student = pgTable("student", {
     noIjasahnas: text("no_ijasahnas"), // JSON: no_ijasahnas
     tglLulus: date("tgl_lulus"), // JSON: tgl_lulus
     noTranskrip: text("no_transkrip"), // JSON: no_transkrip
+
+    // Academic Year
+    tahunAjaran: text("tahun_ajaran"), // e.g., "2026/2027"
+
     // System Metadata
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),

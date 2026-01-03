@@ -1,14 +1,15 @@
 import { createServerFn } from '@tanstack/react-start'
 import { db } from '@/lib/db'
 import { pendaftar } from '@/lib/db/pendaftar-schema'
+import { tahunAjaran } from '@/lib/db/tahun-ajaran-schema'
 import { eq, ilike, sql, asc, and } from 'drizzle-orm'
 
 export const getPendaftarList = createServerFn({
     method: 'GET',
 })
-    .inputValidator((d: { limit?: number; offset?: number; search?: string, asalSekolah?: string, jalurMasuk?: string }) => d)
+    .inputValidator((d: { limit?: number; offset?: number; search?: string, asalSekolah?: string, jalurMasuk?: string, tahunAjaran?: string }) => d)
     .handler(async ({ data }) => {
-        const { limit = 10, offset = 0, search, asalSekolah, jalurMasuk } = data
+        const { limit = 10, offset = 0, search, asalSekolah, jalurMasuk, tahunAjaran } = data
 
         const filters = []
 
@@ -22,6 +23,10 @@ export const getPendaftarList = createServerFn({
 
         if (jalurMasuk && jalurMasuk !== 'semua') {
             filters.push(eq(pendaftar.jalurMasuk, jalurMasuk))
+        }
+
+        if (tahunAjaran && tahunAjaran !== 'semua') {
+            filters.push(eq(pendaftar.tahunAjaran, tahunAjaran))
         }
 
         const whereClause = filters.length > 0 ? and(...filters) : undefined
@@ -110,10 +115,19 @@ export const savePendaftar = createServerFn({ method: 'POST' })
                     })
                     .where(eq(pendaftar.id, cleanData.id))
             } else {
-                // Create
+                // Create - get active tahun ajaran
+                const activeTahun = await db
+                    .select({ tahun: tahunAjaran.tahun })
+                    .from(tahunAjaran)
+                    .where(eq(tahunAjaran.isAktif, true))
+                    .limit(1)
+
+                const aktiveTahunAjaran = activeTahun[0]?.tahun || null
+
                 await db.insert(pendaftar).values({
                     ...cleanData,
                     id: crypto.randomUUID(),
+                    tahunAjaran: aktiveTahunAjaran,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 })
@@ -166,3 +180,16 @@ export const getLocations = createServerFn({ method: 'GET' })
             .limit(10)
     })
 
+// Get distinct tahunAjaran values for filter dropdown
+export const getTahunAjaranOptions = createServerFn({
+    method: 'GET',
+})
+    .handler(async () => {
+        const results = await db
+            .selectDistinct({ tahunAjaran: pendaftar.tahunAjaran })
+            .from(pendaftar)
+            .where(sql`${pendaftar.tahunAjaran} IS NOT NULL`)
+            .orderBy(sql`${pendaftar.tahunAjaran} DESC`)
+
+        return results.map(r => r.tahunAjaran).filter(Boolean) as string[]
+    })

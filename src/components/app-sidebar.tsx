@@ -1,10 +1,9 @@
-"use client"
-
 import * as React from "react"
 import {
   Database,
   GalleryVerticalEnd,
   LayoutDashboard,
+  Settings,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -55,13 +54,19 @@ const data = {
         },
         {
           title: "Data Pendaftar",
-          url: "/pendaftar",
+          url: "/dashboard/pendaftar",
         },
         {
           title: "Data Sekolah",
           url: "/dashboard/sekolah",
         },
       ],
+    },
+    {
+      title: "Setting",
+      url: "/dashboard/settings",
+      icon: Settings,
+      isActive: true,
     },
   ],
 }

@@ -12,6 +12,7 @@ export const pendaftar = pgTable("pendaftar", {
     jalurMasuk: text("jalur_masuk"),
     keterangan: text("keterangan"),
     tahap: text("tahap"), // '1' or '2'
+    tahunAjaran: text("tahun_ajaran"), // e.g., "2026/2027"
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });

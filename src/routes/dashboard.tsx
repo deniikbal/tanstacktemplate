@@ -40,6 +40,7 @@ const routeNames: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/dashboard/users': 'Manajemen User',
   '/dashboard/students': 'Data Siswa',
+  '/dashboard/settings': 'Setting',
 }
 
 function DashboardLayout() {

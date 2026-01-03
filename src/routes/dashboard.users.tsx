@@ -22,7 +22,9 @@ import {
   Search,
   Key,
   UserCog,
-  Trash2
+  Trash2,
+  Users,
+  Plus
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
@@ -41,6 +43,8 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CardTitle,
+  CardDescription,
 } from "@/components/ui/card"
 import {
   Pagination,
@@ -135,50 +139,62 @@ function UsersPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Manajemen User</h1>
-        <p className="text-muted-foreground">
-          Kelola pengguna aplikasi SPMB SMAN 1 BANTARUJEG di sini.
-        </p>
+      {/* Page Header with Icon */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-emerald-100 rounded-lg">
+          <Users className="w-6 h-6 text-emerald-600" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Manajemen User</h1>
+          <p className="text-sm text-slate-500">Kelola pengguna aplikasi SPMB SMAN 1 BANTARUJEG</p>
+        </div>
       </div>
 
-      <Card className="border-slate-200 shadow-sm overflow-hidden py-0 gap-0">
-        <CardHeader className="bg-slate-50/50 py-3 px-6 border-b shadow-sm border-slate-200">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            {/* Left side: Show count and Add User */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-500">Show</span>
-                <Select value={pageSize} onValueChange={(val) => {
-                  setPageSize(val)
-                  setPage(1)
-                }}>
-                  <SelectTrigger className="w-[70px] bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500">
-                    <SelectValue placeholder="10" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">5</SelectItem>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="50">50</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                <DialogTrigger asChild>
-                  <Button className="h-9 gap-2 bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-sm transition-all active:scale-95 px-4 font-medium rounded-md">
-                    Tambah User
-                  </Button>
-                </DialogTrigger>
-                <CreateUserDialog onEmailCreated={() => {
-                  setIsCreateOpen(false)
-                  fetchUsers()
-                }} />
-              </Dialog>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <UserCog className="w-5 h-5 text-emerald-600" />
+              Daftar Pengguna
+            </CardTitle>
+            <CardDescription>
+              Kelola akun pengguna, ubah role, atau reset password.
+            </CardDescription>
+          </div>
+          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-emerald-600 hover:bg-emerald-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Tambah User
+              </Button>
+            </DialogTrigger>
+            <CreateUserDialog onEmailCreated={() => {
+              setIsCreateOpen(false)
+              fetchUsers()
+            }} />
+          </Dialog>
+        </CardHeader>
+        <CardContent className="p-0">
+          {/* Filter Bar */}
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-4 border-b border-slate-200 bg-slate-50/50">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-500">Show</span>
+              <Select value={pageSize} onValueChange={(val) => {
+                setPageSize(val)
+                setPage(1)
+              }}>
+                <SelectTrigger className="w-[70px] bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500">
+                  <SelectValue placeholder="10" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Right side: Search and Filter */}
             <div className="flex items-center gap-2 flex-1 md:justify-end max-w-2xl">
               <div className="relative w-full max-w-sm">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -208,8 +224,7 @@ function UsersPage() {
               </Select>
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="p-0">
+
           <div className="relative overflow-x-auto">
             <Table>
               <TableHeader className="bg-slate-50/50">
