@@ -21,6 +21,7 @@ import { Route as DashboardStudentsRouteImport } from './routes/dashboard.studen
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardSekolahRouteImport } from './routes/dashboard/sekolah'
 import { Route as DashboardPendaftarRouteImport } from './routes/dashboard.pendaftar'
+import { Route as DashboardKelulusanRouteImport } from './routes/dashboard.kelulusan'
 import { Route as ApiAdminSetupRouteImport } from './routes/api/admin-setup'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
@@ -91,6 +92,11 @@ const DashboardPendaftarRoute = DashboardPendaftarRouteImport.update({
   path: '/pendaftar',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardKelulusanRoute = DashboardKelulusanRouteImport.update({
+  id: '/kelulusan',
+  path: '/kelulusan',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const ApiAdminSetupRoute = ApiAdminSetupRouteImport.update({
   id: '/api/admin-setup',
   path: '/api/admin-setup',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/pengumuman': typeof PengumumanRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
+  '/dashboard/kelulusan': typeof DashboardKelulusanRoute
   '/dashboard/pendaftar': typeof DashboardPendaftarRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/pengumuman': typeof PengumumanRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
+  '/dashboard/kelulusan': typeof DashboardKelulusanRoute
   '/dashboard/pendaftar': typeof DashboardPendaftarRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/pengumuman': typeof PengumumanRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
+  '/dashboard/kelulusan': typeof DashboardKelulusanRoute
   '/dashboard/pendaftar': typeof DashboardPendaftarRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
@@ -216,6 +225,7 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/signup'
     | '/api/admin-setup'
+    | '/dashboard/kelulusan'
     | '/dashboard/pendaftar'
     | '/dashboard/sekolah'
     | '/dashboard/settings'
@@ -238,6 +248,7 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/signup'
     | '/api/admin-setup'
+    | '/dashboard/kelulusan'
     | '/dashboard/pendaftar'
     | '/dashboard/sekolah'
     | '/dashboard/settings'
@@ -261,6 +272,7 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/signup'
     | '/api/admin-setup'
+    | '/dashboard/kelulusan'
     | '/dashboard/pendaftar'
     | '/dashboard/sekolah'
     | '/dashboard/settings'
@@ -381,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardPendaftarRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/kelulusan': {
+      id: '/dashboard/kelulusan'
+      path: '/kelulusan'
+      fullPath: '/dashboard/kelulusan'
+      preLoaderRoute: typeof DashboardKelulusanRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/api/admin-setup': {
       id: '/api/admin-setup'
       path: '/api/admin-setup'
@@ -448,6 +467,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
+  DashboardKelulusanRoute: typeof DashboardKelulusanRoute
   DashboardPendaftarRoute: typeof DashboardPendaftarRoute
   DashboardSekolahRoute: typeof DashboardSekolahRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
@@ -457,6 +477,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardKelulusanRoute: DashboardKelulusanRoute,
   DashboardPendaftarRoute: DashboardPendaftarRoute,
   DashboardSekolahRoute: DashboardSekolahRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,

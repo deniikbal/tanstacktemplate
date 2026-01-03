@@ -8,6 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import {
   Plus,
@@ -19,7 +25,9 @@ import {
   Loader2,
   Filter,
   Building2,
-  Users
+  Users,
+  MoreHorizontal,
+  Pencil
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
@@ -92,30 +100,30 @@ function DashboardPendaftarPage() {
 
   // Pagination
   const [page, setPage] = useState(1)
-  const pageSize = 10
+  const [limit, setLimit] = useState('10')
 
   const fetchPendaftar = async () => {
     setIsPending(true)
     try {
       const data = await getPendaftarList({
         data: {
-          limit: pageSize,
-          offset: (page - 1) * pageSize,
-          search: searchTerm || undefined,
-          asalSekolah: sekolahFilter || undefined,
-          jalurMasuk: jalurFilter !== 'semua' ? jalurFilter : undefined
+          limit: Number(limit),
+          offset: (page - 1) * Number(limit),
+          search: searchTerm,
+          asalSekolah: sekolahFilter,
+          jalurMasuk: jalurFilter
         }
       })
       setPendaftarInfo(data)
-    } catch (error: any) {
-      toast.error(error.message || 'Gagal mengambil data pendaftar')
+    } catch (error) {
+      toast.error('Gagal mengambil data pendaftar')
     }
     setIsPending(false)
   }
 
   useEffect(() => {
     fetchPendaftar()
-  }, [page, searchTerm, sekolahFilter, jalurFilter])
+  }, [page, limit, searchTerm, sekolahFilter, jalurFilter])
 
   const handleDelete = async () => {
     if (!pendaftarToDelete) return
@@ -132,7 +140,7 @@ function DashboardPendaftarPage() {
     setIsDeleting(false)
   }
 
-  const totalPages = Math.ceil((pendaftarInfo?.total || 0) / pageSize)
+  const totalPages = Math.ceil((pendaftarInfo?.total || 0) / Number(limit))
 
   return (
     <div className="p-6 space-y-6">
@@ -266,29 +274,34 @@ function DashboardPendaftarPage() {
                       </TableCell>
                       <TableCell className="text-slate-600 px-4">{p.jalurMasuk || '-'}</TableCell>
                       <TableCell className="text-slate-600 px-4">{p.noHandphone || '-'}</TableCell>
-                      <TableCell className="text-right space-x-1 px-4">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50"
-                          onClick={() => {
-                            setSelectedPendaftar(p)
-                            setIsFormOpen(true)
-                          }}
-                        >
-                          <UserCog className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-slate-500 hover:text-red-600 hover:bg-red-50"
-                          onClick={() => {
-                            setPendaftarToDelete(p)
-                            setIsDeleteDialogOpen(true)
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      <TableCell className="text-right px-4">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => {
+                              setSelectedPendaftar(p)
+                              setIsFormOpen(true)
+                            }}>
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Edit Data
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                              onClick={() => {
+                                setPendaftarToDelete(p)
+                                setIsDeleteDialogOpen(true)
+                              }}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Hapus Data
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
@@ -297,32 +310,84 @@ function DashboardPendaftarPage() {
             </Table>
           </div>
 
-          {totalPages > 1 && (
-            <div className="p-4 border-t bg-slate-50/30 flex items-center justify-between">
-              <p className="text-xs text-slate-500">
-                Total {pendaftarInfo?.total} pendaftar
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === 1}
-                  onClick={() => setPage(p => p - 1)}
-                  className="h-8"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-xs font-medium">Halaman {page} dari {totalPages}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === totalPages}
-                  onClick={() => setPage(p => p + 1)}
-                  className="h-8"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
+          {pendaftarInfo && pendaftarInfo.total > 0 && (
+            <div className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100 bg-slate-50/30">
+              <div className="flex items-center gap-4">
+                <div className="text-sm text-slate-500">
+                  Menampilkan <span className="font-medium text-slate-900">{Math.min(pendaftarInfo.total, (page - 1) * Number(limit) + 1)}</span>
+                  {' '}- <span className="font-medium text-slate-900">{Math.min(pendaftarInfo.total, page * Number(limit))}</span>
+                  {' '}dari <span className="font-medium text-slate-900">{pendaftarInfo.total}</span> data
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400 font-medium">Baris:</span>
+                  <select
+                    value={limit}
+                    onChange={(e) => {
+                      setLimit(e.target.value)
+                      setPage(1)
+                    }}
+                    className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  >
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
               </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => page > 1 && setPage(p => p - 1)}
+                    disabled={page === 1}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Sebelumnya
+                  </button>
+
+                  {(() => {
+                    const pages = []
+                    const showEllipsisStart = page > 3
+                    const showEllipsisEnd = page < totalPages - 2
+
+                    pages.push(1)
+                    if (showEllipsisStart) pages.push('...')
+                    for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
+                      if (!pages.includes(i)) pages.push(i)
+                    }
+                    if (showEllipsisEnd) pages.push('...')
+                    if (totalPages > 1 && !pages.includes(totalPages)) pages.push(totalPages)
+
+                    return pages.map((p, idx) => (
+                      p === '...' ? (
+                        <span key={`ellipsis-${idx}`} className="px-2 py-1.5 text-slate-400">...</span>
+                      ) : (
+                        <button
+                          key={p}
+                          onClick={() => setPage(p as number)}
+                          className={`min-w-[32px] h-8 px-3 py-1.5 text-sm rounded-md transition-colors ${page === p
+                            ? 'bg-emerald-600 text-white font-medium'
+                            : 'text-slate-600 hover:bg-slate-100'
+                            }`}
+                        >
+                          {p}
+                        </button>
+                      )
+                    ))
+                  })()}
+
+                  <button
+                    onClick={() => page < totalPages && setPage(p => p + 1)}
+                    disabled={page === totalPages}
+                    className="flex items-center gap-1 px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Selanjutnya
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </CardContent>

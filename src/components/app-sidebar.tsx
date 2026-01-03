@@ -4,6 +4,7 @@ import {
   GalleryVerticalEnd,
   LayoutDashboard,
   Settings,
+  GraduationCap
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -36,13 +37,13 @@ const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: LayoutDashboard,
-      isActive: true,
+      isActive: false,
     },
     {
       title: "Data Master",
       url: "#",
       icon: Database,
-      isActive: true,
+      isActive: false,
       items: [
         {
           title: "Data Pengguna",
@@ -63,10 +64,16 @@ const data = {
       ],
     },
     {
+      title: "Kelulusan",
+      url: "/dashboard/kelulusan",
+      icon: GraduationCap,
+      isActive: false,
+    },
+    {
       title: "Setting",
       url: "/dashboard/settings",
       icon: Settings,
-      isActive: true,
+      isActive: false,
     },
   ],
 }

@@ -504,9 +504,29 @@ function StudentsPage() {
                     </div>
                 </CardContent>
                 <div className="border-t bg-slate-50/30 px-6 py-4 flex items-center justify-between">
-                    <p className="text-sm text-slate-500">
-                        Showing {Math.min((page - 1) * Number(pageSize) + 1, studentsInfo?.total || 0)} to {Math.min(page * Number(pageSize), studentsInfo?.total || 0)} of {studentsInfo?.total || 0} entries
-                    </p>
+                    <div className="flex items-center gap-4">
+                        <p className="text-sm text-slate-500">
+                            Menampilkan <span className="font-medium text-slate-900">{Math.min(studentsInfo?.total || 0, (page - 1) * Number(pageSize) + 1)}</span>
+                            {' '}- <span className="font-medium text-slate-900">{Math.min(studentsInfo?.total || 0, page * Number(pageSize))}</span>
+                            {' '}dari <span className="font-medium text-slate-900">{studentsInfo?.total || 0}</span> data
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs text-slate-400 font-medium">Baris:</span>
+                            <select
+                                value={pageSize}
+                                onChange={(e) => {
+                                    setPageSize(e.target.value)
+                                    setPage(1)
+                                }}
+                                className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                            >
+                                <option value="10">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
                     {totalPages > 1 && (
                         <div className="flex items-center gap-1">
                             <button
@@ -515,7 +535,7 @@ function StudentsPage() {
                                 className="flex items-center gap-1 px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <ChevronLeft className="h-4 w-4" />
-                                Previous
+                                Sebelumnya
                             </button>
 
                             {(() => {
@@ -569,7 +589,7 @@ function StudentsPage() {
                                 disabled={page === totalPages}
                                 className="flex items-center gap-1 px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Next
+                                Selanjutnya
                                 <ChevronRight className="h-4 w-4" />
                             </button>
                         </div>

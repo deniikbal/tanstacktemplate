@@ -8,16 +8,23 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import {
     Plus,
     Search,
-    UserCog,
     Trash2,
     ChevronLeft,
     ChevronRight,
     Loader2,
-    Building2
+    Building2,
+    MoreHorizontal,
+    Pencil
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
@@ -59,8 +66,8 @@ function SekolahManagement() {
     const [searchTerm, setSearchTerm] = useState('')
     const [bentukFilter, setBentukFilter] = useState('semua')
     const [statusFilter, setStatusFilter] = useState('semua')
-    const [page, setPage] = useState(0)
-    const limit = 10
+    const [page, setPage] = useState(1)
+    const [pageSize, setPageSize] = useState('10')
 
     const [data, setData] = useState<{ sekolah: any[], total: number }>({ sekolah: [], total: 0 })
     const [loading, setLoading] = useState(true)
@@ -75,8 +82,8 @@ function SekolahManagement() {
         try {
             const result = await getSekolahList({
                 data: {
-                    limit,
-                    offset: page * limit,
+                    limit: Number(pageSize),
+                    offset: (page - 1) * Number(pageSize),
                     search: searchTerm,
                     bentuk: bentukFilter,
                     status: statusFilter
@@ -93,12 +100,12 @@ function SekolahManagement() {
     useEffect(() => {
         const timeoutId = setTimeout(fetchSekolah, 500)
         return () => clearTimeout(timeoutId)
-    }, [searchTerm, page, bentukFilter, statusFilter])
+    }, [searchTerm, page, pageSize, bentukFilter, statusFilter])
 
     // Reset page on filter change
     useEffect(() => {
-        setPage(0)
-    }, [searchTerm, bentukFilter, statusFilter])
+        setPage(1)
+    }, [searchTerm, bentukFilter, statusFilter, pageSize])
 
     const handleDelete = async () => {
         if (!deletingId) return
@@ -114,7 +121,7 @@ function SekolahManagement() {
         }
     }
 
-    const totalPages = Math.ceil(data.total / limit)
+    const totalPages = Math.ceil(data.total / Number(pageSize))
 
     return (
         <div className="p-6 space-y-6">
@@ -220,14 +227,27 @@ function SekolahManagement() {
                                                 </span>
                                             </TableCell>
                                             <TableCell className="text-right px-4">
-                                                <div className="flex justify-end gap-2">
-                                                    <Button variant="outline" size="icon" onClick={() => { setEditingSekolah(item); setIsDialogOpen(true) }} className="h-8 w-8 hover:text-emerald-600 hover:border-emerald-200">
-                                                        <UserCog className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button variant="outline" size="icon" onClick={() => { setDeletingId(item.id); setIsDeleteDialogOpen(true) }} className="h-8 w-8 hover:text-red-600 hover:border-red-200">
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" className="h-8 w-8 p-0">
+                                                            <span className="sr-only">Open menu</span>
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem onClick={() => { setEditingSekolah(item); setIsDialogOpen(true) }}>
+                                                            <Pencil className="mr-2 h-4 w-4" />
+                                                            Edit Data
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                                                            onClick={() => { setDeletingId(item.id); setIsDeleteDialogOpen(true) }}
+                                                        >
+                                                            <Trash2 className="mr-2 h-4 w-4" />
+                                                            Hapus Data
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -236,31 +256,86 @@ function SekolahManagement() {
                         </Table>
                     </div>
 
-                    <div className="flex items-center justify-between space-x-2 py-4">
-                        <div className="text-sm text-muted-foreground font-medium">
-                            Menampilkan {data.total > 0 ? (page * limit) + 1 : 0} sampai {Math.min(data.total, (page + 1) * limit)} dari {data.total} sekolah
+                    {data.total > 0 && (
+                        <div className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100 bg-slate-50/30">
+                            <div className="flex items-center gap-4">
+                                <div className="text-sm text-slate-500">
+                                    Menampilkan <span className="font-medium text-slate-900">{Math.min(data.total, (page - 1) * Number(pageSize) + 1)}</span>
+                                    {' '}- <span className="font-medium text-slate-900">{Math.min(data.total, page * Number(pageSize))}</span>
+                                    {' '}dari <span className="font-medium text-slate-900">{data.total}</span> data
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-slate-400 font-medium">Baris:</span>
+                                    <select
+                                        value={pageSize}
+                                        onChange={(e) => {
+                                            setPageSize(e.target.value)
+                                            setPage(1)
+                                        }}
+                                        className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                    >
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {totalPages > 1 && (
+                                <div className="flex items-center gap-1">
+                                    <button
+                                        onClick={() => page > 1 && setPage(p => p - 1)}
+                                        disabled={page === 1}
+                                        className="flex items-center gap-1 px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <ChevronLeft className="h-4 w-4" />
+                                        Sebelumnya
+                                    </button>
+
+                                    {(() => {
+                                        const pages = []
+                                        const showEllipsisStart = page > 3
+                                        const showEllipsisEnd = page < totalPages - 2
+
+                                        pages.push(1)
+                                        if (showEllipsisStart) pages.push('...')
+                                        for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
+                                            if (!pages.includes(i)) pages.push(i)
+                                        }
+                                        if (showEllipsisEnd) pages.push('...')
+                                        if (totalPages > 1 && !pages.includes(totalPages)) pages.push(totalPages)
+
+                                        return pages.map((p, idx) => (
+                                            p === '...' ? (
+                                                <span key={`ellipsis-${idx}`} className="px-2 py-1.5 text-slate-400">...</span>
+                                            ) : (
+                                                <button
+                                                    key={p}
+                                                    onClick={() => setPage(p as number)}
+                                                    className={`min-w-[32px] h-8 px-3 py-1.5 text-sm rounded-md transition-colors ${page === p
+                                                        ? 'bg-emerald-600 text-white font-medium'
+                                                        : 'text-slate-600 hover:bg-slate-100'
+                                                        }`}
+                                                >
+                                                    {p}
+                                                </button>
+                                            )
+                                        ))
+                                    })()}
+
+                                    <button
+                                        onClick={() => page < totalPages && setPage(p => p + 1)}
+                                        disabled={page === totalPages}
+                                        className="flex items-center gap-1 px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Selanjutnya
+                                        <ChevronRight className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                        <div className="flex space-x-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setPage(p => Math.max(0, p - 1))}
-                                disabled={page === 0}
-                                className="h-8"
-                            >
-                                <ChevronLeft className="h-4 w-4 mr-1" /> Sebelum
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setPage(p => p + 1)}
-                                disabled={page >= totalPages - 1}
-                                className="h-8"
-                            >
-                                Sesudah <ChevronRight className="h-4 w-4 ml-1" />
-                            </Button>
-                        </div>
-                    </div>
+                    )}
                 </CardContent>
             </Card>
 

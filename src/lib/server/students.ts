@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { db } from '@/lib/db'
 import { student } from '@/lib/db/student-schema'
 import { tahunAjaran } from '@/lib/db/tahun-ajaran-schema'
-import { eq, like, sql, desc, asc, inArray, and } from 'drizzle-orm'
+import { eq, like, sql, asc, inArray, and } from 'drizzle-orm'
 
 export const getStudents = createServerFn({
     method: 'GET',
@@ -47,6 +47,48 @@ export const deleteStudent = createServerFn({ method: 'POST' })
     .handler(async ({ data }) => {
         await db.delete(student).where(eq(student.id, data.id))
         return { success: true }
+    })
+
+import { pendaftar } from '@/lib/db/pendaftar-schema'
+
+export const checkAnnouncement = createServerFn({ method: 'GET' })
+    .inputValidator((d: { nisn: string }) => d)
+    .handler(async ({ data }) => {
+        const { nisn } = data
+
+        if (!nisn) return { found: false }
+
+        const result = await db
+            .select({
+                nmSiswa: student.nmSiswa,
+                noDaftar: student.noDaftar,
+                nisn: student.nisn,
+                sekolahAsal: student.sekolahAsal,
+                tempatLahir: student.tempatLahir,
+                tanggalLahir: student.tanggalLahir,
+                jalurMasuk: pendaftar.jalurMasuk
+            })
+            .from(student)
+            .leftJoin(pendaftar, eq(student.noDaftar, pendaftar.id))
+            .where(eq(student.nisn, nisn))
+            .limit(1)
+
+        if (result.length > 0) {
+            const studentData = result[0]
+            return {
+                found: true,
+                status: 'LULUS',
+                name: studentData.nmSiswa,
+                regNo: studentData.noDaftar,
+                nisn: studentData.nisn,
+                sekolahAsal: studentData.sekolahAsal,
+                tempatLahir: studentData.tempatLahir,
+                tanggalLahir: studentData.tanggalLahir,
+                jalur: studentData.jalurMasuk
+            }
+        }
+
+        return { found: false }
     })
 
 export const bulkDeleteStudents = createServerFn({ method: 'POST' })

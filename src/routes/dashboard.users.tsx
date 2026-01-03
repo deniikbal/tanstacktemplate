@@ -24,7 +24,9 @@ import {
   UserCog,
   Trash2,
   Users,
-  Plus
+  Plus,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
@@ -47,14 +49,6 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -62,6 +56,16 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 export const Route = createFileRoute('/dashboard/users')({
   component: UsersPage,
@@ -77,9 +81,13 @@ function UsersPage() {
   const [isPasswordOpen, setIsPasswordOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<any>(null)
 
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [userToDelete, setUserToDelete] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
   // Pagination State
   const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState('5')
+  const [pageSize, setPageSize] = useState('10')
 
   const fetchUsers = async () => {
     setIsPending(true)
@@ -123,22 +131,55 @@ function UsersPage() {
     return () => clearTimeout(timer)
   }, [page, searchTerm, roleFilter, pageSize])
 
-  const handleDeleteUser = async (userId: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus user ini?')) {
-      const { error } = await authClient.admin.removeUser({ userId })
-      if (error) {
-        toast.error(error.message || 'Gagal menghapus user')
-      } else {
-        toast.success('User berhasil dihapus')
-        fetchUsers()
-      }
+  const handleDeleteUser = (userId: string) => {
+    setUserToDelete(userId)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const executeDeleteUser = async () => {
+    if (!userToDelete) return
+    setIsDeleting(true)
+    const { error } = await authClient.admin.removeUser({ userId: userToDelete })
+    if (error) {
+      toast.error(error.message || 'Gagal menghapus user')
+    } else {
+      toast.success('User berhasil dihapus')
+      setIsDeleteDialogOpen(false)
+      setUserToDelete(null)
+      fetchUsers()
     }
+    setIsDeleting(false)
   }
 
   const totalPages = Math.ceil((usersInfo?.total || 0) / Number(pageSize))
 
   return (
     <div className="p-6 space-y-6">
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Pengguna?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus user ini?
+              <br />
+              Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault()
+                executeDeleteUser()
+              }}
+              disabled={isDeleting}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {isDeleting ? 'Menghapus...' : 'Hapus'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {/* Page Header with Icon */}
       <div className="flex items-center gap-3">
         <div className="p-2 bg-emerald-100 rounded-lg">
@@ -325,49 +366,84 @@ function UsersPage() {
             </Table>
           </div>
         </CardContent>
-        {totalPages > 1 && (
-          <div className="border-t bg-slate-50/30 p-4">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      if (page > 1) setPage(p => p - 1)
-                    }}
-                    className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                  />
-                </PaginationItem>
+        {usersInfo && usersInfo.total > 0 && (
+          <div className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100 bg-slate-50/30">
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-slate-500">
+                Menampilkan <span className="font-medium text-slate-900">{Math.min(usersInfo.total, (page - 1) * Number(pageSize) + 1)}</span>
+                {' '}- <span className="font-medium text-slate-900">{Math.min(usersInfo.total, page * Number(pageSize))}</span>
+                {' '}dari <span className="font-medium text-slate-900">{usersInfo.total}</span> data
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-400 font-medium">Baris:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(e.target.value)
+                    setPage(1)
+                  }}
+                  className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                >
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </div>
+            </div>
 
-                {[...Array(totalPages)].map((_, i) => (
-                  <PaginationItem key={i}>
-                    <PaginationLink
-                      href="#"
-                      isActive={page === i + 1}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setPage(i + 1)
-                      }}
-                      className="cursor-pointer"
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
+            {totalPages > 1 && (
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => page > 1 && setPage(p => p - 1)}
+                  disabled={page === 1}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Sebelumnya
+                </button>
 
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      if (page < totalPages) setPage(p => p + 1)
-                    }}
-                    className={page === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                {(() => {
+                  const pages = []
+                  const showEllipsisStart = page > 3
+                  const showEllipsisEnd = page < totalPages - 2
+
+                  pages.push(1)
+                  if (showEllipsisStart) pages.push('...')
+                  for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
+                    if (!pages.includes(i)) pages.push(i)
+                  }
+                  if (showEllipsisEnd) pages.push('...')
+                  if (totalPages > 1 && !pages.includes(totalPages)) pages.push(totalPages)
+
+                  return pages.map((p, idx) => (
+                    p === '...' ? (
+                      <span key={`ellipsis-${idx}`} className="px-2 py-1.5 text-slate-400">...</span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => setPage(p as number)}
+                        className={`min-w-[32px] h-8 px-3 py-1.5 text-sm rounded-md transition-colors ${page === p
+                          ? 'bg-emerald-600 text-white font-medium'
+                          : 'text-slate-600 hover:bg-slate-100'
+                          }`}
+                      >
+                        {p}
+                      </button>
+                    )
+                  ))
+                })()}
+
+                <button
+                  onClick={() => page < totalPages && setPage(p => p + 1)}
+                  disabled={page === totalPages}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Selanjutnya
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
           </div>
         )}
       </Card>
