@@ -35,7 +35,7 @@ export const getActiveTahunAjaran = createServerFn({
 
 // Create new tahun ajaran
 export const createTahunAjaran = createServerFn({ method: 'POST' })
-    .inputValidator((d: { tahun: string; tanggalPengumuman?: string }) => d)
+    .inputValidator((d: { tahun: string; tahap?: string; tanggalPengumuman?: string }) => d)
     .handler(async ({ data }) => {
         const now = new Date()
         const id = crypto.randomUUID()
@@ -43,6 +43,7 @@ export const createTahunAjaran = createServerFn({ method: 'POST' })
         await db.insert(tahunAjaran).values({
             id,
             tahun: data.tahun,
+            tahap: data.tahap || null,
             tanggalPengumuman: data.tanggalPengumuman ? new Date(data.tanggalPengumuman) : null,
             isAktif: false,
             createdAt: now,
@@ -54,12 +55,13 @@ export const createTahunAjaran = createServerFn({ method: 'POST' })
 
 // Update tahun ajaran
 export const updateTahunAjaran = createServerFn({ method: 'POST' })
-    .inputValidator((d: { id: string; tahun?: string; tanggalPengumuman?: string | null }) => d)
+    .inputValidator((d: { id: string; tahun?: string; tahap?: string | null; tanggalPengumuman?: string | null }) => d)
     .handler(async ({ data }) => {
         const now = new Date()
 
         const updateData: any = { updatedAt: now }
         if (data.tahun !== undefined) updateData.tahun = data.tahun
+        if (data.tahap !== undefined) updateData.tahap = data.tahap
         if (data.tanggalPengumuman !== undefined) {
             updateData.tanggalPengumuman = data.tanggalPengumuman ? new Date(data.tanggalPengumuman) : null
         }
@@ -110,5 +112,5 @@ export const getTahunAjaranOptions = createServerFn({
             .from(tahunAjaran)
             .orderBy(desc(tahunAjaran.tahun))
 
-        return results.map(r => r.tahun)
+        return results.map((r: { tahun: string }) => r.tahun)
     })

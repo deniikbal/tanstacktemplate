@@ -49,7 +49,7 @@ export const deleteStudent = createServerFn({ method: 'POST' })
         return { success: true }
     })
 
-import { pendaftar } from '@/lib/db/pendaftar-schema'
+import { kelulusan } from '@/lib/db/kelulusan-schema'
 
 export const checkAnnouncement = createServerFn({ method: 'GET' })
     .inputValidator((d: { nisn: string }) => d)
@@ -66,25 +66,30 @@ export const checkAnnouncement = createServerFn({ method: 'GET' })
                 sekolahAsal: student.sekolahAsal,
                 tempatLahir: student.tempatLahir,
                 tanggalLahir: student.tanggalLahir,
-                jalurMasuk: pendaftar.jalurMasuk
+                jalur: kelulusan.jalur,
+                status: kelulusan.status,
+                tahap: kelulusan.tahap
             })
             .from(student)
-            .leftJoin(pendaftar, eq(student.noDaftar, pendaftar.id))
+            .innerJoin(kelulusan, eq(student.id, kelulusan.studentId))
             .where(eq(student.nisn, nisn))
             .limit(1)
 
         if (result.length > 0) {
             const studentData = result[0]
+            const statusRaw = studentData.status?.toUpperCase()
+
             return {
                 found: true,
-                status: 'LULUS',
+                status: (statusRaw === 'LULUS' ? 'LULUS' : 'TIDAK_LULUS') as 'LULUS' | 'TIDAK_LULUS',
                 name: studentData.nmSiswa,
                 regNo: studentData.noDaftar,
                 nisn: studentData.nisn,
                 sekolahAsal: studentData.sekolahAsal,
                 tempatLahir: studentData.tempatLahir,
                 tanggalLahir: studentData.tanggalLahir,
-                jalur: studentData.jalurMasuk
+                jalur: studentData.jalur,
+                tahap: studentData.tahap
             }
         }
 

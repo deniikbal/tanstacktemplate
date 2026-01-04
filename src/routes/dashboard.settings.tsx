@@ -49,6 +49,7 @@ export const Route = createFileRoute('/dashboard/settings')({
 type TahunAjaranData = {
   id: string
   tahun: string
+  tahap: string | null
   tanggalPengumuman: Date | null
   isAktif: boolean
   createdAt: Date
@@ -62,12 +63,14 @@ function SettingsPage() {
   // Add dialog state
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [newTahun, setNewTahun] = useState('')
+  const [newTahap, setNewTahap] = useState('')
   const [newTanggal, setNewTanggal] = useState('')
   const [newJam, setNewJam] = useState('')
   const [isAdding, setIsAdding] = useState(false)
 
   // Edit dialog state
   const [editItem, setEditItem] = useState<TahunAjaranData | null>(null)
+  const [editTahap, setEditTahap] = useState('')
   const [editTanggal, setEditTanggal] = useState('')
   const [editJam, setEditJam] = useState('')
   const [isEditing, setIsEditing] = useState(false)
@@ -110,10 +113,11 @@ function SettingsPage() {
         ? new Date(`${newTanggal}T${newJam}:00`).toISOString()
         : undefined
 
-      await createTahunAjaran({ data: { tahun: newTahun, tanggalPengumuman } })
+      await createTahunAjaran({ data: { tahun: newTahun, tahap: newTahap, tanggalPengumuman } })
       toast.success('Tahun ajaran berhasil ditambahkan')
       setIsAddDialogOpen(false)
       setNewTahun('')
+      setNewTahap('')
       setNewTanggal('')
       setNewJam('')
       loadData()
@@ -134,8 +138,8 @@ function SettingsPage() {
         ? new Date(`${editTanggal}T${editJam}:00`).toISOString()
         : null
 
-      await updateTahunAjaran({ data: { id: editItem.id, tanggalPengumuman } })
-      toast.success('Tanggal pengumuman berhasil diperbarui')
+      await updateTahunAjaran({ data: { id: editItem.id, tahap: editTahap, tanggalPengumuman } })
+      toast.success('Pengaturan berhasil diperbarui')
       setEditItem(null)
       loadData()
     } catch (error) {
@@ -176,6 +180,7 @@ function SettingsPage() {
 
   const openEditDialog = (item: TahunAjaranData) => {
     setEditItem(item)
+    setEditTahap(item.tahap || '')
     if (item.tanggalPengumuman) {
       const date = new Date(item.tanggalPengumuman)
       setEditTanggal(date.toISOString().split('T')[0])
@@ -242,6 +247,16 @@ function SettingsPage() {
                   />
                   <p className="text-xs text-slate-500">Format: YYYY/YYYY</p>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="newTahap">Tahap SPMB</Label>
+                  <Input
+                    id="newTahap"
+                    placeholder="Contoh: Tahap 2"
+                    value={newTahap}
+                    onChange={(e) => setNewTahap(e.target.value)}
+                  />
+                  <p className="text-xs text-slate-500">Teks ini akan muncul di halaman pengumuman</p>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="newTanggal">Tanggal Pengumuman</Label>
@@ -280,6 +295,7 @@ function SettingsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Tahun Ajaran</TableHead>
+                <TableHead>Tahap</TableHead>
                 <TableHead>Tanggal Pengumuman</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
@@ -296,6 +312,7 @@ function SettingsPage() {
                 tahunAjaranList.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.tahun}</TableCell>
+                    <TableCell className="font-medium">{item.tahap || '-'}</TableCell>
                     <TableCell>
                       {item.tanggalPengumuman ? (
                         new Date(item.tanggalPengumuman).toLocaleString('id-ID', {
@@ -361,29 +378,40 @@ function SettingsPage() {
       <Dialog open={!!editItem} onOpenChange={(open) => !open && setEditItem(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Tanggal Pengumuman</DialogTitle>
+            <DialogTitle>Edit Pengaturan Tahun Ajaran</DialogTitle>
             <DialogDescription>
-              Atur tanggal dan jam pengumuman untuk tahun ajaran {editItem?.tahun}.
+              Atur tahap dan tanggal pengumuman untuk tahun ajaran {editItem?.tahun}.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-4 py-4">
+          <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="editTanggal">Tanggal</Label>
+              <Label htmlFor="editTahap">Tahap SPMB</Label>
               <Input
-                id="editTanggal"
-                type="date"
-                value={editTanggal}
-                onChange={(e) => setEditTanggal(e.target.value)}
+                id="editTahap"
+                placeholder="Contoh: Tahap 2"
+                value={editTahap}
+                onChange={(e) => setEditTahap(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="editJam">Jam</Label>
-              <Input
-                id="editJam"
-                type="time"
-                value={editJam}
-                onChange={(e) => setEditJam(e.target.value)}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="editTanggal">Tanggal</Label>
+                <Input
+                  id="editTanggal"
+                  type="date"
+                  value={editTanggal}
+                  onChange={(e) => setEditTanggal(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="editJam">Jam</Label>
+                <Input
+                  id="editJam"
+                  type="time"
+                  value={editJam}
+                  onChange={(e) => setEditJam(e.target.value)}
+                />
+              </div>
             </div>
           </div>
           {editTanggal && editJam && (

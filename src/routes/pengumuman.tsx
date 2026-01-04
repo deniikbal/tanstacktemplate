@@ -13,7 +13,8 @@ import {
     Hash,
     Calendar,
     Building,
-    Trophy
+    Trophy,
+    Instagram
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,13 +28,14 @@ export const Route = createFileRoute('/pengumuman')({
         const activeTahun = await getActiveTahunAjaran()
         return {
             announcementDate: activeTahun?.tanggalPengumuman || new Date('2026-06-01T08:00:00'),
-            tahunAjaran: activeTahun?.tahun || '2026/2027'
+            tahunAjaran: activeTahun?.tahun || '2026/2027',
+            tahap: activeTahun?.tahap || 'Tahap 2'
         }
     },
 })
 
 function AnnouncementPage() {
-    const { announcementDate } = Route.useLoaderData()
+    const { announcementDate, tahap } = Route.useLoaderData()
     // Target date for announcement from database
     const targetDate = new Date(announcementDate).getTime()
 
@@ -133,15 +135,15 @@ function AnnouncementPage() {
     }
 
     return (
-        <div className="min-h-screen w-full bg-[#f8fafc] text-slate-900 font-sans flex flex-col items-center justify-center relative select-none overflow-x-hidden p-6 md:p-12">
+        <div className="min-h-screen w-full bg-[#f8fafc] text-slate-900 font-sans flex flex-col items-center relative select-none overflow-x-hidden">
             {/* Soft Light Mesh Background */}
-            <div className="absolute top-0 inset-0 overflow-hidden -z-10 bg-[#f8fafc]">
+            <div className="fixed top-0 inset-0 overflow-hidden -z-10 bg-[#f8fafc]">
                 <div className="absolute top-[-10%] left-[-10%] w-[80%] h-[80%] bg-emerald-100/40 rounded-full blur-[120px]"></div>
                 <div className="absolute bottom-[-10%] right-[-10%] w-[70%] h-[70%] bg-blue-100/30 rounded-full blur-[120px]"></div>
                 <div className="absolute top-[20%] right-[-5%] w-[50%] h-[50%] bg-emerald-50/20 rounded-full blur-[100px]"></div>
             </div>
 
-            <nav className="absolute top-6 left-6 z-30">
+            <header className="w-full py-5 px-6 md:px-12 relative z-30 flex justify-start">
                 <Link to="/">
                     <Button
                         variant="ghost"
@@ -151,9 +153,9 @@ function AnnouncementPage() {
                         <span className="hidden sm:inline">Beranda</span>
                     </Button>
                 </Link>
-            </nav>
+            </header>
 
-            <div className="w-full max-w-2xl relative z-20">
+            <div className="w-full max-w-2xl relative z-20 flex-1 flex flex-col justify-center my-12 px-6">
                 {!timeLeft.isExpired ? (
                     /* Premium Light Countdown View */
                     <div key="countdown-view" className="space-y-8 md:space-y-12 animate-in fade-in zoom-in-95 duration-1000 ease-out">
@@ -189,7 +191,7 @@ function AnnouncementPage() {
                             <div className="h-px w-8 md:w-16 bg-slate-400 opacity-30"></div>
                             <span className="flex items-center gap-2 whitespace-nowrap">
                                 <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                                PPDB SMANSABA 2026
+                                SPMB SMANSABA 2026
                             </span>
                             <div className="h-px w-8 md:w-16 bg-slate-400 opacity-30"></div>
                         </div>
@@ -200,7 +202,7 @@ function AnnouncementPage() {
                         {!result || !result.found ? (
                             <>
                                 <div className="text-center space-y-1">
-                                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-emerald-900">Cek Hasil SPMB Tahap 2</h2>
+                                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-emerald-900">Cek Hasil SPMB {tahap}</h2>
                                 </div>
                                 <Card className="bg-[#fafffb] border-emerald-100/50 shadow-sm rounded-sm overflow-hidden">
                                     <CardContent className="p-6 md:p-8 space-y-5">
@@ -244,7 +246,7 @@ function AnnouncementPage() {
                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Petunjuk</p>
                                             <ul className="text-xs text-slate-500 font-medium space-y-1.5 list-disc pl-4 text-left">
                                                 <li>Pastikan NISN sesuai dengan kartu peserta.</li>
-                                                <li>Jika data tidak ditemukan, hubungi panitia PPDB.</li>
+                                                <li>Jika data tidak ditemukan, hubungi panitia SPMB.</li>
                                                 <li>Pengumuman ini bersifat final dan mengikat.</li>
                                             </ul>
                                         </div>
@@ -254,38 +256,40 @@ function AnnouncementPage() {
                         ) : (
                             /* Premium Result View - Single Page Fit */
                             <div className="animate-in zoom-in-95 fade-in duration-500 ease-out w-full max-w-2xl mx-auto flex flex-col justify-center">
-                                <Card className="bg-white border-slate-200 shadow-xl rounded-sm overflow-hidden relative border-t-0 my-auto">
+                                <Card className={`bg-white border-t-0 my-auto shadow-2xl rounded-sm overflow-hidden relative transition-all duration-500 border ${result.status === 'LULUS' ? 'border-emerald-200' : 'border-red-200'}`}>
                                     {/* Refresh Icon Button */}
                                     <Button
                                         onClick={() => setResult(null)}
                                         variant="ghost"
                                         size="icon"
-                                        className="absolute top-3 right-3 text-slate-400 hover:text-emerald-600 transition-colors z-20 rounded-sm w-8 h-8"
+                                        className={`absolute top-3 right-3 transition-colors z-20 rounded-sm w-8 h-8 ${result.status === 'LULUS' ? 'text-emerald-400 hover:text-emerald-600' : 'text-red-300 hover:text-red-500'}`}
                                     >
                                         <RotateCcw className="w-4 h-4" />
                                     </Button>
 
                                     {/* Merged Header & Content */}
-                                    <div className="p-5 md:p-6 space-y-5">
+                                    <div className="p-5 md:p-8 space-y-6">
                                         {/* Horizontal Header */}
-                                        <div className={`p-4 rounded-sm flex items-center gap-4 ${result.status === 'LULUS' ? 'bg-[#f0fdf4] border border-emerald-100' : 'bg-red-50 border border-red-100'}`}>
-                                            <div className={`flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full ${result.status === 'LULUS' ? 'bg-[#dcfce7] text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                                <div className={`${result.status === 'LULUS' ? 'bg-emerald-600' : 'bg-red-600'} text-white rounded-full p-1`}>
+                                        <div className={`p-6 rounded-sm flex items-center gap-5 transition-all ${result.status === 'LULUS' ? 'bg-emerald-50 border border-emerald-100' : 'bg-red-50 border border-red-100'}`}>
+                                            <div className={`flex-shrink-0 flex items-center justify-center w-16 h-16 rounded-full ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                                <div className={`${result.status === 'LULUS' ? 'bg-emerald-600' : 'bg-red-600'} text-white rounded-full p-2 block shadow-lg animate-bounce`}>
                                                     {result.status === 'LULUS' ? (
-                                                        <CheckCircle2 className="w-5 h-5" />
+                                                        <CheckCircle2 className="w-8 h-8" />
                                                     ) : (
-                                                        <XCircle className="w-5 h-5" />
+                                                        <XCircle className="w-8 h-8" />
                                                     )}
                                                 </div>
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <div className="flex items-baseline gap-2 flex-wrap">
-                                                    <h1 className="text-lg font-extrabold tracking-tight text-slate-900 uppercase leading-none">SELAMAT!</h1>
-                                                    <p className={`text-base font-bold uppercase leading-none ${result.status === 'LULUS' ? 'text-emerald-600' : 'text-red-600'}`}>
-                                                        {result.status === 'LULUS' ? 'ANDA LULUS' : 'MAAF ANDA BELUM LULUS'}
+                                                <div className="flex flex-col">
+                                                    <h1 className={`text-xl font-black tracking-tight uppercase leading-tight ${result.status === 'LULUS' ? 'text-emerald-900' : 'text-red-900'}`}>
+                                                        {result.status === 'LULUS' ? 'SELAMAT!' : 'MOHON MAAF,'}
+                                                    </h1>
+                                                    <p className={`text-lg font-bold uppercase leading-tight mb-1 ${result.status === 'LULUS' ? 'text-emerald-600' : 'text-red-600'}`}>
+                                                        {result.status === 'LULUS' ? 'ANDA DINYATAKAN LULUS' : 'ANDA BELUM LULUS'}
                                                     </p>
+                                                    <p className="text-slate-500 font-medium text-xs truncate">Penerimaan Siswa Baru SMAN 1 Bantarujeg</p>
                                                 </div>
-                                                <p className="text-slate-500 font-medium text-xs mt-1 truncate">Di SMAN 1 Bantarujeg - Tahun 2026/2027</p>
                                             </div>
                                         </div>
 
@@ -297,27 +301,27 @@ function AnnouncementPage() {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
                                                 {/* Left Column */}
                                                 <div className="space-y-2">
-                                                    <div className="flex gap-2 items-center group p-1.5 hover:bg-slate-50 rounded-sm transition-colors border border-transparent hover:border-slate-100">
-                                                        <div className="p-1 bg-emerald-50 rounded-sm text-emerald-600">
-                                                            <User className="w-3.5 h-3.5" />
+                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
+                                                        <div className={`p-2 rounded-sm ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                                            <User className="w-4 h-4" />
                                                         </div>
                                                         <div className="min-w-0">
                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">Nama Lengkap</p>
                                                             <p className="text-xs font-bold text-slate-900 leading-tight uppercase truncate">{result.name}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="flex gap-2 items-center group p-1.5 hover:bg-slate-50 rounded-sm transition-colors border border-transparent hover:border-slate-100">
-                                                        <div className="p-1 bg-emerald-50 rounded-sm text-emerald-600">
-                                                            <Hash className="w-3.5 h-3.5" />
+                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
+                                                        <div className={`p-2 rounded-sm ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                                            <Hash className="w-4 h-4" />
                                                         </div>
                                                         <div className="min-w-0">
                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">No. Peserta</p>
                                                             <p className="text-xs font-bold text-slate-900 tracking-tight truncate">{result.regNo}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="flex gap-2 items-center group p-1.5 hover:bg-slate-50 rounded-sm transition-colors border border-transparent hover:border-slate-100">
-                                                        <div className="p-1 bg-emerald-50 rounded-sm text-emerald-600">
-                                                            <Calendar className="w-3.5 h-3.5" />
+                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
+                                                        <div className={`p-2 rounded-sm ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                                            <Calendar className="w-4 h-4" />
                                                         </div>
                                                         <div className="min-w-0">
                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">Tgl Lahir</p>
@@ -329,27 +333,27 @@ function AnnouncementPage() {
                                                 </div>
                                                 {/* Right Column */}
                                                 <div className="space-y-2">
-                                                    <div className="flex gap-2 items-center group p-1.5 hover:bg-slate-50 rounded-sm transition-colors border border-transparent hover:border-slate-100">
-                                                        <div className="p-1 bg-emerald-50 rounded-sm text-emerald-600 flex items-center justify-center w-5.5 h-5.5">
-                                                            <span className="font-bold text-[10px]">#</span>
+                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
+                                                        <div className={`p-2 rounded-sm flex items-center justify-center w-8 h-8 ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                                            <span className="font-bold text-xs">#</span>
                                                         </div>
                                                         <div className="min-w-0">
                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">Asal Sekolah</p>
                                                             <p className="text-xs font-bold text-slate-900 leading-tight uppercase truncate">{result.sekolahAsal}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="flex gap-2 items-center group p-1.5 hover:bg-slate-50 rounded-sm transition-colors border border-transparent hover:border-slate-100">
-                                                        <div className="p-1 bg-emerald-50 rounded-sm text-emerald-600">
-                                                            <Building className="w-3.5 h-3.5" />
+                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
+                                                        <div className={`p-2 rounded-sm ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                                            <Building className="w-4 h-4" />
                                                         </div>
                                                         <div className="min-w-0">
                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">NISN</p>
                                                             <p className="text-xs font-bold text-slate-900 tracking-tight truncate">{result.nisn || '-'}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="flex gap-2 items-center group p-1.5 hover:bg-slate-50 rounded-sm transition-colors border border-transparent hover:border-slate-100">
-                                                        <div className="p-1 bg-emerald-50 rounded-sm text-emerald-600">
-                                                            <Trophy className="w-3.5 h-3.5" />
+                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
+                                                        <div className={`p-2 rounded-sm ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                                                            <Trophy className="w-4 h-4" />
                                                         </div>
                                                         <div className="min-w-0">
                                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">Jalur</p>
@@ -382,9 +386,25 @@ function AnnouncementPage() {
                 )}
             </div>
 
-            <p className="absolute bottom-6 md:bottom-10 text-[10px] font-black tracking-[0.5em] text-slate-500 uppercase opacity-90">
-                © 2026 PPDB Online SMAN 1 BANTARUJEG
-            </p>
+            <footer className="w-full py-5 mt-auto border-t border-slate-200/60 bg-white/30 backdrop-blur-md">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 text-[13px] font-medium text-slate-500">
+                    <p className="flex items-center gap-1">
+                        © {new Date().getFullYear()} SPMB Online SMAN 1 BANTARUJEG,
+                    </p>
+                    <p className="flex items-center gap-1.5">
+                        Made with <span className="animate-pulse">💖</span> for better web by
+                        <a
+                            href="https://www.instagram.com/deni_ikbal"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 font-bold text-slate-700 hover:text-pink-600 transition-all group"
+                        >
+                            <Instagram className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                            deni_ikbal
+                        </a>
+                    </p>
+                </div>
+            </footer>
         </div >
     )
 }
