@@ -1,5 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { getStudents, deleteStudent, updateStudent, importBatchStudents, bulkDeleteStudents } from '@/lib/server/students'
+import { getSchoolSearch } from '@/lib/server/pendaftar'
+import { Loader2 } from 'lucide-react'
 import {
     Table,
     TableBody,
@@ -770,6 +772,32 @@ function StudentsPage() {
 function EditStudentForm({ student, onSuccess }: { student: Student | null, onSuccess: () => void }) {
     const [loading, setLoading] = useState(false)
 
+    // School Search Logic
+    const [sekolahQuery, setSekolahQuery] = useState(student?.sekolahAsal || '')
+    const [sekolahResults, setSekolahResults] = useState<any[]>([])
+    const [isSearchingSekolah, setIsSearchingSekolah] = useState(false)
+    const [showSekolahResults, setShowSekolahResults] = useState(false)
+
+    useEffect(() => {
+        const fetchSekolah = async () => {
+            if (sekolahQuery.length < 3) {
+                setSekolahResults([])
+                return
+            }
+            setIsSearchingSekolah(true)
+            try {
+                const results = await getSchoolSearch({ data: { query: sekolahQuery } })
+                setSekolahResults(results)
+            } catch (error) {
+                console.error('Failed to fetch sekolah:', error)
+            } finally {
+                setIsSearchingSekolah(false)
+            }
+        }
+        const timeoutId = setTimeout(fetchSekolah, 500)
+        return () => clearTimeout(timeoutId)
+    }, [sekolahQuery])
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (!student) return
@@ -804,7 +832,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     // Supplementary
                     statusDalamKel: formData.get('statusDalamKel') as string || null,
                     anakKe: formData.get('anakKe') as string || null,
-                    sekolahAsal: formData.get('sekolahAsal') as string || null,
+                    sekolahAsal: sekolahQuery,
                     diterimaKelas: formData.get('diterimaKelas') as string || null,
                     diterimaTanggal: formData.get('diterimaTanggal') as string || null,
                     noIjasahnas: formData.get('noIjasahnas') as string || null,
@@ -966,9 +994,52 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                 {/* Tab Kelengkapan */}
                 <TabsContent value="supplementary" forceMount className="space-y-3 mt-3 data-[state=inactive]:hidden">
                     <div className="grid grid-cols-4 gap-3">
-                        <div className="space-y-1">
+                        <div className="space-y-1 relative">
                             <Label htmlFor="edit-sekolahAsal" className="text-xs">Sekolah Asal</Label>
-                            <Input id="edit-sekolahAsal" name="sekolahAsal" defaultValue={student?.sekolahAsal || ''} className="h-8" />
+                            <div className="relative">
+                                <Input
+                                    id="edit-sekolahAsal"
+                                    value={sekolahQuery}
+                                    onChange={(e) => {
+                                        setSekolahQuery(e.target.value)
+                                        setShowSekolahResults(true)
+                                    }}
+                                    onFocus={() => setShowSekolahResults(true)}
+                                    onBlur={() => setTimeout(() => setShowSekolahResults(false), 300)}
+                                    placeholder="Ketik nama sekolah..."
+                                    className="h-8 bg-white pr-8"
+                                    autoComplete="off"
+                                />
+                                {isSearchingSekolah && (
+                                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                                        <Loader2 className="h-3 w-3 animate-spin text-slate-400" />
+                                    </div>
+                                )}
+                            </div>
+                            {showSekolahResults && sekolahResults.length > 0 && (
+                                <div className="absolute z-[100] w-[250%] mt-1 bg-white border border-slate-200 rounded-md shadow-lg max-h-48 overflow-y-auto left-0">
+                                    {sekolahResults.map((s, idx) => (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            className="w-full text-left px-3 py-2 text-[11px] hover:bg-emerald-50 border-b border-slate-100 flex flex-col group"
+                                            onMouseDown={(e) => e.preventDefault()}
+                                            onClick={() => {
+                                                setSekolahQuery(s.sekolah)
+                                                setShowSekolahResults(false)
+                                            }}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-slate-900 group-hover:text-emerald-700">{s.sekolah}</span>
+                                                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${s.status === 'N' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}`}>
+                                                    {s.status === 'N' ? 'Negeri' : 'Swasta'}
+                                                </span>
+                                            </div>
+                                            <span className="text-[9px] text-slate-400">{s.kecamatan}, {s.kabupaten_kota}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-diterimaKelas" className="text-xs">Diterima Kelas</Label>

@@ -1,6 +1,7 @@
 import { pgTable, text, serial, timestamp } from "drizzle-orm/pg-core";
 import { student } from "./student-schema";
 import { relations } from "drizzle-orm";
+import { daftarUlang } from "./daftar-ulang-schema";
 
 export const kelulusan = pgTable("kelulusan", {
     id: serial("id").primaryKey(),
@@ -16,5 +17,9 @@ export const kelulusanRelations = relations(kelulusan, ({ one }) => ({
     student: one(student, {
         fields: [kelulusan.studentId],
         references: [student.id],
+    }),
+    daftarUlang: one(daftarUlang, {
+        fields: [kelulusan.id],
+        references: [daftarUlang.kelulusanId],
     }),
 }));

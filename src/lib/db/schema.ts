@@ -60,3 +60,4 @@ export * from "./sekolah-schema";
 export * from "./setting-schema";
 export * from "./tahun-ajaran-schema";
 export * from "./kelulusan-schema";
+export * from "./daftar-ulang-schema";

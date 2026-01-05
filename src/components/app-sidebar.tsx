@@ -4,7 +4,8 @@ import {
   GalleryVerticalEnd,
   LayoutDashboard,
   Settings,
-  GraduationCap
+  GraduationCap,
+  ClipboardList
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -67,6 +68,12 @@ const data = {
       title: "Kelulusan",
       url: "/dashboard/kelulusan",
       icon: GraduationCap,
+      isActive: false,
+    },
+    {
+      title: "Daftar Ulang",
+      url: "/dashboard/daftar-ulang",
+      icon: ClipboardList,
       isActive: false,
     },
     {

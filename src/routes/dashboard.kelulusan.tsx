@@ -581,7 +581,7 @@ function GraduationModal({
           <DialogTitle>{editingData ? 'Edit Data Kelulusan' : 'Tambah Data Kelulusan'}</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
+          <div className="grid gap-2 relative">
             <Label htmlFor="search">Cari Siswa (Nama/NISN/No.Daftar)</Label>
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -596,7 +596,7 @@ function GraduationModal({
             </div>
             {loading && <div className="text-xs text-muted-foreground flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" /> Mencari...</div>}
             {students.length > 0 && !selectedStudent && (
-              <div className="border rounded-md mt-1 divide-y shadow-sm max-h-[200px] overflow-auto bg-white z-20 absolute w-full top-[calc(100%-8px)]">
+              <div className="border rounded-md mt-1 divide-y shadow-md max-h-[200px] overflow-auto bg-white z-[100] absolute w-full top-full">
                 {students.map(s => (
                   <div
                     key={s.id}
@@ -683,7 +683,7 @@ function GraduationModal({
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </Dialog >
   )
 }
 
