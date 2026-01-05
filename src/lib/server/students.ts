@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { db } from '@/lib/db'
 import { student } from '@/lib/db/student-schema'
 import { tahunAjaran } from '@/lib/db/tahun-ajaran-schema'
-import { eq, like, sql, asc, inArray, and } from 'drizzle-orm'
+import { eq, ilike, or, sql, asc, inArray, and } from 'drizzle-orm'
 
 export const getStudents = createServerFn({
     method: 'GET',
@@ -14,7 +14,13 @@ export const getStudents = createServerFn({
         const filters = []
 
         if (search) {
-            filters.push(like(student.nmSiswa, `%${search}%`))
+            filters.push(
+                or(
+                    ilike(student.nmSiswa, `%${search}%`),
+                    ilike(student.nisn, `%${search}%`),
+                    ilike(student.noDaftar, `%${search}%`)
+                )
+            )
         }
 
         if (tahunAjaran && tahunAjaran !== 'semua') {
@@ -358,5 +364,5 @@ export const getTahunAjaranStudentOptions = createServerFn({
             .where(sql`${student.tahunAjaran} IS NOT NULL`)
             .orderBy(sql`${student.tahunAjaran} DESC`)
 
-        return results.map(r => r.tahunAjaran).filter(Boolean) as string[]
+        return results.map((r: { tahunAjaran: string | null }) => r.tahunAjaran).filter(Boolean) as string[]
     })

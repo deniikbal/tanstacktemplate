@@ -1,24 +1,45 @@
 import { db } from "@/lib/db";
 import { daftarUlang, kelulusan } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, count, desc } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
 
 export const getDaftarUlangList = createServerFn({ method: "GET" })
-    .handler(async () => {
+    .inputValidator((d: { page?: number; limit?: number }) => d)
+    .handler(async ({ data }) => {
+        const page = data?.page || 1;
+        const limit = data?.limit || 10;
+        const offset = (page - 1) * limit;
+
+        const whereClause = eq(kelulusan.status, "LULUS");
+
+        // Get total count
+        const [totalRes] = await db
+            .select({ value: count() })
+            .from(kelulusan)
+            .where(whereClause);
+
+        const total = totalRes.value;
+
+        // Get paginated results
         const results = await db.query.kelulusan.findMany({
-            where: eq(kelulusan.status, "LULUS"),
+            where: whereClause,
             with: {
                 student: true,
                 daftarUlang: true,
             },
+            limit: limit,
+            offset: offset,
+            orderBy: [desc(kelulusan.id)],
         });
 
-        return results.map((item: any) => ({
+        const students = results.map((item: any) => ({
             id: item.id,
             studentId: item.studentId,
             nmSiswa: item.student.nmSiswa,
             sekolahAsal: item.student.sekolahAsal,
             jenisKelamin: item.student.jenisKelamin,
+            teleponSiswa: item.student.teleponSiswa,
+            teleponOrtu: item.student.teleponOrtu,
             jalur: item.jalur,
             tahap: item.tahap,
             daftarUlang: item.daftarUlang || {
@@ -31,6 +52,12 @@ export const getDaftarUlangList = createServerFn({ method: "GET" })
                 petugas: "",
             },
         }));
+
+        return {
+            students,
+            total,
+            totalPages: Math.ceil(total / limit),
+        };
     });
 
 export const upsertDaftarUlang = createServerFn({ method: "POST" })

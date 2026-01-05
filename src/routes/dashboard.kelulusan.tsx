@@ -114,14 +114,14 @@ function KelulusanPage() {
   const totalPages = Math.ceil(total / Number(limit))
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6">
       <div className="flex items-center gap-3">
         <div className="p-2 bg-emerald-100 rounded-lg">
           <GraduationCap className="w-6 h-6 text-emerald-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Manajemen Kelulusan</h1>
-          <p className="text-sm text-slate-500">Kelola status kelulusan siswa pendaftar</p>
+          <h1 className="text-xl md:text-2xl font-bold text-slate-900">Manajemen Kelulusan</h1>
+          <p className="text-xs md:text-sm text-slate-500">Kelola status kelulusan siswa pendaftar</p>
         </div>
       </div>
 
@@ -145,7 +145,7 @@ function KelulusanPage() {
       />
 
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="w-[95vw] sm:max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle>Hapus Data Kelulusan?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -154,8 +154,8 @@ function KelulusanPage() {
               Tindakan ini tidak dapat dibatalkan.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Batal</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row gap-2 justify-end">
+            <AlertDialogCancel disabled={isDeleting} className="mt-0">Batal</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault()
@@ -171,9 +171,9 @@ function KelulusanPage() {
       </AlertDialog>
 
       <Card className="shadow-sm border-slate-200">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
+        <CardHeader className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-center sm:text-left">
+            <CardTitle className="text-lg font-bold text-slate-800 flex items-center justify-center sm:justify-start gap-2">
               <CheckCircle2 className="h-5 w-5 text-emerald-600" />
               Daftar Status Kelulusan
             </CardTitle>
@@ -181,10 +181,11 @@ function KelulusanPage() {
               Kelola status kelulusan siswa, edit status, atau tambah data baru.
             </CardDescription>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               onClick={() => setIsBulkModalOpen(true)}
+              className="flex-1 sm:flex-none"
             >
               <Users className="mr-2 h-4 w-4 text-slate-500" />
               Bulk Tambah
@@ -194,7 +195,7 @@ function KelulusanPage() {
                 setEditingData(null)
                 setIsModalOpen(true)
               }}
-              className="bg-emerald-600 hover:bg-emerald-700"
+              className="bg-emerald-600 hover:bg-emerald-700 flex-1 sm:flex-none"
             >
               <Plus className="mr-2 h-4 w-4 text-white" />
               Tambah Data
@@ -203,27 +204,27 @@ function KelulusanPage() {
         </CardHeader>
         <CardContent className="p-0">
           {/* Filter Bar */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-4 border-b border-slate-200 bg-slate-50/50">
-            <div className="flex items-center gap-2 flex-1 max-w-5xl">
-              <div className="relative flex-1 max-w-xs">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                <Input
-                  placeholder="Cari siswa..."
-                  className="pl-9 bg-white h-9 border-slate-200"
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value)
-                    setPage(1)
-                  }}
-                />
-              </div>
+          <div className="flex flex-col md:flex-row md:items-center gap-3 p-4 border-b border-slate-200 bg-slate-50/50">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Cari nama/nisn..."
+                className="pl-9 bg-white h-9 border-slate-200 shadow-sm"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setPage(1)
+                }}
+              />
+            </div>
 
+            <div className="grid grid-cols-2 lg:flex lg:items-center gap-2">
               <Select value={tahapFilter} onValueChange={(val) => {
                 setTahapFilter(val)
-                setJalurFilter('all') // Reset jalur saat tahap berubah
+                setJalurFilter('all')
                 setPage(1)
               }}>
-                <SelectTrigger className="w-[130px] bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500">
+                <SelectTrigger className="bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500 lg:w-[130px]">
                   <SelectValue placeholder="Tahap" />
                 </SelectTrigger>
                 <SelectContent>
@@ -233,12 +234,26 @@ function KelulusanPage() {
                 </SelectContent>
               </Select>
 
+              <Select value={statusFilter} onValueChange={(val) => {
+                setStatusFilter(val)
+                setPage(1)
+              }}>
+                <SelectTrigger className="bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500 lg:w-[130px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Status</SelectItem>
+                  <SelectItem value="Lulus">Lulus</SelectItem>
+                  <SelectItem value="Tidak Lulus">Tidak Lulus</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Select value={jalurFilter} onValueChange={(val) => {
                 setJalurFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="w-[180px] bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500">
-                  <SelectValue placeholder="Jalur" />
+                <SelectTrigger className="col-span-2 lg:w-[180px] bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500">
+                  <SelectValue placeholder="Pilih Jalur" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Semua Jalur</SelectItem>
@@ -272,101 +287,178 @@ function KelulusanPage() {
                   )}
                 </SelectContent>
               </Select>
-
-              <Select value={statusFilter} onValueChange={(val) => {
-                setStatusFilter(val)
-                setPage(1)
-              }}>
-                <SelectTrigger className="w-[150px] bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Semua Status</SelectItem>
-                  <SelectItem value="Lulus">Lulus</SelectItem>
-                  <SelectItem value="Tidak Lulus">Tidak Lulus</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
-          <Table>
-            <TableHeader className="bg-slate-50/50">
-              <TableRow>
-                <TableHead className="w-12 text-center text-slate-500 font-semibold">No</TableHead>
-                <TableHead className="font-semibold text-slate-800">Nama Siswa</TableHead>
-                <TableHead className="font-semibold text-slate-800">NISN / No. Daftar</TableHead>
-                <TableHead className="font-semibold text-slate-800">Tahap</TableHead>
-                <TableHead className="font-semibold text-slate-800">Jalur</TableHead>
-                <TableHead className="font-semibold text-slate-800">Status</TableHead>
-                <TableHead className="text-right font-semibold text-slate-800 pr-6">Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isPending ? (
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-slate-50/50">
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-32">
-                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                      <Loader2 className="h-8 w-8 animate-spin opacity-20" />
-                      <p>Memuat data...</p>
-                    </div>
-                  </TableCell>
+                  <TableHead className="w-12 text-center text-slate-500 font-semibold">No</TableHead>
+                  <TableHead className="font-semibold text-slate-800">Nama Siswa</TableHead>
+                  <TableHead className="font-semibold text-slate-800">NISN / No. Daftar</TableHead>
+                  <TableHead className="font-semibold text-slate-800">Asal Sekolah</TableHead>
+                  <TableHead className="font-semibold text-slate-800">Status</TableHead>
+                  <TableHead className="text-right font-semibold text-slate-800 pr-6">Aksi</TableHead>
                 </TableRow>
-              ) : data.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center h-32 text-muted-foreground">
-                    <div className="flex flex-col items-center gap-2 opacity-50">
-                      <AlertCircle className="h-8 w-8" />
-                      <p>Belum ada data kelulusan.</p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                data.map((item: any, index: number) => (
-                  <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                    <TableCell className="text-center text-slate-400">{(page - 1) * Number(limit) + index + 1}</TableCell>
-                    <TableCell className="font-semibold text-slate-700">{item.studentName}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span className="text-sm text-slate-600 font-medium">{item.studentNisn}</span>
-                        <span className="text-xs text-muted-foreground uppercase">{item.noDaftar || '-'}</span>
+              </TableHeader>
+              <TableBody>
+                {isPending ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center h-32">
+                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                        <Loader2 className="h-8 w-8 animate-spin opacity-20" />
+                        <p>Memuat data...</p>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200">
-                        {item.tahap}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-slate-600">{item.jalur || '-'}</TableCell>
-                    <TableCell>
-                      <StatusBadge status={item.status} />
-                    </TableCell>
-                    <TableCell className="text-right pr-6">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => {
-                            setEditingData(item)
-                            setIsModalOpen(true)
-                          }}>
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit Data
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => handleDelete(item.id)}>
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Hapus Data
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                  </TableRow>
+                ) : data.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center h-32 text-muted-foreground">
+                      <div className="flex flex-col items-center gap-2 opacity-50">
+                        <AlertCircle className="h-8 w-8" />
+                        <p>Belum ada data kelulusan.</p>
+                      </div>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : (
+                  data.map((item: any, index: number) => (
+                    <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                      <TableCell className="text-center text-slate-400">{(page - 1) * Number(limit) + index + 1}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col gap-1">
+                          <span className="font-bold text-slate-700">{item.studentName}</span>
+                          <div className="flex gap-1">
+                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-slate-50 text-slate-500 border-slate-200">
+                              {item.tahap}
+                            </Badge>
+                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-emerald-50 text-emerald-600 border-emerald-100 uppercase">
+                              {item.jalur}
+                            </Badge>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="text-sm text-slate-600 font-medium">{item.studentNisn}</span>
+                          <span className="text-xs text-muted-foreground uppercase">{item.noDaftar || '-'}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {item.sekolahAsal || '-'}
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge status={item.status} />
+                      </TableCell>
+                      <TableCell className="text-right pr-6">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => {
+                              setEditingData(item)
+                              setIsModalOpen(true)
+                            }}>
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Edit Data
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => handleDelete(item.id)}>
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Hapus Data
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-slate-100">
+            {isPending ? (
+              <div className="p-8 text-center flex flex-col items-center gap-3">
+                <Loader2 className="h-8 w-8 animate-spin text-emerald-500/20" />
+                <p className="text-sm text-slate-400 font-medium">Memuat data kelulusan...</p>
+              </div>
+            ) : data.length === 0 ? (
+              <div className="p-12 text-center text-slate-400">
+                <AlertCircle className="h-10 w-10 mx-auto mb-2 opacity-20" />
+                <p className="text-sm">Tidak ada data ditemukan.</p>
+              </div>
+            ) : (
+              data.map((item: any, index: number) => (
+                <div key={item.id} className="p-4 bg-white hover:bg-slate-50/50 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-start gap-2.5">
+                      <div className="mt-1 flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-400">
+                        {(page - 1) * Number(limit) + index + 1}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-slate-800 leading-tight">{item.studentName}</span>
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          <Badge variant="outline" className="text-[9px] h-3.5 px-1 bg-slate-50 text-slate-500 border-slate-200 uppercase">
+                            {item.tahap}
+                          </Badge>
+                          <Badge className="text-[9px] h-3.5 px-1 bg-emerald-50 text-emerald-600 border-emerald-100 uppercase hover:bg-emerald-50 shadow-none">
+                            {item.jalur}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 -mr-1">
+                          <MoreHorizontal className="h-4 w-4 text-slate-400" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-40">
+                        <DropdownMenuItem onClick={() => {
+                          setEditingData(item)
+                          setIsModalOpen(true)
+                        }}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit Data
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Hapus Data
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  <div className="space-y-1.5 ml-7">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-400">NISN / No. Daftar</span>
+                      <div className="text-right">
+                        <div className="font-medium text-slate-600">{item.studentNisn}</div>
+                        <div className="text-[10px] text-slate-400 uppercase">{item.noDaftar || '-'}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-slate-400">Asal Sekolah</span>
+                      <span className="font-medium text-slate-600">{item.sekolahAsal || '-'}</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-2">
+                      <span className="text-xs text-slate-400 font-medium">Status Kelulusan</span>
+                      <StatusBadge status={item.status} />
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
 
           {total > 0 && (
             <div className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100">

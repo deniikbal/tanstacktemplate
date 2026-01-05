@@ -63,6 +63,7 @@ export const getAllKelulusan = createServerFn({ method: "GET" })
                     studentName: student.nmSiswa,
                     studentNisn: student.nisn,
                     noDaftar: student.noDaftar,
+                    sekolahAsal: student.sekolahAsal,
                 })
                 .from(kelulusan)
                 .leftJoin(student, eq(kelulusan.studentId, student.id))
