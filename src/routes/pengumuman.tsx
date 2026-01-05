@@ -14,9 +14,13 @@ import {
     Calendar,
     Building,
     Trophy,
-    Instagram
+    Instagram,
+    Printer
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import QRCode from 'qrcode'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { getActiveTahunAjaran } from '@/lib/server/tahun-ajaran'
@@ -123,6 +127,257 @@ function AnnouncementPage() {
             return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`
         } catch (e) {
             return String(dateString)
+        }
+    }
+
+    const generateCoverMapPDF = async (data: any) => {
+        const doc = new jsPDF({
+            orientation: 'p',
+            unit: 'mm',
+            format: 'a4'
+        })
+
+        const pageWidth = doc.internal.pageSize.width
+        const margin = 20
+
+        // Helper to get image as base64
+        const getBase64ImageFromURL = (url: string): Promise<string> => {
+            return new Promise((resolve, reject) => {
+                const img = new Image()
+                img.crossOrigin = 'Anonymous'
+                img.src = url
+                img.onload = () => {
+                    const canvas = document.createElement('canvas')
+                    canvas.width = img.width
+                    canvas.height = img.height
+                    const ctx = canvas.getContext('2d')
+                    if (ctx) {
+                        ctx.drawImage(img, 0, 0)
+                        resolve(canvas.toDataURL('image/png'))
+                    } else {
+                        reject('Failed to get context')
+                    }
+                }
+                img.onerror = (e) => reject(e)
+            })
+        }
+
+        try {
+            // Main Border
+            doc.setDrawColor(0)
+            doc.setLineWidth(0.5)
+            // Draw a rectangle around the content area, ending below the No. Absen box
+            doc.rect(5, 5, pageWidth - 10, 170, 'S')
+
+            // Header logos - Side-by-side centered
+            const logoJabar = await getBase64ImageFromURL('/logo-pemprov.png')
+            const logoSpmb = await getBase64ImageFromURL('/logo-spmb.png')
+
+            const totalLogoWidth = 47 // logo1(21) + gap(5) + logo2(21) approx 80px each
+            const startX = (pageWidth - totalLogoWidth) / 2
+
+            doc.addImage(logoJabar, 'PNG', startX, 10, 25, 21)
+            doc.addImage(logoSpmb, 'PNG', startX + 26, 10, 40, 21)
+
+            // Header Title
+            doc.setFont('helvetica', 'bold')
+            doc.setFontSize(18)
+            doc.text('SPMB SMAN 1 BANTARUJEG', pageWidth / 2, 45, { align: 'center' })
+            doc.setFontSize(12)
+            doc.text(`TAHAP 2 TAHUN AJAR 2025/2026`, pageWidth / 2, 51, { align: 'center' })
+
+            // Jalur Section - Blue Button style
+            doc.setFillColor(25, 118, 210) // Primary Blue
+            const jalurText = `JALUR : ${String(data.jalur).toUpperCase()}`
+            const textWidth = doc.getTextWidth(jalurText)
+            const rectWidth = textWidth + 30
+            doc.roundedRect((pageWidth - rectWidth) / 2, 58, rectWidth, 11, 4, 4, 'F')
+            doc.setTextColor(255, 255, 255)
+            doc.setFontSize(15)
+            doc.text(jalurText, pageWidth / 2, 65.5, { align: 'center' })
+
+            // Student Info & QR Code Container
+            doc.setTextColor(0, 0, 0)
+            doc.setFont('helvetica', 'normal')
+            doc.setFontSize(11)
+
+            const startY = 85
+            const rowHeight = 6.5
+            const labelCol = margin + 5
+            const valCol = 65
+
+            const info = [
+                ['No. Pendaftar', `: ${data.regNo}`],
+                ['NISN', `: ${data.nisn || '-'}`],
+                ['Nama Lengkap', `: ${data.name.toUpperCase()}`],
+                ['Jenis Kelamin', `: ${data.jenisKelamin || '-'}`],
+                ['Asal Sekolah', `: ${data.sekolahAsal.toUpperCase()}`],
+                ['Status', `: ${data.status}`]
+            ]
+
+            info.forEach((item, i) => {
+                doc.setFont('helvetica', 'normal')
+                doc.text(item[0], labelCol, startY + (i * rowHeight))
+
+                // Handle text wrap for long sekolahAsal
+                if (item[0] === 'Asal Sekolah' && item[1].length > 40) {
+                    const splitText = doc.splitTextToSize(item[1], 80);
+                    doc.setFont('helvetica', 'bold')
+                    doc.text(splitText, valCol, startY + (i * rowHeight))
+                } else {
+                    doc.setFont('helvetica', 'bold')
+                    doc.text(item[1], valCol, startY + (i * rowHeight))
+                }
+            })
+
+            // QR Code generation
+            const qrData = `${data.regNo}|${data.name}|${data.nisn}`
+            const qrCodeBase64 = await QRCode.toDataURL(qrData, { margin: 1, width: 100 })
+            doc.addImage(qrCodeBase64, 'PNG', pageWidth - 60, 85, 35, 35)
+
+            // Divider Line
+            doc.setDrawColor(240)
+            doc.setLineWidth(0.2)
+            doc.line(margin, 135, pageWidth - margin, 135)
+
+            // Footer
+            doc.setTextColor(0)
+            doc.setFont('helvetica', 'normal')
+            doc.setFontSize(10)
+            doc.text('Silahkan tunjukkan QR Code ini saat melakukan pendaftaran ulang', margin, 148)
+            doc.setFontSize(9)
+            doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID').replace(/\./g, ':').replace(',', '')}`, margin, 153)
+
+            // No. Absen Box
+            const boxWidth = 35
+            const boxHeight = 22
+            doc.setDrawColor(0)
+            doc.setLineWidth(0.5)
+            doc.roundedRect(pageWidth - margin - boxWidth, 142, boxWidth, boxHeight, 3, 3, 'S')
+            doc.setFont('helvetica', 'bold')
+            doc.setFontSize(9)
+            doc.text('No. Absen', pageWidth - margin - boxWidth + 17.5, 146, { align: 'center' })
+
+            // --- Requirements Section (New) ---
+            const reqY = 185
+            doc.setFont('helvetica', 'bold')
+            doc.setFontSize(14)
+            doc.text('PERSYARATAN DAFTAR ULANG', pageWidth / 2, reqY, { align: 'center' })
+
+            autoTable(doc, {
+                startY: reqY + 5,
+                head: [['Dokumen Persyaratan', 'Ceklis']],
+                body: [
+                    ['Surat Bukti Kelulusan SPMB 2025 Tahap 2', ''],
+                    ['Foto Copy Kartu Keluarga', ''],
+                    ['Ijazah SMP/MTs atau Surat Kelulusan atau Kartu Ujian', ''],
+                    ['Tata Tertib SMA Negeri 1 Bantarujeg (Bermeterai)', ''],
+                    ['Surat Pernyataan Tidak Mengkriminalisasi Sekolah', '']
+                ],
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [232, 244, 253], // Light blue header
+                    textColor: [0, 0, 0],
+                    fontSize: 11,
+                    halign: 'center',
+                    fontStyle: 'bold',
+                    lineWidth: 0.5,
+                    lineColor: [0, 0, 0]
+                },
+                bodyStyles: {
+                    fontSize: 10,
+                    textColor: [50, 50, 50],
+                    cellPadding: 5,
+                    lineWidth: 0.5,
+                    lineColor: [0, 0, 0]
+                },
+                columnStyles: {
+                    0: { cellWidth: pageWidth - margin * 2 - 25 }, // Auto-calculate based on page width
+                    1: { cellWidth: 25, halign: 'center' }
+                },
+                didDrawCell: (data) => {
+                    // Draw checkbox in the Ceklis column (column 1)
+                    if (data.section === 'body' && data.column.index === 1) {
+                        const size = 6
+                        const x = data.cell.x + (data.cell.width - size) / 2
+                        const y = data.cell.y + (data.cell.height - size) / 2
+                        doc.setDrawColor(0)
+                        doc.setLineWidth(0.5)
+                        doc.rect(x, y, size, size, 'S')
+                    }
+                },
+                margin: { left: margin, right: margin }
+            })
+
+            // --- PAGE 2: Announcement Result (New) ---
+            doc.addPage()
+
+            // Border
+            doc.setDrawColor(0)
+            doc.setLineWidth(0.5)
+            // Updated height to end just below the green bar (approx 185mm)
+            doc.rect(5, 5, pageWidth - 10, 185, 'S')
+
+            // Header Logos (Center) - Reusing logos from Page 1
+            doc.addImage(logoJabar, 'PNG', startX, 15, 21, 21)
+            doc.addImage(logoSpmb, 'PNG', startX + 26, 15, 40, 21)
+
+            // Blue Bar
+            doc.setFillColor(103, 185, 235) // Light Blue from image
+            doc.rect(margin, 52, pageWidth - margin * 2, 8, 'F')
+
+            // Title
+            doc.setFont('helvetica', 'bold')
+            doc.setFontSize(16)
+            doc.setTextColor(30, 30, 30)
+            doc.text('Pengumuman Hasil Seleksi SPMB Jawa Barat 2025 Tahap 2', pageWidth / 2, 72, { align: 'center' })
+
+            // Content Section
+            const contentY = 85
+            // Large QR Code
+            doc.addImage(qrCodeBase64, 'PNG', margin, contentY, 40, 40)
+
+            // Student Labels - Aligned with the top of QR code (contentY)
+            // Offset 4 is roughly where the top of capital letters will start for 11pt font
+            doc.setFontSize(11)
+            doc.setFont('helvetica', 'normal')
+            doc.text('No. Pendaftar', margin + 50, contentY + 4)
+            doc.text('Nama', margin + 50, contentY + 11)
+            doc.text('Asal Sekolah', margin + 50, contentY + 18)
+
+            doc.text(`: ${data.regNo}`, margin + 85, contentY + 4)
+            doc.setFont('helvetica', 'bold')
+            doc.text(`: ${data.name.toUpperCase()}`, margin + 85, contentY + 11)
+            doc.setFont('helvetica', 'normal')
+            doc.text(`: ${data.sekolahAsal.toUpperCase()}`, margin + 85, contentY + 18)
+
+            // Acceptance Message - Tightened
+            doc.setFontSize(12)
+            doc.text('Selamat! Anda dinyatakan Diterima di:', margin + 50, contentY + 32)
+            doc.setFontSize(15)
+            doc.setFont('helvetica', 'bold')
+            const resultText = `SMAN 1 BANTARUJEG - ${String(data.jalur).toUpperCase()}`
+            doc.text(resultText, margin + 50, contentY + 41)
+
+            // Attention Section - Tightened
+            doc.setFontSize(11)
+            doc.text('PERHATIAN!', margin, contentY + 56)
+            doc.setFont('helvetica', 'normal')
+            doc.setFontSize(10)
+            const attentionText = `Pendaftar yang telah diterima wajib melakukan daftar ulang di sekolah tujuan pada tanggal 10 Juli 2025 - 11 Juli 2025.`
+            const splitAttention = doc.splitTextToSize(attentionText, pageWidth - margin * 2)
+            doc.text(splitAttention, margin, contentY + 62)
+
+            // Green Bar - Tightened
+            doc.setFillColor(0, 150, 60) // Green
+            doc.rect(margin, contentY + 80, pageWidth - margin * 2, 10, 'F')
+
+            // Save the PDF
+            doc.save(`Pengumuman_${data.name.replace(/\s+/g, '_')}.pdf`)
+
+        } catch (error) {
+            console.error('PDF generation failed:', error)
+            alert('Gagal membuat PDF. Pastikan aset logo tersedia.')
         }
     }
 
@@ -292,6 +547,17 @@ function AnnouncementPage() {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {result.status === 'LULUS' && (
+                                            <Button
+                                                onClick={() => generateCoverMapPDF(result)}
+                                                variant="outline"
+                                                className="w-full h-11 border-emerald-200 hover:bg-emerald-50 text-emerald-700 font-bold gap-2 rounded-sm transition-all"
+                                            >
+                                                <Printer className="w-4 h-4" />
+                                                Cetak Cover Map
+                                            </Button>
+                                        )}
 
                                         {/* Data Grid */}
                                         <div className="space-y-3">

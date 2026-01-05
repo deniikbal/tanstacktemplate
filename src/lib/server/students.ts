@@ -72,6 +72,7 @@ export const checkAnnouncement = createServerFn({ method: 'GET' })
                 sekolahAsal: student.sekolahAsal,
                 tempatLahir: student.tempatLahir,
                 tanggalLahir: student.tanggalLahir,
+                jenisKelamin: student.jenisKelamin,
                 jalur: kelulusan.jalur,
                 status: kelulusan.status,
                 tahap: kelulusan.tahap
@@ -94,6 +95,7 @@ export const checkAnnouncement = createServerFn({ method: 'GET' })
                 sekolahAsal: studentData.sekolahAsal,
                 tempatLahir: studentData.tempatLahir,
                 tanggalLahir: studentData.tanggalLahir,
+                jenisKelamin: studentData.jenisKelamin,
                 jalur: studentData.jalur,
                 tahap: studentData.tahap
             }
