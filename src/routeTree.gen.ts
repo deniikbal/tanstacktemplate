@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as PengumumanRouteImport } from './routes/pengumuman'
 import { Route as PendaftarRouteImport } from './routes/pendaftar'
 import { Route as LoginRouteImport } from './routes/login'
@@ -36,6 +37,11 @@ import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ss
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScannerRoute = ScannerRouteImport.update({
+  id: '/scanner',
+  path: '/scanner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PengumumanRoute = PengumumanRouteImport.update({
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/pendaftar': typeof PendaftarRoute
   '/pengumuman': typeof PengumumanRoute
+  '/scanner': typeof ScannerRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/pendaftar': typeof PendaftarRoute
   '/pengumuman': typeof PengumumanRoute
+  '/scanner': typeof ScannerRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/pendaftar': typeof PendaftarRoute
   '/pengumuman': typeof PengumumanRoute
+  '/scanner': typeof ScannerRoute
   '/signup': typeof SignupRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pendaftar'
     | '/pengumuman'
+    | '/scanner'
     | '/signup'
     | '/api/admin-setup'
     | '/dashboard/daftar-ulang'
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pendaftar'
     | '/pengumuman'
+    | '/scanner'
     | '/signup'
     | '/api/admin-setup'
     | '/dashboard/daftar-ulang'
@@ -281,6 +292,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pendaftar'
     | '/pengumuman'
+    | '/scanner'
     | '/signup'
     | '/api/admin-setup'
     | '/dashboard/daftar-ulang'
@@ -307,6 +319,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PendaftarRoute: typeof PendaftarRoute
   PengumumanRoute: typeof PengumumanRoute
+  ScannerRoute: typeof ScannerRoute
   SignupRoute: typeof SignupRoute
   ApiAdminSetupRoute: typeof ApiAdminSetupRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -326,6 +339,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scanner': {
+      id: '/scanner'
+      path: '/scanner'
+      fullPath: '/scanner'
+      preLoaderRoute: typeof ScannerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pengumuman': {
@@ -517,6 +537,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PendaftarRoute: PendaftarRoute,
   PengumumanRoute: PengumumanRoute,
+  ScannerRoute: ScannerRoute,
   SignupRoute: SignupRoute,
   ApiAdminSetupRoute: ApiAdminSetupRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
