@@ -57,22 +57,29 @@ function ScannerPage() {
     if (!data) return
 
     const updatedDaftarUlang = { ...data.daftarUlang, [field]: checked }
-    setData({ ...data, daftarUlang: updatedDaftarUlang })
+
+    // Auto-calculate completion status
+    const requiredFields = ['skl', 'kk', 'bukti', 'tatib', 'pernyataan']
+    const isComplete = requiredFields.every(f => !!updatedDaftarUlang[f])
+    const newKeterangan = isComplete ? 'LENGKAP' : 'BELUM LENGKAP'
+
+    const finalDaftarUlang = { ...updatedDaftarUlang, keterangan: newKeterangan }
+    setData({ ...data, daftarUlang: finalDaftarUlang })
 
     setSaving(true)
     try {
       await upsertDaftarUlang({
         data: {
           kelulusanId: data.student.kelulusanId,
-          skl: !!updatedDaftarUlang.skl,
-          tatib: !!updatedDaftarUlang.tatib,
-          kk: !!updatedDaftarUlang.kk,
-          bukti: !!updatedDaftarUlang.bukti,
-          pernyataan: !!updatedDaftarUlang.pernyataan,
-          keterangan: updatedDaftarUlang.keterangan || '',
+          skl: !!finalDaftarUlang.skl,
+          tatib: !!finalDaftarUlang.tatib,
+          kk: !!finalDaftarUlang.kk,
+          bukti: !!finalDaftarUlang.bukti,
+          pernyataan: !!finalDaftarUlang.pernyataan,
+          keterangan: newKeterangan,
         }
       })
-      toast.success('Kemajuan berhasil disimpan')
+      toast.success(isComplete ? 'Data Lengkap! Tersimpan.' : 'Kemajuan disimpan')
     } catch (error: any) {
       toast.error('Gagal menyimpan perubahan')
     } finally {
