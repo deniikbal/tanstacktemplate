@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { Loader2, QrCode, User, School, Phone, CheckCircle2, XCircle, RefreshCw, LogOut } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Loader2, QrCode, User, School, Phone, CheckCircle2, XCircle, RefreshCw, LogOut, Info } from 'lucide-react'
 import { getStudentByQRData } from '@/lib/server/scanner'
 import { upsertDaftarUlang } from '@/lib/server/daftar-ulang'
 import { authClient } from '@/lib/auth-client'
@@ -163,29 +164,29 @@ function ScannerPage() {
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Student Info Card */}
             <Card className="border-none shadow-lg bg-white overflow-hidden">
-              <div className="bg-emerald-600 p-4 text-white flex justify-between items-start">
+              <div className="bg-emerald-600 p-5 text-white flex justify-between items-center">
                 <div>
-                  <h2 className="text-lg font-bold">{data.student.nmSiswa}</h2>
-                  <p className="text-emerald-100 text-sm">{data.student.noDaftar}</p>
+                  <h2 className="text-xl font-black tracking-tight leading-tight mb-1">{data.student.nmSiswa}</h2>
+                  <p className="text-emerald-100 text-xs font-bold uppercase tracking-widest">{data.student.noDaftar}</p>
                 </div>
-                <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                <Badge variant="outline" className="bg-white/20 text-white border-white/20 px-3 py-1 font-bold text-[10px] uppercase tracking-tighter backdrop-blur-md">
                   {data.student.jalur}
-                </div>
+                </Badge>
               </div>
               <CardContent className="p-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <Label className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Asal Sekolah</Label>
-                    <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                      <School className="w-4 h-4 text-slate-400" />
-                      <span className="truncate">{data.student.sekolahAsal}</span>
+                    <div className="flex items-start gap-2 text-sm font-semibold text-slate-800 leading-snug">
+                      <School className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>{data.student.sekolahAsal}</span>
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">NISN</Label>
-                    <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                      <User className="w-4 h-4 text-slate-400" />
-                      <span>{data.student.nisn || '-'}</span>
+                    <Label className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Jenis Kelamin</Label>
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+                      <User className="w-4 h-4 text-emerald-600" />
+                      <span>{data.student.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
                     </div>
                   </div>
                 </div>
@@ -193,14 +194,17 @@ function ScannerPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <Label className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Telepon Ortu</Label>
-                    <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
-                      <Phone className="w-4 h-4 text-slate-400" />
+                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+                      <Phone className="w-4 h-4 text-emerald-600" />
                       <span>{data.student.teleponOrtu || '-'}</span>
                     </div>
                   </div>
                   <div className="space-y-1 flex flex-col justify-center items-end">
-                    <div className={`px-3 py-1 rounded-lg text-xs font-bold border ${data.student.status === 'LULUS' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'
+                    <div className={`px-4 py-1.5 rounded-full text-xs font-black border-2 flex items-center gap-2 ${data.student.status === 'LULUS'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-500/30'
+                      : 'bg-rose-50 text-rose-700 border-rose-500/30'
                       }`}>
+                      {data.student.status === 'LULUS' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
                       {data.student.status}
                     </div>
                   </div>
