@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { kelulusan, student, daftarUlang } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
 
 // Server function to lookup student by QR data
@@ -17,6 +17,7 @@ export const getStudentByQRData = createServerFn({ method: "GET" })
             const [regNo, name, nisn] = parts;
 
             // Find student and related data using manual joins
+            // We search primarily by noDaftar as it is unique
             const results = await db
                 .select({
                     kelulusan: kelulusan,
@@ -26,20 +27,26 @@ export const getStudentByQRData = createServerFn({ method: "GET" })
                 .from(student)
                 .innerJoin(kelulusan, eq(student.id, kelulusan.studentId))
                 .leftJoin(daftarUlang, eq(kelulusan.id, daftarUlang.kelulusanId))
-                .where(
-                    and(
-                        eq(student.noDaftar, regNo),
-                        eq(student.nmSiswa, name.toUpperCase()),
-                        eq(student.nisn, nisn)
-                    )
-                )
+                .where(eq(student.noDaftar, regNo))
                 .limit(1);
 
             if (results.length === 0) {
-                throw new Error("Data siswa tidak ditemukan atau data QR tidak cocok");
+                throw new Error("Data pendaftaran tidak ditemukan");
             }
 
             const row = results[0];
+
+            // Verify name and NISN to ensure QR belongs to this student
+            const dbName = row.student.nmSiswa || "";
+            const dbNisn = row.student.nisn || "";
+
+            const isNameMatch = dbName.toUpperCase() === name.toUpperCase();
+            // NISN might be null/empty in DB or QR, handle both
+            const isNisnMatch = (dbNisn || "").toString() === (nisn || "").toString();
+
+            if (!isNameMatch || !isNisnMatch) {
+                throw new Error("Data pada QR Code (Nama/NISN) tidak cocok dengan pendaftaran");
+            }
 
             return {
                 success: true,

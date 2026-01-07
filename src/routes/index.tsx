@@ -12,13 +12,24 @@ import {
   MapPin,
   Facebook,
   Instagram,
-  Twitter
+  Twitter,
+  Menu,
+  X
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import { useState } from 'react'
 
 export const Route = createFileRoute('/')({ component: LandingPage })
 
 function LandingPage() {
+  const [isOpen, setIsOpen] = useState(false)
   const features = [
     {
       icon: <GraduationCap className="w-6 h-6 text-emerald-500" />,
@@ -55,13 +66,13 @@ function LandingPage() {
             </div>
             <span className="font-bold text-xl tracking-tight">SPMB <span className="text-emerald-600">SMANSABA</span></span>
           </div>
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+          <div className="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-600">
             <a href="#beranda" className="hover:text-emerald-600 transition-colors">Beranda</a>
             <a href="#fitur" className="hover:text-emerald-600 transition-colors">Keunggulan</a>
             <a href="#alur" className="hover:text-emerald-600 transition-colors">Alur</a>
             <a href="#kontak" className="hover:text-emerald-600 transition-colors">Kontak</a>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             <Link to="/login">
               <Button variant="ghost" className="text-slate-600 font-semibold">Masuk</Button>
             </Link>
@@ -70,6 +81,43 @@ function LandingPage() {
                 Pengumuman
               </Button>
             </Link>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <div className="lg:hidden flex items-center">
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-slate-600">
+                  <Menu className="w-6 h-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0">
+                <SheetHeader className="p-6 border-b text-left">
+                  <SheetTitle className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
+                      <GraduationCap className="text-white w-5 h-5" />
+                    </div>
+                    <span className="font-bold text-xl tracking-tight">SPMB <span className="text-emerald-600">SMANSABA</span></span>
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col py-6 px-4 gap-2">
+                  <a href="#beranda" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">Beranda</a>
+                  <a href="#fitur" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">Keunggulan</a>
+                  <a href="#alur" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">Alur</a>
+                  <a href="#kontak" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">Kontak</a>
+                </div>
+                <div className="mt-auto p-6 border-t bg-slate-50/50 space-y-3">
+                  <Link to="/login" onClick={() => setIsOpen(false)} className="block">
+                    <Button variant="outline" className="w-full h-11 border-slate-200 text-slate-600 font-semibold">Masuk</Button>
+                  </Link>
+                  <Link to="/pengumuman" onClick={() => setIsOpen(false)} className="block">
+                    <Button className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 font-semibold shadow-lg shadow-emerald-600/20">
+                      Pengumuman
+                    </Button>
+                  </Link>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </nav>

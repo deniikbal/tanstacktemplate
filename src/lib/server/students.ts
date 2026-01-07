@@ -125,6 +125,7 @@ interface UpdateStudentData {
     id: string
     // Identity
     nmSiswa: string
+    noDaftar?: string | null
     nis?: string | null
     nisn?: string | null
     tempatLahir?: string | null
@@ -174,6 +175,7 @@ export const updateStudent = createServerFn({ method: 'POST' })
                 .update(student)
                 .set({
                     nmSiswa: cleanData.nmSiswa,
+                    noDaftar: cleanData.noDaftar,
                     nis: cleanData.nis,
                     nisn: cleanData.nisn,
                     tempatLahir: cleanData.tempatLahir,

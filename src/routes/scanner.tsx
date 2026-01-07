@@ -75,7 +75,7 @@ function ScannerPage() {
       <div className="w-full max-w-md">
         <header className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-indigo-600 p-2 rounded-lg">
+            <div className="bg-emerald-600 p-2 rounded-lg">
               <QrCode className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -92,7 +92,7 @@ function ScannerPage() {
         </header>
 
         {scanning ? (
-          <Card className="overflow-hidden border-2 border-indigo-100 shadow-xl">
+          <Card className="overflow-hidden border-2 border-emerald-100 shadow-xl">
             <div className="aspect-square relative flex items-center justify-center bg-black">
               <Scanner
                 onScan={handleScan}
@@ -103,7 +103,7 @@ function ScannerPage() {
               />
               <div className="absolute inset-0 border-[40px] border-black/40 pointer-events-none flex items-center justify-center">
                 <div className="w-full aspect-square border-2 border-white/80 rounded-lg relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-red-500 animate-[scan_2s_linear_infinite]" />
+                  <div className="absolute top-0 left-0 w-full h-[2px] bg-emerald-500 animate-[scan_2s_linear_infinite]" />
                 </div>
               </div>
             </div>
@@ -116,17 +116,17 @@ function ScannerPage() {
           </Card>
         ) : loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <Loader2 className="w-12 h-12 text-indigo-600 animate-spin" />
+            <Loader2 className="w-12 h-12 text-emerald-600 animate-spin" />
             <p className="text-slate-600 font-medium">Mencari data siswa...</p>
           </div>
         ) : data ? (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Student Info Card */}
             <Card className="border-none shadow-lg bg-white overflow-hidden">
-              <div className="bg-indigo-600 p-4 text-white flex justify-between items-start">
+              <div className="bg-emerald-600 p-4 text-white flex justify-between items-start">
                 <div>
                   <h2 className="text-lg font-bold">{data.student.nmSiswa}</h2>
-                  <p className="text-indigo-100 text-sm">{data.student.noDaftar}</p>
+                  <p className="text-emerald-100 text-sm">{data.student.noDaftar}</p>
                 </div>
                 <div className="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
                   {data.student.jalur}
@@ -188,7 +188,7 @@ function ScannerPage() {
                       checked={!!data.daftarUlang[item.id]}
                       onCheckedChange={(checked) => handleToggleCheck(item.id, !!checked)}
                       disabled={saving}
-                      className="w-5 h-5 rounded-md border-slate-300 data-[state=checked]:bg-indigo-600"
+                      className="w-5 h-5 rounded-md border-slate-300 data-[state=checked]:bg-emerald-600"
                     />
                     <Label htmlFor={item.id} className="text-sm font-medium text-slate-700 cursor-pointer flex-1">
                       {item.label}
@@ -212,7 +212,7 @@ function ScannerPage() {
               </CardContent>
             </Card>
 
-            <Button onClick={resetScanner} className="w-full bg-indigo-600 hover:bg-indigo-700 h-12 rounded-xl text-md font-bold shadow-indigo-200 shadow-lg mb-8">
+            <Button onClick={resetScanner} className="w-full bg-emerald-600 hover:bg-emerald-700 h-12 rounded-xl text-md font-bold shadow-emerald-200 shadow-lg mb-8">
               Selesai & Scan Siswa Lain
             </Button>
           </div>

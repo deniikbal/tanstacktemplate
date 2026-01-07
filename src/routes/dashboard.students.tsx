@@ -147,7 +147,7 @@ function StudentsPage() {
 
     // Pagination State
     const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState('10')
+    const [pageSize] = useState('10')
 
     // Bulk Delete State
     const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -373,24 +373,7 @@ function StudentsPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                     {/* Filter Bar */}
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-4 border-b border-slate-200 bg-slate-50/50">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-slate-500">Show</span>
-                            <Select value={pageSize} onValueChange={(val) => {
-                                setPageSize(val)
-                                setPage(1)
-                            }}>
-                                <SelectTrigger className="w-[70px] bg-white h-8 border-slate-200 shadow-sm focus:ring-emerald-500">
-                                    <SelectValue placeholder="10" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="5">5</SelectItem>
-                                    <SelectItem value="10">10</SelectItem>
-                                    <SelectItem value="20">20</SelectItem>
-                                    <SelectItem value="50">50</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-end p-4 border-b border-slate-200 bg-slate-50/50">
 
                         <div className="flex items-center gap-2 flex-1 md:justify-end max-w-sm">
                             <div className="relative w-full">
@@ -512,22 +495,6 @@ function StudentsPage() {
                             {' '}- <span className="font-medium text-slate-900">{Math.min(studentsInfo?.total || 0, page * Number(pageSize))}</span>
                             {' '}dari <span className="font-medium text-slate-900">{studentsInfo?.total || 0}</span> data
                         </p>
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs text-slate-400 font-medium">Baris:</span>
-                            <select
-                                value={pageSize}
-                                onChange={(e) => {
-                                    setPageSize(e.target.value)
-                                    setPage(1)
-                                }}
-                                className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                            >
-                                <option value="10">10</option>
-                                <option value="25">25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
                     </div>
                     {totalPages > 1 && (
                         <div className="flex items-center gap-1">
@@ -810,6 +777,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     id: student.id,
                     // Identity
                     nmSiswa: formData.get('nmSiswa') as string,
+                    noDaftar: formData.get('noDaftar') as string || null,
                     nis: formData.get('nis') as string || null,
                     nisn: formData.get('nisn') as string || null,
                     tempatLahir: formData.get('tempatLahir') as string || null,
@@ -856,10 +824,13 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     <TabsTrigger value="supplementary" className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white">Kelengkapan</TabsTrigger>
                 </TabsList>
 
-                {/* Tab Identitas Siswa */}
                 <TabsContent value="identity" forceMount className="space-y-3 mt-3 data-[state=inactive]:hidden">
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-5 gap-3">
                         <div className="space-y-1">
+                            <Label htmlFor="edit-noDaftar" className="text-xs">No Daftar</Label>
+                            <Input id="edit-noDaftar" name="noDaftar" defaultValue={student?.noDaftar || ''} className="h-8" />
+                        </div>
+                        <div className="space-y-1 col-span-2">
                             <Label htmlFor="edit-nmSiswa" className="text-xs">Nama Lengkap *</Label>
                             <Input id="edit-nmSiswa" name="nmSiswa" defaultValue={student?.nmSiswa} required className="h-8" />
                         </div>
@@ -871,6 +842,9 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                             <Label htmlFor="edit-nisn" className="text-xs">NISN</Label>
                             <Input id="edit-nisn" name="nisn" defaultValue={student?.nisn || ''} className="h-8" />
                         </div>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-3">
                         <div className="space-y-1">
                             <Label htmlFor="edit-jenisKelamin" className="text-xs">Jenis Kelamin</Label>
                             <Select name="jenisKelamin" defaultValue={student?.jenisKelamin || ''}>
@@ -883,8 +857,6 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                                 </SelectContent>
                             </Select>
                         </div>
-                    </div>
-                    <div className="grid grid-cols-4 gap-3">
                         <div className="space-y-1">
                             <Label htmlFor="edit-tempatLahir" className="text-xs">Tempat Lahir</Label>
                             <Input id="edit-tempatLahir" name="tempatLahir" defaultValue={student?.tempatLahir || ''} className="h-8" />
@@ -909,13 +881,14 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                                 </SelectContent>
                             </Select>
                         </div>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-3">
                         <div className="space-y-1">
                             <Label htmlFor="edit-teleponSiswa" className="text-xs">Telepon Siswa</Label>
                             <Input id="edit-teleponSiswa" name="teleponSiswa" defaultValue={student?.teleponSiswa || ''} className="h-8" />
                         </div>
-                    </div>
-                    <div className="grid grid-cols-4 gap-3">
-                        <div className="col-span-2 space-y-1">
+                        <div className="col-span-3 space-y-1">
                             <Label htmlFor="edit-alamatSiswa" className="text-xs">Alamat Siswa</Label>
                             <textarea
                                 id="edit-alamatSiswa"
