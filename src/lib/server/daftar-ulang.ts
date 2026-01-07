@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { daftarUlang, kelulusan } from "@/lib/db/schema";
 import { eq, count, desc } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
+import { authMiddleware } from "@/lib/middleware";
 
 export const getDaftarUlangList = createServerFn({ method: "GET" })
     .inputValidator((d: { page?: number; limit?: number }) => d)
@@ -69,11 +70,12 @@ export const upsertDaftarUlang = createServerFn({ method: "POST" })
         bukti: boolean;
         pernyataan: boolean;
         keterangan?: string;
-        petugas?: string;
     }) => data)
-    .handler(async ({ data }) => {
+    .middleware([authMiddleware])
+    .handler(async ({ data, context }) => {
         try {
-            const { kelulusanId, skl, tatib, kk, bukti, pernyataan, keterangan, petugas } = data;
+            const { kelulusanId, skl, tatib, kk, bukti, pernyataan, keterangan } = data;
+            const petugas = context.session.user.name;
 
             const existing = await db.query.daftarUlang.findFirst({
                 where: eq(daftarUlang.kelulusanId, kelulusanId),

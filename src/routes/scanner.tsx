@@ -1,24 +1,40 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Scanner } from '@yudiel/react-qr-scanner'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
-import { Loader2, QrCode, User, School, Phone, CheckCircle2, XCircle, RefreshCw } from 'lucide-react'
+import { Loader2, QrCode, User, School, Phone, CheckCircle2, XCircle, RefreshCw, LogOut } from 'lucide-react'
 import { getStudentByQRData } from '@/lib/server/scanner'
 import { upsertDaftarUlang } from '@/lib/server/daftar-ulang'
+import { authClient } from '@/lib/auth-client'
+import { useNavigate } from '@tanstack/react-router'
+import { useEffect } from 'react'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 export const Route = createFileRoute('/scanner')({
   component: ScannerPage,
 })
 
 function ScannerPage() {
+  const { data: session, isPending: sessionPending } = authClient.useSession()
+  const navigate = useNavigate()
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [scanning, setScanning] = useState(true)
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (!sessionPending && !session) {
+      navigate({ to: '/login' })
+    }
+  }, [session, sessionPending, navigate])
+
+  if (sessionPending) return <LoadingSpinner />
+  if (!session) return null
 
   const handleScan = async (result: any) => {
     if (!result || !result[0]?.rawValue) return
@@ -54,7 +70,6 @@ function ScannerPage() {
           bukti: !!updatedDaftarUlang.bukti,
           pernyataan: !!updatedDaftarUlang.pernyataan,
           keterangan: updatedDaftarUlang.keterangan || '',
-          petugas: updatedDaftarUlang.petugas || '',
         }
       })
       toast.success('Kemajuan berhasil disimpan')
@@ -84,12 +99,30 @@ function ScannerPage() {
             </div>
           </div>
           {(!scanning || data) && (
-            <Button variant="outline" size="sm" onClick={resetScanner} className="gap-2">
-              <RefreshCw className="w-4 h-4" />
-              Scan Ulang
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={resetScanner} className="gap-2">
+                <RefreshCw className="w-4 h-4" />
+                Scan Ulang
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => authClient.signOut({ fetchOptions: { onSuccess: () => navigate({ to: '/login' }) } })} className="gap-2 text-rose-600 hover:text-rose-700">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
           )}
         </header>
+
+        <div className="mb-6 bg-emerald-50 border border-emerald-100 p-3 rounded-xl flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Avatar className="w-8 h-8 rounded-lg">
+              <AvatarImage src={session.user.image || ''} />
+              <AvatarFallback className="bg-emerald-600 text-white text-[10px]">{session.user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Petugas Aktif</p>
+              <p className="text-sm font-bold text-slate-900">{session.user.name}</p>
+            </div>
+          </div>
+        </div>
 
         {scanning ? (
           <Card className="overflow-hidden border-2 border-emerald-100 shadow-xl">
