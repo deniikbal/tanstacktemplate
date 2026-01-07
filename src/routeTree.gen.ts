@@ -13,6 +13,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as PengumumanRouteImport } from './routes/pengumuman'
 import { Route as PendaftarRouteImport } from './routes/pendaftar'
+import { Route as MonitorRouteImport } from './routes/monitor'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
@@ -52,6 +53,11 @@ const PengumumanRoute = PengumumanRouteImport.update({
 const PendaftarRoute = PendaftarRouteImport.update({
   id: '/pendaftar',
   path: '/pendaftar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MonitorRoute = MonitorRouteImport.update({
+  id: '/monitor',
+  path: '/monitor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
+  '/monitor': typeof MonitorRoute
   '/pendaftar': typeof PendaftarRoute
   '/pengumuman': typeof PengumumanRoute
   '/scanner': typeof ScannerRoute
@@ -184,6 +191,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/monitor': typeof MonitorRoute
   '/pendaftar': typeof PendaftarRoute
   '/pengumuman': typeof PengumumanRoute
   '/scanner': typeof ScannerRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
+  '/monitor': typeof MonitorRoute
   '/pendaftar': typeof PendaftarRoute
   '/pengumuman': typeof PengumumanRoute
   '/scanner': typeof ScannerRoute
@@ -239,6 +248,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/login'
+    | '/monitor'
     | '/pendaftar'
     | '/pengumuman'
     | '/scanner'
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/monitor'
     | '/pendaftar'
     | '/pengumuman'
     | '/scanner'
@@ -290,6 +301,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/login'
+    | '/monitor'
     | '/pendaftar'
     | '/pengumuman'
     | '/scanner'
@@ -317,6 +329,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
+  MonitorRoute: typeof MonitorRoute
   PendaftarRoute: typeof PendaftarRoute
   PengumumanRoute: typeof PengumumanRoute
   ScannerRoute: typeof ScannerRoute
@@ -360,6 +373,13 @@ declare module '@tanstack/react-router' {
       path: '/pendaftar'
       fullPath: '/pendaftar'
       preLoaderRoute: typeof PendaftarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/monitor': {
+      id: '/monitor'
+      path: '/monitor'
+      fullPath: '/monitor'
+      preLoaderRoute: typeof MonitorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -535,6 +555,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
+  MonitorRoute: MonitorRoute,
   PendaftarRoute: PendaftarRoute,
   PengumumanRoute: PengumumanRoute,
   ScannerRoute: ScannerRoute,

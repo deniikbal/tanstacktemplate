@@ -4,12 +4,22 @@ import { pendaftar } from '@/lib/db/pendaftar-schema'
 import { tahunAjaran } from '@/lib/db/tahun-ajaran-schema'
 import { eq, ilike, sql, asc, and } from 'drizzle-orm'
 
+// Helper to get the next queue number for a specific date
+async function getNextQueueNumber(dateStr: string) {
+    const result = await db
+        .select({ maxNo: sql<number>`max(cast(${pendaftar.noAntrian} as integer))` })
+        .from(pendaftar)
+        .where(eq(pendaftar.tglAntrian, dateStr))
+
+    return (result[0]?.maxNo || 0) + 1
+}
+
 export const getPendaftarList = createServerFn({
     method: 'GET',
 })
-    .inputValidator((d: { limit?: number; offset?: number; search?: string, asalSekolah?: string, jalurMasuk?: string, tahunAjaran?: string }) => d)
+    .inputValidator((d: { limit?: number; offset?: number; search?: string, asalSekolah?: string, jalurMasuk?: string, tahap?: string, statusAntrian?: string, tahunAjaran?: string }) => d)
     .handler(async ({ data }) => {
-        const { limit = 10, offset = 0, search, asalSekolah, jalurMasuk, tahunAjaran } = data
+        const { limit = 10, offset = 0, search, asalSekolah, jalurMasuk, tahap, statusAntrian, tahunAjaran } = data
 
         const filters = []
 
@@ -23,6 +33,14 @@ export const getPendaftarList = createServerFn({
 
         if (jalurMasuk && jalurMasuk !== 'semua') {
             filters.push(eq(pendaftar.jalurMasuk, jalurMasuk))
+        }
+
+        if (tahap && tahap !== 'semua') {
+            filters.push(eq(pendaftar.tahap, tahap))
+        }
+
+        if (statusAntrian && statusAntrian !== 'semua') {
+            filters.push(eq(pendaftar.statusAntrian, statusAntrian))
         }
 
         if (tahunAjaran && tahunAjaran !== 'semua') {
@@ -78,6 +96,18 @@ export const deletePendaftar = createServerFn({ method: 'POST' })
         return { success: true }
     })
 
+export const updateQueueStatus = createServerFn({
+    method: 'POST',
+})
+    .inputValidator((d: { id: string, status: string }) => d)
+    .handler(async ({ data }) => {
+        const { id, status } = data
+        await db.update(pendaftar)
+            .set({ statusAntrian: status })
+            .where(eq(pendaftar.id, id))
+        return { success: true }
+    })
+
 interface PendaftarData {
     id?: string
     nmLengkap: string
@@ -90,7 +120,27 @@ interface PendaftarData {
     jalurMasuk?: string | null
     keterangan?: string | null
     tahap?: string | null
+    noAntrian?: string | null
+    tglAntrian?: string | null
 }
+
+export const issueQueueNumber = createServerFn({ method: 'POST' })
+    .inputValidator((d: { id: string }) => d)
+    .handler(async ({ data }) => {
+        const today = new Date().toISOString().split('T')[0]
+        const nextNo = await getNextQueueNumber(today)
+
+        await db
+            .update(pendaftar)
+            .set({
+                noAntrian: nextNo.toString(),
+                tglAntrian: today,
+                updatedAt: new Date(),
+            })
+            .where(eq(pendaftar.id, data.id))
+
+        return { success: true, noAntrian: nextNo }
+    })
 
 export const savePendaftar = createServerFn({ method: 'POST' })
     .inputValidator((d: PendaftarData) => d)
@@ -124,10 +174,15 @@ export const savePendaftar = createServerFn({ method: 'POST' })
 
                 const aktiveTahunAjaran = activeTahun[0]?.tahun || null
 
+                const today = new Date().toISOString().split('T')[0]
+                const nextNo = await getNextQueueNumber(today)
+
                 await db.insert(pendaftar).values({
                     ...cleanData,
                     id: crypto.randomUUID(),
                     tahunAjaran: aktiveTahunAjaran,
+                    noAntrian: nextNo.toString(),
+                    tglAntrian: today,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 })
@@ -191,5 +246,5 @@ export const getTahunAjaranOptions = createServerFn({
             .where(sql`${pendaftar.tahunAjaran} IS NOT NULL`)
             .orderBy(sql`${pendaftar.tahunAjaran} DESC`)
 
-        return results.map(r => r.tahunAjaran).filter(Boolean) as string[]
+        return results.map((r: { tahunAjaran: string | null }) => r.tahunAjaran).filter(Boolean) as string[]
     })

@@ -22,7 +22,14 @@ import {
     Users,
     CheckCircle2,
     Clock,
-    ArrowUpCircle
+    ArrowUpCircle,
+    Ticket,
+    Bell,
+    Volume2,
+    Play,
+    CheckCircle,
+    MoreVertical,
+    XCircle
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
@@ -77,7 +84,19 @@ interface Pendaftar {
     jalurMasuk: string | null
     keterangan: string | null
     tahap: string | null
+    noAntrian: string | null
+    tglAntrian: string | null
+    statusAntrian: string | null
 }
+
+import { issueQueueNumber, updateQueueStatus } from '@/lib/server/pendaftar'
+import { Badge } from '@/components/ui/badge'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 function PendaftaranPage() {
     const [pendaftarInfo, setPendaftarInfo] = useState<{ pendaftar: Pendaftar[], total: number } | null>(null)
@@ -90,6 +109,8 @@ function PendaftaranPage() {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [sekolahFilter, setSekolahFilter] = useState('')
     const [jalurFilter, setJalurFilter] = useState('semua')
+    const [tahapFilter, setTahapFilter] = useState('semua')
+    const [statusFilter, setStatusFilter] = useState('semua')
     const [stats, setStats] = useState<{ total: number, verified: number, unverified: number, tahap1: number, tahap2: number } | null>(null)
 
     // Pagination
@@ -105,7 +126,9 @@ function PendaftaranPage() {
                     offset: (page - 1) * pageSize,
                     search: searchTerm || undefined,
                     asalSekolah: sekolahFilter || undefined,
-                    jalurMasuk: jalurFilter !== 'semua' ? jalurFilter : undefined
+                    jalurMasuk: jalurFilter !== 'semua' ? jalurFilter : undefined,
+                    tahap: tahapFilter !== 'semua' ? tahapFilter : undefined,
+                    statusAntrian: statusFilter !== 'semua' ? statusFilter : undefined
                 }
             })
             setPendaftarInfo(data)
@@ -121,7 +144,23 @@ function PendaftaranPage() {
 
     useEffect(() => {
         fetchPendaftar()
-    }, [page, searchTerm, sekolahFilter, jalurFilter])
+
+        // Polling every 30 seconds to keep queue live
+        const interval = setInterval(fetchPendaftar, 30000)
+        return () => clearInterval(interval)
+    }, [page, searchTerm, sekolahFilter, jalurFilter, tahapFilter, statusFilter])
+
+    const handleVoiceCall = (p: Pendaftar) => {
+        if (!p.noAntrian) return
+        const text = `Nomor Antrian, ${p.noAntrian.split('').join(' ')}, atas nama, ${p.nmLengkap}, silakan menuju meja pendaftaran.`
+        const utterance = new SpeechSynthesisUtterance(text)
+        utterance.lang = 'id-ID'
+        utterance.rate = 0.9
+        window.speechSynthesis.speak(utterance)
+
+        // Update status to CALLING automatically
+        updateQueueStatus({ data: { id: p.id, status: 'CALLING' } }).then(fetchPendaftar)
+    }
 
     const handleDelete = async () => {
         if (!pendaftarToDelete) return
@@ -150,6 +189,78 @@ function PendaftaranPage() {
                             Manajemen pendaftaran calon peserta didik baru.
                         </p>
                     </div>
+                </div>
+
+                {/* Live Queue Display */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white border-none shadow-lg overflow-hidden relative">
+                        <div className="absolute top-0 right-0 p-8 opacity-10">
+                            <Ticket className="w-32 h-32 rotate-12" />
+                        </div>
+                        <CardContent className="p-6 relative z-10 flex items-center justify-between">
+                            <div className="space-y-1">
+                                <p className="text-emerald-100 font-medium flex items-center gap-2">
+                                    <Bell className="w-4 h-4 animate-bounce" />
+                                    Sedang Dipanggil
+                                </p>
+                                <h2 className="text-5xl font-black tracking-tighter">
+                                    {pendaftarInfo?.pendaftar.find(p => p.statusAntrian === 'CALLING')?.noAntrian ?
+                                        `#${pendaftarInfo.pendaftar.find(p => p.statusAntrian === 'CALLING')?.noAntrian}` :
+                                        '-'}
+                                </h2>
+                                <p className="text-emerald-100 text-sm font-medium">
+                                    {pendaftarInfo?.pendaftar.find(p => p.statusAntrian === 'CALLING')?.nmLengkap || 'Belum ada panggilan'}
+                                </p>
+                            </div>
+                            <div className="text-right hidden sm:block">
+                                <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 inline-block">
+                                    <p className="text-[10px] uppercase font-bold tracking-wider text-emerald-50">Sisa Antrian</p>
+                                    <p className="text-2xl font-black">
+                                        {pendaftarInfo?.pendaftar.filter(p =>
+                                            p.tglAntrian === new Date().toISOString().split('T')[0] &&
+                                            p.statusAntrian === 'WAITING'
+                                        ).length || 0}
+                                    </p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
+                        <CardHeader className="p-4 border-b bg-slate-50/50">
+                            <div className="flex items-center justify-between">
+                                <p className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                    <Users className="w-4 h-4 text-indigo-600" />
+                                    Riwayat Panggilan Terakhir
+                                </p>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <div className="divide-y divide-slate-100">
+                                {pendaftarInfo?.pendaftar
+                                    .filter(p => p.statusAntrian === 'DONE' || p.statusAntrian === 'IN_ROOM')
+                                    .slice(0, 3)
+                                    .map(p => (
+                                        <div key={p.id} className="p-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                                            <div className="flex items-center gap-3">
+                                                <Badge className={`${p.statusAntrian === 'DONE' ? 'bg-slate-400' : 'bg-blue-600'} text-white font-bold`}>
+                                                    #{p.noAntrian}
+                                                </Badge>
+                                                <span className="text-sm font-medium text-slate-700 truncate max-w-[150px]">{p.nmLengkap}</span>
+                                            </div>
+                                            <Badge variant="outline" className="text-[10px] font-bold text-slate-500">
+                                                {p.statusAntrian === 'DONE' ? 'Selesai' : 'Di Ruangan'}
+                                            </Badge>
+                                        </div>
+                                    ))}
+                                {(!pendaftarInfo?.pendaftar.some(p => p.statusAntrian === 'DONE' || p.statusAntrian === 'IN_ROOM')) && (
+                                    <div className="p-8 text-center text-slate-400 text-xs italic">
+                                        Belum ada aktivitas panggilan.
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
                 {/* Stats Cards */}
@@ -281,7 +392,42 @@ function PendaftaranPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="ml-auto">
+                            <div className="flex items-center gap-2">
+                                <Filter className="h-4 w-4 text-slate-400 mr-1" />
+                                <Select value={tahapFilter} onValueChange={(val) => {
+                                    setTahapFilter(val)
+                                    setPage(1)
+                                }}>
+                                    <SelectTrigger className="w-[140px] h-9 text-sm bg-slate-50 border-slate-200">
+                                        <SelectValue placeholder="Semua Tahap" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="semua">Semua Tahap</SelectItem>
+                                        <SelectItem value="1">Tahap 1</SelectItem>
+                                        <SelectItem value="2">Tahap 2</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Filter className="h-4 w-4 text-slate-400 mr-1" />
+                                <Select value={statusFilter} onValueChange={(val) => {
+                                    setStatusFilter(val)
+                                    setPage(1)
+                                }}>
+                                    <SelectTrigger className="w-[140px] h-9 text-sm bg-slate-50 border-slate-200">
+                                        <SelectValue placeholder="Status Antrian" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="semua">Semua Status</SelectItem>
+                                        <SelectItem value="WAITING">Menunggu</SelectItem>
+                                        <SelectItem value="CALLING">Dipanggil</SelectItem>
+                                        <SelectItem value="IN_ROOM">Masuk Ruangan</SelectItem>
+                                        <SelectItem value="SKIPPED">Terlewat</SelectItem>
+                                        <SelectItem value="DONE">Selesai</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="ml-auto flex items-center gap-2">
                                 <Button
                                     onClick={() => {
                                         setSelectedPendaftar({})
@@ -300,10 +446,10 @@ function PendaftaranPage() {
                             <Table>
                                 <TableHeader className="bg-slate-50/50">
                                     <TableRow>
+                                        <TableHead className="font-semibold text-slate-700 px-4">Antrian</TableHead>
                                         <TableHead className="font-semibold text-slate-700 px-4">Nama Lengkap</TableHead>
                                         <TableHead className="font-semibold text-slate-700 px-4">Asal Sekolah</TableHead>
-                                        <TableHead className="font-semibold text-slate-700 px-4">Tahap</TableHead>
-                                        <TableHead className="font-semibold text-slate-700 px-4">Jalur Masuk</TableHead>
+                                        <TableHead className="font-semibold text-slate-700 px-4">Tahap/Jalur</TableHead>
                                         <TableHead className="font-semibold text-slate-700 px-4">No. HP</TableHead>
                                         <TableHead className="w-[100px] text-right px-4">Aksi</TableHead>
                                     </TableRow>
@@ -329,38 +475,107 @@ function PendaftaranPage() {
                                     ) : (
                                         pendaftarInfo.pendaftar.map((p) => (
                                             <TableRow key={p.id} className="hover:bg-slate-50 transition-colors">
+                                                <TableCell className="px-4">
+                                                    {p.noAntrian && p.tglAntrian === new Date().toISOString().split('T')[0] ? (
+                                                        <div className="flex flex-col gap-1">
+                                                            <Badge className={`${p.statusAntrian === 'CALLING' ? 'bg-amber-500 animate-pulse' :
+                                                                p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
+                                                                    p.statusAntrian === 'SKIPPED' ? 'bg-red-500' :
+                                                                        p.statusAntrian === 'DONE' ? 'bg-slate-400' :
+                                                                            'bg-emerald-600'} hover:opacity-90 text-white font-black px-3 py-1 text-sm shadow-sm w-fit`}>
+                                                                #{p.noAntrian}
+                                                            </Badge>
+                                                            <span className="text-[10px] font-bold text-slate-500 uppercase">
+                                                                {p.statusAntrian === 'WAITING' ? 'Menunggu' :
+                                                                    p.statusAntrian === 'CALLING' ? 'Mendekat/Dipanggil' :
+                                                                        p.statusAntrian === 'IN_ROOM' ? 'Di Ruangan' :
+                                                                            p.statusAntrian === 'SKIPPED' ? 'Terlewat' :
+                                                                                p.statusAntrian === 'DONE' ? 'Selesai' : p.statusAntrian}
+                                                            </span>
+                                                        </div>
+                                                    ) : p.noAntrian ? (
+                                                        <div className="flex flex-col">
+                                                            <Badge variant="outline" className="text-slate-400 border-slate-200 font-bold px-2 py-0.5 text-[10px] w-fit">
+                                                                #{p.noAntrian}
+                                                            </Badge>
+                                                            <span className="text-[10px] text-slate-400 mt-0.5">Lama</span>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-slate-300 text-xs italic">Belum Ada</span>
+                                                    )}
+                                                </TableCell>
                                                 <TableCell className="font-medium text-slate-900 px-4">{p.nmLengkap}</TableCell>
                                                 <TableCell className="px-4">{p.asalSekolah || '-'}</TableCell>
                                                 <TableCell className="px-4">
-                                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${p.tahap === '1' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
-                                                        Tahap {p.tahap}
-                                                    </span>
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className={`w-fit px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${p.tahap === '1' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                                                            Tahap {p.tahap}
+                                                        </span>
+                                                        <span className="text-xs text-slate-600 font-medium">{p.jalurMasuk || '-'}</span>
+                                                    </div>
                                                 </TableCell>
-                                                <TableCell className="text-slate-600 px-4">{p.jalurMasuk || '-'}</TableCell>
                                                 <TableCell className="text-slate-600 px-4">{p.noHandphone || '-'}</TableCell>
-                                                <TableCell className="text-right space-x-1 px-4">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50"
-                                                        onClick={() => {
-                                                            setSelectedPendaftar(p)
-                                                            setIsFormOpen(true)
-                                                        }}
-                                                    >
-                                                        <UserCog className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8 text-slate-500 hover:text-red-600 hover:bg-red-50"
-                                                        onClick={() => {
-                                                            setPendaftarToDelete(p)
-                                                            setIsDeleteDialogOpen(true)
-                                                        }}
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
+                                                <TableCell className="text-right flex items-center justify-end gap-1 px-4">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500">
+                                                                <MoreVertical className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" className="w-48">
+                                                            <DropdownMenuItem onClick={() => handleVoiceCall(p as Pendaftar)}>
+                                                                <Volume2 className="mr-2 h-4 w-4 text-amber-500" />
+                                                                Panggil (Suara)
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'IN_ROOM' } }).then(fetchPendaftar)}>
+                                                                <Play className="mr-2 h-4 w-4 text-blue-500" />
+                                                                Masuk Ruangan
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'SKIPPED' } }).then(fetchPendaftar)}>
+                                                                <XCircle className="mr-2 h-4 w-4 text-red-500" />
+                                                                Terlewat
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'DONE' } }).then(fetchPendaftar)}>
+                                                                <CheckCircle className="mr-2 h-4 w-4 text-emerald-500" />
+                                                                Selesai
+                                                            </DropdownMenuItem>
+                                                            <div className="h-px bg-slate-100 my-1" />
+                                                            <DropdownMenuItem
+                                                                onClick={async () => {
+                                                                    try {
+                                                                        await issueQueueNumber({ data: { id: p.id } })
+                                                                        toast.success(`Antrian #${p.nmLengkap} berhasil diterbitkan`)
+                                                                        fetchPendaftar()
+                                                                    } catch (error: any) {
+                                                                        toast.error(error.message || 'Gagal menerbitkan antrian')
+                                                                    }
+                                                                }}
+                                                                className="text-emerald-600"
+                                                            >
+                                                                <Ticket className="mr-2 h-4 w-4" />
+                                                                Terbitkan Antrian
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() => {
+                                                                    setSelectedPendaftar(p)
+                                                                    setIsFormOpen(true)
+                                                                }}
+                                                            >
+                                                                <UserCog className="mr-2 h-4 w-4" />
+                                                                Edit Data
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                                                                onClick={() => {
+                                                                    setPendaftarToDelete(p as Pendaftar)
+                                                                    setIsDeleteDialogOpen(true)
+                                                                }}
+                                                            >
+                                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                                Hapus
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
                                                 </TableCell>
                                             </TableRow>
                                         ))

@@ -27,7 +27,13 @@ import {
   Building2,
   Users,
   MoreHorizontal,
-  Pencil
+  Pencil,
+  Ticket,
+  MessageCircle,
+  Bell,
+  CheckCircle,
+  SkipForward,
+  Play
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
@@ -84,7 +90,13 @@ interface Pendaftar {
   jalurMasuk: string | null
   keterangan: string | null
   tahap: string | null
+  noAntrian: string | null
+  tglAntrian: string | null
+  statusAntrian: string | null
 }
+
+import { issueQueueNumber, updateQueueStatus } from '@/lib/server/pendaftar'
+import { Badge } from '@/components/ui/badge'
 
 function DashboardPendaftarPage() {
   const [pendaftarInfo, setPendaftarInfo] = useState<{ pendaftar: Pendaftar[], total: number } | null>(null)
@@ -97,6 +109,8 @@ function DashboardPendaftarPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [sekolahFilter, setSekolahFilter] = useState('')
   const [jalurFilter, setJalurFilter] = useState('semua')
+  const [tahapFilter, setTahapFilter] = useState('semua')
+  const [statusFilter, setStatusFilter] = useState('semua')
 
   // Pagination
   const [page, setPage] = useState(1)
@@ -111,7 +125,9 @@ function DashboardPendaftarPage() {
           offset: (page - 1) * Number(limit),
           search: searchTerm,
           asalSekolah: sekolahFilter,
-          jalurMasuk: jalurFilter
+          jalurMasuk: jalurFilter,
+          tahap: tahapFilter !== 'semua' ? tahapFilter : undefined,
+          statusAntrian: statusFilter !== 'semua' ? statusFilter : undefined
         }
       })
       setPendaftarInfo(data)
@@ -123,7 +139,7 @@ function DashboardPendaftarPage() {
 
   useEffect(() => {
     fetchPendaftar()
-  }, [page, limit, searchTerm, sekolahFilter, jalurFilter])
+  }, [page, limit, searchTerm, sekolahFilter, jalurFilter, tahapFilter, statusFilter])
 
   const handleDelete = async () => {
     if (!pendaftarToDelete) return
@@ -230,16 +246,53 @@ function DashboardPendaftarPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-slate-400" />
+              <Select value={tahapFilter} onValueChange={(val) => {
+                setTahapFilter(val)
+                setPage(1)
+              }}>
+                <SelectTrigger className="w-[140px] h-9 bg-white border-slate-200">
+                  <SelectValue placeholder="Semua Tahap" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="semua">Semua Tahap</SelectItem>
+                  <SelectItem value="1">Tahap 1</SelectItem>
+                  <SelectItem value="2">Tahap 2</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-slate-400" />
+              <Select value={statusFilter} onValueChange={(val) => {
+                setStatusFilter(val)
+                setPage(1)
+              }}>
+                <SelectTrigger className="w-[140px] h-9 bg-white border-slate-200">
+                  <SelectValue placeholder="Status Antrian" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="semua">Semua Status</SelectItem>
+                  <SelectItem value="WAITING">Menunggu</SelectItem>
+                  <SelectItem value="CALLING">Dipanggil</SelectItem>
+                  <SelectItem value="IN_ROOM">Masuk Ruangan</SelectItem>
+                  <SelectItem value="SKIPPED">Terlewat</SelectItem>
+                  <SelectItem value="DONE">Selesai</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-slate-50/50">
                 <TableRow>
+                  <TableHead className="font-semibold text-slate-700 px-4">Antrian</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">Nama Lengkap</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">Asal Sekolah</TableHead>
-                  <TableHead className="font-semibold text-slate-700 px-4">Tahap</TableHead>
-                  <TableHead className="font-semibold text-slate-700 px-4">Jalur Masuk</TableHead>
+                  <TableHead className="font-semibold text-slate-700 px-4">Tahap/Jalur</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">No. HP</TableHead>
                   <TableHead className="w-[100px] text-right px-4">Aksi</TableHead>
                 </TableRow>
@@ -265,14 +318,45 @@ function DashboardPendaftarPage() {
                 ) : (
                   pendaftarInfo.pendaftar.map((p) => (
                     <TableRow key={p.id} className="hover:bg-slate-50 transition-colors">
+                      <TableCell className="px-4">
+                        {p.noAntrian && p.tglAntrian === new Date().toISOString().split('T')[0] ? (
+                          <div className="flex flex-col gap-1">
+                            <Badge className={`${p.statusAntrian === 'CALLING' ? 'bg-amber-500 animate-pulse' :
+                              p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
+                                p.statusAntrian === 'SKIPPED' ? 'bg-red-500' :
+                                  p.statusAntrian === 'DONE' ? 'bg-slate-400' :
+                                    'bg-emerald-600'} hover:opacity-90 text-white font-black px-3 py-1 text-sm shadow-sm w-fit`}>
+                              #{p.noAntrian}
+                            </Badge>
+                            <span className="text-[10px] font-bold text-slate-500 uppercase">
+                              {p.statusAntrian === 'WAITING' ? 'Menunggu' :
+                                p.statusAntrian === 'CALLING' ? 'Mendekat/Dipanggil' :
+                                  p.statusAntrian === 'IN_ROOM' ? 'Di Ruangan' :
+                                    p.statusAntrian === 'SKIPPED' ? 'Terlewat' :
+                                      p.statusAntrian === 'DONE' ? 'Selesai' : p.statusAntrian}
+                            </span>
+                          </div>
+                        ) : p.noAntrian ? (
+                          <div className="flex flex-col">
+                            <Badge variant="outline" className="text-slate-400 border-slate-200 font-bold px-2 py-0.5 text-[10px] w-fit">
+                              #{p.noAntrian}
+                            </Badge>
+                            <span className="text-[10px] text-slate-400 mt-0.5">Lama</span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-300 text-xs italic">Belum Ada</span>
+                        )}
+                      </TableCell>
                       <TableCell className="font-medium text-slate-900 px-4">{p.nmLengkap}</TableCell>
                       <TableCell className="px-4">{p.asalSekolah || '-'}</TableCell>
                       <TableCell className="px-4">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${p.tahap === '1' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
-                          Tahap {p.tahap}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span className={`w-fit px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${p.tahap === '1' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                            Tahap {p.tahap}
+                          </span>
+                          <span className="text-xs text-slate-600 font-medium">{p.jalurMasuk || '-'}</span>
+                        </div>
                       </TableCell>
-                      <TableCell className="text-slate-600 px-4">{p.jalurMasuk || '-'}</TableCell>
                       <TableCell className="text-slate-600 px-4">{p.noHandphone || '-'}</TableCell>
                       <TableCell className="text-right px-4">
                         <DropdownMenu>
@@ -291,6 +375,21 @@ function DashboardPendaftarPage() {
                               Edit Data
                             </DropdownMenuItem>
                             <DropdownMenuItem
+                              onClick={async () => {
+                                try {
+                                  await issueQueueNumber({ data: { id: p.id } })
+                                  toast.success(`Antrian #${p.nmLengkap} berhasil diterbitkan`)
+                                  fetchPendaftar()
+                                } catch (error: any) {
+                                  toast.error(error.message || 'Gagal menerbitkan antrian')
+                                }
+                              }}
+                              className="text-emerald-600 focus:text-emerald-700 focus:bg-emerald-50"
+                            >
+                              <Ticket className="mr-2 h-4 w-4" />
+                              Ambil Antrian
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
                               className="text-destructive focus:text-destructive focus:bg-destructive/10"
                               onClick={() => {
                                 setPendaftarToDelete(p)
@@ -300,6 +399,43 @@ function DashboardPendaftarPage() {
                               <Trash2 className="mr-2 h-4 w-4" />
                               Hapus Data
                             </DropdownMenuItem>
+
+                            <div className="h-px bg-slate-100 my-1" />
+
+                            <DropdownMenuItem
+                              onClick={() => {
+                                const msg = `Halo ${p.nmLengkap}, nomor antrian Anda untuk hari ini adalah *#${p.noAntrian}*. Silakan tunggu di ruang tunggu. Cek status antrian berkala. Terima kasih.`
+                                const phone = p.noHandphone?.replace(/[^0-9]/g, '')
+                                const finalPhone = phone?.startsWith('0') ? '62' + phone.slice(1) : phone
+                                window.open(`https://wa.me/${finalPhone}?text=${encodeURIComponent(msg)}`, '_blank')
+                              }}
+                              className="text-blue-600"
+                              disabled={!p.noAntrian || !p.noHandphone}
+                            >
+                              <MessageCircle className="mr-2 h-4 w-4" />
+                              Kirim Info WA
+                            </DropdownMenuItem>
+
+                            {p.noAntrian && p.tglAntrian === new Date().toISOString().split('T')[0] && (
+                              <>
+                                <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'CALLING' } }).then(fetchPendaftar)}>
+                                  <Bell className="mr-2 h-4 w-4 text-amber-500" />
+                                  Panggil Siswa
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'IN_ROOM' } }).then(fetchPendaftar)}>
+                                  <Play className="mr-2 h-4 w-4 text-blue-500" />
+                                  Masuk Ruangan
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'SKIPPED' } }).then(fetchPendaftar)}>
+                                  <SkipForward className="mr-2 h-4 w-4 text-red-500" />
+                                  Lewati (Skipped)
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'DONE' } }).then(fetchPendaftar)}>
+                                  <CheckCircle className="mr-2 h-4 w-4 text-slate-500" />
+                                  Selesai
+                                </DropdownMenuItem>
+                              </>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
