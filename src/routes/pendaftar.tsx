@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { getPendaftarList, savePendaftar, deletePendaftar, getSchoolSearch, getPendaftarStats } from '@/lib/server/pendaftar'
+import { getPendaftarList, savePendaftar, deletePendaftar, getSchoolSearch, getPendaftarStats, resendQueueWA } from '@/lib/server/pendaftar'
 import {
     Table,
     TableBody,
@@ -29,7 +29,8 @@ import {
     Play,
     CheckCircle,
     MoreVertical,
-    XCircle
+    XCircle,
+    MessageSquare
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
@@ -112,6 +113,9 @@ function PendaftaranPage() {
     const [tahapFilter, setTahapFilter] = useState('semua')
     const [statusFilter, setStatusFilter] = useState('semua')
     const [stats, setStats] = useState<{ total: number, verified: number, unverified: number, tahap1: number, tahap2: number } | null>(null)
+    const [isSendingWA, setIsSendingWA] = useState(false)
+    const [pendaftarToNotify, setPendaftarToNotify] = useState<Pendaftar | null>(null)
+    const [isWANotifyDialogOpen, setIsWANotifyDialogOpen] = useState(false)
 
     // Pagination
     const [page, setPage] = useState(1)
@@ -160,6 +164,20 @@ function PendaftaranPage() {
 
         // Update status to CALLING automatically
         updateQueueStatus({ data: { id: p.id, status: 'CALLING' } }).then(fetchPendaftar)
+    }
+
+    const handleResendWA = async () => {
+        if (!pendaftarToNotify) return
+        setIsSendingWA(true)
+        try {
+            await resendQueueWA({ data: { id: pendaftarToNotify.id } })
+            toast.success('Notifikasi WhatsApp berhasil dikirim ulang')
+            setIsWANotifyDialogOpen(false)
+            setPendaftarToNotify(null)
+        } catch (error: any) {
+            toast.error(error.message || 'Gagal mengirim notifikasi WA')
+        }
+        setIsSendingWA(false)
     }
 
     const handleDelete = async () => {
@@ -565,6 +583,16 @@ function PendaftaranPage() {
                                                                 Edit Data
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
+                                                                onClick={() => {
+                                                                    setPendaftarToNotify(p as Pendaftar)
+                                                                    setIsWANotifyDialogOpen(true)
+                                                                }}
+                                                                disabled={!p.noHandphone || !p.noAntrian}
+                                                            >
+                                                                <MessageSquare className="mr-2 h-4 w-4 text-emerald-500" />
+                                                                Kirim Ulang WA
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
                                                                 className="text-red-600 focus:text-red-600 focus:bg-red-50"
                                                                 onClick={() => {
                                                                     setPendaftarToDelete(p as Pendaftar)
@@ -658,6 +686,31 @@ function PendaftaranPage() {
                             className="bg-red-600 hover:bg-red-700 text-white"
                         >
                             {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Hapus Data'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* WA Notification Confirmation */}
+            <AlertDialog open={isWANotifyDialogOpen} onOpenChange={setIsWANotifyDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Kirim Notifikasi WhatsApp?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Apakah Anda yakin ingin mengirim ulang nomor antrian <span className="font-bold text-slate-900">#{pendaftarToNotify?.noAntrian}</span> ke <span className="font-bold text-slate-900">{pendaftarToNotify?.nmLengkap}</span> ({pendaftarToNotify?.noHandphone})?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isSendingWA}>Batal</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={(e) => {
+                                e.preventDefault()
+                                handleResendWA()
+                            }}
+                            disabled={isSendingWA}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                        >
+                            {isSendingWA ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Kirim Sekarang'}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

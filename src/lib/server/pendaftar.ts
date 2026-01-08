@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { pendaftar } from '@/lib/db/pendaftar-schema'
 import { tahunAjaran } from '@/lib/db/tahun-ajaran-schema'
 import { eq, ilike, sql, asc, and } from 'drizzle-orm'
+import { sendWhatsApp } from './whatsapp'
 
 // Helper to get the next queue number for a specific date
 async function getNextQueueNumber(dateStr: string) {
@@ -139,6 +140,19 @@ export const issueQueueNumber = createServerFn({ method: 'POST' })
             })
             .where(eq(pendaftar.id, data.id))
 
+        // Send Notification
+        const p = await db.select().from(pendaftar).where(eq(pendaftar.id, data.id)).limit(1)
+        if (p[0] && p[0].noHandphone) {
+            const message = `Halo *${p[0].nmLengkap}*, Nomor Antrian Anda adalah *#${nextNo}*.
+
+*Asal Sekolah*: ${p[0].asalSekolah || '-'}
+*Jalur*: ${p[0].jalurMasuk || '-'}
+*Tahap*: ${p[0].tahap || '-'}
+
+Silakan tunjukkan pesan ini kepada petugas saat verifikasi. Terima kasih.`
+            await sendWhatsApp(p[0].noHandphone, message)
+        }
+
         return { success: true, noAntrian: nextNo }
     })
 
@@ -186,6 +200,18 @@ export const savePendaftar = createServerFn({ method: 'POST' })
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 })
+
+                // Send Notification for New Registration
+                if (cleanData.noHandphone) {
+                    const message = `Halo *${cleanData.nmLengkap}*, Pendaftaran Anda berhasil. Nomor Antrian Anda adalah *#${nextNo}*.
+
+*Asal Sekolah*: ${cleanData.asalSekolah || '-'}
+*Jalur*: ${cleanData.jalurMasuk || '-'}
+*Tahap*: ${cleanData.tahap || '-'}
+
+Silakan tunjukkan pesan ini kepada petugas saat verifikasi. Terima kasih.`
+                    await sendWhatsApp(cleanData.noHandphone, message)
+                }
             }
             return { success: true }
         } catch (error: any) {
@@ -247,4 +273,24 @@ export const getTahunAjaranOptions = createServerFn({
             .orderBy(sql`${pendaftar.tahunAjaran} DESC`)
 
         return results.map((r: { tahunAjaran: string | null }) => r.tahunAjaran).filter(Boolean) as string[]
+    })
+
+export const resendQueueWA = createServerFn({ method: 'POST' })
+    .inputValidator((d: { id: string }) => d)
+    .handler(async ({ data }) => {
+        const p = await db.select().from(pendaftar).where(eq(pendaftar.id, data.id)).limit(1)
+        if (!p[0] || !p[0].noHandphone || !p[0].noAntrian) {
+            throw new Error('Data tidak lengkap (No HP atau Antrian kosong)')
+        }
+
+        const message = `Halo *${p[0].nmLengkap}*, ini adalah pengiriman ulang Nomor Antrian Anda: *#${p[0].noAntrian}*.
+
+*Asal Sekolah*: ${p[0].asalSekolah || '-'}
+*Jalur*: ${p[0].jalurMasuk || '-'}
+*Tahap*: ${p[0].tahap || '-'}
+
+Silakan tunjukkan pesan ini kepada petugas saat verifikasi. Terima kasih.`
+        await sendWhatsApp(p[0].noHandphone, message)
+
+        return { success: true }
     })

@@ -13,6 +13,7 @@ export const auth = betterAuth({
         enabled: true,
     },
     baseURL: process.env.BETTER_AUTH_URL,
+    trustedOrigins: ["http://localhost:3000"],
     plugins: [
         admin(),
     ],
