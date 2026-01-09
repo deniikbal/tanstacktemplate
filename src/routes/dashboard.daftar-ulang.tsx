@@ -84,6 +84,10 @@ function DaftarUlangPage() {
             keterangan: keteranganStatus
           }
         });
+        toast.success(`Data ${updatedItem.nmSiswa} diperbarui`, {
+          description: `Status berkas: ${keteranganStatus}`,
+          duration: 2000,
+        });
       } catch (err) {
         toast.error('Gagal menyimpan perubahan otomatis');
         // Optional: revert local state on error
@@ -443,7 +447,7 @@ function DaftarUlangPage() {
                       const status = calculateKeterangan(item.daftarUlang);
                       return (
                         <Badge className={`w-full justify-center py-1 text-xs font-semibold ${status === 'Lengkap' ? 'bg-emerald-500' :
-                            status === 'Belum Daftar Ulang' ? 'bg-rose-500' : 'bg-orange-500'
+                          status === 'Belum Daftar Ulang' ? 'bg-rose-500' : 'bg-orange-500'
                           }`}>
                           {status}
                         </Badge>

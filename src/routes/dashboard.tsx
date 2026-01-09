@@ -51,8 +51,19 @@ function DashboardLayout() {
   useEffect(() => {
     if (!isPending && !session) {
       navigate({ to: '/login' })
+      return
     }
-  }, [session, isPending, navigate])
+
+    // Protection for non-admin users
+    if (session?.user?.role !== 'admin') {
+      const restrictedPaths = ['/dashboard/users', '/dashboard/students', '/dashboard/settings', '/dashboard/sekolah']
+      const currentPath = matches[matches.length - 1]?.pathname
+      if (restrictedPaths.includes(currentPath)) {
+        toast.error('Anda tidak memiliki akses ke halaman ini')
+        navigate({ to: '/dashboard' })
+      }
+    }
+  }, [session, isPending, navigate, matches])
 
   if (isPending) return <LoadingSpinner />
   if (!session) return null
@@ -61,6 +72,7 @@ function DashboardLayout() {
     name: session.user.name,
     email: session.user.email,
     avatar: session.user.image,
+    role: session.user.role || undefined,
   }
 
   // Get current route path for breadcrumb

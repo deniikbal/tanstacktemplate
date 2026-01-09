@@ -5,7 +5,8 @@ import {
   LayoutDashboard,
   Settings,
   GraduationCap,
-  ClipboardList
+  ClipboardList,
+  QrCode
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -21,11 +22,6 @@ import {
 
 // This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "Acme Inc",
@@ -47,20 +43,23 @@ const data = {
       isActive: false,
       items: [
         {
-          title: "Data Pengguna",
-          url: "/dashboard/users",
-        },
-        {
-          title: "Data Siswa",
-          url: "/dashboard/students",
-        },
-        {
           title: "Data Pendaftar",
           url: "/dashboard/pendaftar",
         },
         {
           title: "Data Sekolah",
           url: "/dashboard/sekolah",
+          adminOnly: true,
+        },
+        {
+          title: "Data Pengguna",
+          url: "/dashboard/users",
+          adminOnly: true,
+        },
+        {
+          title: "Data Siswa",
+          url: "/dashboard/students",
+          adminOnly: true,
         },
       ],
     },
@@ -77,10 +76,17 @@ const data = {
       isActive: false,
     },
     {
+      title: "Scanner",
+      url: "/scanner",
+      icon: QrCode,
+      isActive: false,
+    },
+    {
       title: "Setting",
       url: "/dashboard/settings",
       icon: Settings,
       isActive: false,
+      adminOnly: true,
     },
   ],
 }
@@ -90,15 +96,33 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
     name: string
     email: string
     avatar?: string | null
+    role?: string
   }
 }) {
+  const filteredNavMain = data.navMain.filter(item => {
+    // If user is not admin, hide adminOnly items
+    if (user.role !== 'admin' && (item as any).adminOnly) return false
+    return true
+  }).map(item => {
+    if (item.items) {
+      return {
+        ...item,
+        items: item.items.filter(subItem => {
+          if (user.role !== 'admin' && (subItem as any).adminOnly) return false
+          return true
+        })
+      }
+    }
+    return item
+  })
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent className="overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        <NavMain items={data.navMain} />
+        <NavMain items={filteredNavMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

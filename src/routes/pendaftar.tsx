@@ -17,7 +17,6 @@ import {
     ChevronLeft,
     ChevronRight,
     Loader2,
-    Filter,
     Building2,
     Users,
     CheckCircle2,
@@ -30,7 +29,8 @@ import {
     CheckCircle,
     MoreVertical,
     XCircle,
-    MessageSquare
+    MessageSquare,
+    Phone
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
@@ -92,6 +92,7 @@ interface Pendaftar {
 
 import { issueQueueNumber, updateQueueStatus } from '@/lib/server/pendaftar'
 import { Badge } from '@/components/ui/badge'
+import { getJakartaDate } from '@/lib/utils'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -156,7 +157,7 @@ function PendaftaranPage() {
 
     const handleVoiceCall = (p: Pendaftar) => {
         if (!p.noAntrian) return
-        const text = `Nomor Antrian, ${p.noAntrian.split('').join(' ')}, atas nama, ${p.nmLengkap}, silakan menuju meja pendaftaran.`
+        const text = `Nomor Antrian, ${p.noAntrian.split('').join(' ')}, atas nama, ${p.nmLengkap}, silakan menuju ruang tunggu.`
         const utterance = new SpeechSynthesisUtterance(text)
         utterance.lang = 'id-ID'
         utterance.rate = 0.9
@@ -235,7 +236,7 @@ function PendaftaranPage() {
                                     <p className="text-[10px] uppercase font-bold tracking-wider text-emerald-50">Sisa Antrian</p>
                                     <p className="text-2xl font-black">
                                         {pendaftarInfo?.pendaftar.filter(p =>
-                                            p.tglAntrian === new Date().toISOString().split('T')[0] &&
+                                            p.tglAntrian?.substring(0, 10) === getJakartaDate() &&
                                             p.statusAntrian === 'WAITING'
                                         ).length || 0}
                                     </p>
@@ -362,12 +363,12 @@ function PendaftaranPage() {
 
                 <Card className="border-slate-200 shadow-sm">
                     <CardHeader className="p-4 border-b bg-white">
-                        <div className="flex flex-col md:flex-row gap-4">
-                            <div className="relative flex-1 max-w-sm">
+                        <div className="flex flex-wrap items-center gap-3 md:gap-4">
+                            <div className="relative w-full md:max-w-xs transition-all flex-grow">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                 <Input
-                                    placeholder="Cari nama pendaftar..."
-                                    className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-colors h-9 text-sm"
+                                    placeholder="Cari nama..."
+                                    className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-colors h-9 text-xs"
                                     value={searchTerm}
                                     onChange={(e) => {
                                         setSearchTerm(e.target.value)
@@ -375,11 +376,11 @@ function PendaftaranPage() {
                                     }}
                                 />
                             </div>
-                            <div className="relative flex-1 max-w-sm">
+                            <div className="relative w-full md:max-w-xs transition-all flex-grow">
                                 <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                 <Input
-                                    placeholder="Filter asal sekolah..."
-                                    className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-colors h-9 text-sm"
+                                    placeholder="Asal sekolah..."
+                                    className="pl-9 bg-slate-50 border-slate-200 focus:bg-white transition-colors h-9 text-xs"
                                     value={sekolahFilter}
                                     onChange={(e) => {
                                         setSekolahFilter(e.target.value)
@@ -387,14 +388,13 @@ function PendaftaranPage() {
                                     }}
                                 />
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Filter className="h-4 w-4 text-slate-400 mr-1" />
+                            <div className="flex items-center gap-2 flex-wrap">
                                 <Select value={jalurFilter} onValueChange={(val) => {
                                     setJalurFilter(val)
                                     setPage(1)
                                 }}>
-                                    <SelectTrigger className="w-[180px] h-9 text-sm bg-slate-50 border-slate-200">
-                                        <SelectValue placeholder="Semua Jalur" />
+                                    <SelectTrigger className="w-[140px] h-9 text-[11px] bg-slate-50 border-slate-200">
+                                        <SelectValue placeholder="Jalur" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="semua">Semua Jalur</SelectItem>
@@ -409,15 +409,13 @@ function PendaftaranPage() {
                                         <SelectItem value="Prestasi Raport">Prestasi Raport</SelectItem>
                                     </SelectContent>
                                 </Select>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Filter className="h-4 w-4 text-slate-400 mr-1" />
+
                                 <Select value={tahapFilter} onValueChange={(val) => {
                                     setTahapFilter(val)
                                     setPage(1)
                                 }}>
-                                    <SelectTrigger className="w-[140px] h-9 text-sm bg-slate-50 border-slate-200">
-                                        <SelectValue placeholder="Semua Tahap" />
+                                    <SelectTrigger className="w-[100px] h-9 text-[11px] bg-slate-50 border-slate-200">
+                                        <SelectValue placeholder="Tahap" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="semua">Semua Tahap</SelectItem>
@@ -425,15 +423,13 @@ function PendaftaranPage() {
                                         <SelectItem value="2">Tahap 2</SelectItem>
                                     </SelectContent>
                                 </Select>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Filter className="h-4 w-4 text-slate-400 mr-1" />
+
                                 <Select value={statusFilter} onValueChange={(val) => {
                                     setStatusFilter(val)
                                     setPage(1)
                                 }}>
-                                    <SelectTrigger className="w-[140px] h-9 text-sm bg-slate-50 border-slate-200">
-                                        <SelectValue placeholder="Status Antrian" />
+                                    <SelectTrigger className="w-[110px] h-9 text-[11px] bg-slate-50 border-slate-200">
+                                        <SelectValue placeholder="Status" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="semua">Semua Status</SelectItem>
@@ -445,31 +441,32 @@ function PendaftaranPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="ml-auto flex items-center gap-2">
+                            <div className="flex-grow md:flex-grow-0 ml-auto">
                                 <Button
                                     onClick={() => {
                                         setSelectedPendaftar({})
                                         setIsFormOpen(true)
                                     }}
-                                    className="bg-emerald-600 hover:bg-emerald-700 shadow-sm h-9 text-sm"
+                                    className="bg-emerald-600 hover:bg-emerald-700 shadow-sm h-9 text-xs w-full md:w-auto"
                                 >
-                                    <Plus className="mr-1.5 h-4 w-4" />
+                                    <Plus className="mr-1 h-3.5 w-3.5" />
                                     Tambah
                                 </Button>
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent className="p-0">
-                        <div className="overflow-x-auto">
+                        {/* Desktop Table View */}
+                        <div className="hidden md:block overflow-x-auto">
                             <Table>
                                 <TableHeader className="bg-slate-50/50">
-                                    <TableRow>
-                                        <TableHead className="font-semibold text-slate-700 px-4">Antrian</TableHead>
-                                        <TableHead className="font-semibold text-slate-700 px-4">Nama Lengkap</TableHead>
-                                        <TableHead className="font-semibold text-slate-700 px-4">Asal Sekolah</TableHead>
-                                        <TableHead className="font-semibold text-slate-700 px-4">Tahap/Jalur</TableHead>
-                                        <TableHead className="font-semibold text-slate-700 px-4">No. HP</TableHead>
-                                        <TableHead className="w-[100px] text-right px-4">Aksi</TableHead>
+                                    <TableRow className="hover:bg-transparent">
+                                        <TableHead className="font-semibold text-slate-700 px-4 h-10 py-0">Antrian</TableHead>
+                                        <TableHead className="font-semibold text-slate-700 px-4 h-10 py-0">Nama Lengkap</TableHead>
+                                        <TableHead className="font-semibold text-slate-700 px-4 h-10 py-0 text-xs">Asal Sekolah</TableHead>
+                                        <TableHead className="font-semibold text-slate-700 px-4 h-10 py-0 text-xs">Tahap/Jalur</TableHead>
+                                        <TableHead className="font-semibold text-slate-700 px-4 h-10 py-0 text-xs">No. HP</TableHead>
+                                        <TableHead className="w-[60px] text-right px-4 h-10 py-0">Aksi</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -494,7 +491,7 @@ function PendaftaranPage() {
                                         pendaftarInfo.pendaftar.map((p) => (
                                             <TableRow key={p.id} className="hover:bg-slate-50 transition-colors">
                                                 <TableCell className="px-4">
-                                                    {p.noAntrian && p.tglAntrian === new Date().toISOString().split('T')[0] ? (
+                                                    {p.noAntrian && p.tglAntrian?.substring(0, 10) === getJakartaDate() ? (
                                                         <div className="flex flex-col gap-1">
                                                             <Badge className={`${p.statusAntrian === 'CALLING' ? 'bg-amber-500 animate-pulse' :
                                                                 p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
@@ -610,6 +607,164 @@ function PendaftaranPage() {
                                     )}
                                 </TableBody>
                             </Table>
+                        </div>
+
+                        {/* Mobile Card View */}
+                        <div className="md:hidden space-y-3 p-4 bg-slate-50/50">
+                            {isPending ? (
+                                Array.from({ length: 3 }).map((_, i) => (
+                                    <div key={i} className="p-4 bg-white border border-slate-200 rounded-md shadow-sm space-y-3">
+                                        <div className="flex justify-between">
+                                            <Skeleton className="h-10 w-16" />
+                                            <Skeleton className="h-8 w-8 rounded-full" />
+                                        </div>
+                                        <Skeleton className="h-4 w-3/4" />
+                                        <Skeleton className="h-4 w-1/2" />
+                                    </div>
+                                ))
+                            ) : !pendaftarInfo || pendaftarInfo.pendaftar.length === 0 ? (
+                                <div className="p-8 text-center text-slate-400 italic text-sm">
+                                    Belum ada data pendaftar.
+                                </div>
+                            ) : (
+                                pendaftarInfo.pendaftar.map((p) => (
+                                    <div key={p.id} className="p-4 bg-white border border-slate-200 rounded-md shadow-sm hover:border-emerald-300 transition-all space-y-3 relative overflow-hidden">
+                                        {/* Colored accent bar */}
+                                        <div className={`absolute top-0 left-0 w-1 h-full ${p.statusAntrian === 'CALLING' ? 'bg-amber-500 animate-pulse' :
+                                            p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
+                                                p.statusAntrian === 'SKIPPED' ? 'bg-red-500' :
+                                                    p.statusAntrian === 'DONE' ? 'bg-slate-400' :
+                                                        'bg-emerald-600'
+                                            }`} />
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                {p.noAntrian && p.tglAntrian?.substring(0, 10) === getJakartaDate() ? (
+                                                    <div className="flex flex-col gap-0.5">
+                                                        <Badge className={`${p.statusAntrian === 'CALLING' ? 'bg-amber-500 animate-pulse' :
+                                                            p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
+                                                                p.statusAntrian === 'SKIPPED' ? 'bg-red-500' :
+                                                                    p.statusAntrian === 'DONE' ? 'bg-slate-400' :
+                                                                        'bg-emerald-600'} text-white font-black px-2 py-0.5 text-xs shadow-sm w-fit`}>
+                                                            #{p.noAntrian}
+                                                        </Badge>
+                                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
+                                                            {p.statusAntrian === 'WAITING' ? 'Menunggu' :
+                                                                p.statusAntrian === 'CALLING' ? 'Dipanggil' :
+                                                                    p.statusAntrian === 'IN_ROOM' ? 'Di Ruangan' :
+                                                                        p.statusAntrian === 'SKIPPED' ? 'Terlewat' :
+                                                                            p.statusAntrian === 'DONE' ? 'Selesai' : p.statusAntrian}
+                                                        </span>
+                                                    </div>
+                                                ) : p.noAntrian ? (
+                                                    <div className="flex flex-col gap-0.5">
+                                                        <Badge variant="outline" className="text-slate-400 border-slate-200 font-bold px-1.5 py-0 text-[10px] w-fit">
+                                                            #{p.noAntrian}
+                                                        </Badge>
+                                                        <span className="text-[9px] text-slate-300 font-medium">Lama</span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-slate-300 text-[10px] italic">Belum Ada</span>
+                                                )}
+                                            </div>
+
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400">
+                                                        <MoreVertical className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-52">
+                                                    <div className="px-2 py-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50 border-b mb-1">
+                                                        Kontrol Antrian
+                                                    </div>
+                                                    <DropdownMenuItem onClick={() => handleVoiceCall(p as Pendaftar)}>
+                                                        <Volume2 className="mr-2 h-4 w-4 text-amber-500" />
+                                                        Panggil (Suara)
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'IN_ROOM' } }).then(fetchPendaftar)}>
+                                                        <Play className="mr-2 h-4 w-4 text-blue-500" />
+                                                        Masuk Ruangan
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'SKIPPED' } }).then(fetchPendaftar)}>
+                                                        <XCircle className="mr-2 h-4 w-4 text-red-500" />
+                                                        Terlewat
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'DONE' } }).then(fetchPendaftar)}>
+                                                        <CheckCircle className="mr-2 h-4 w-4 text-emerald-500" />
+                                                        Selesai
+                                                    </DropdownMenuItem>
+                                                    <div className="h-px bg-slate-100 my-1" />
+                                                    <DropdownMenuItem
+                                                        onClick={async () => {
+                                                            try {
+                                                                await issueQueueNumber({ data: { id: p.id } })
+                                                                toast.success(`Antrian #${p.nmLengkap} diterbitkan`)
+                                                                fetchPendaftar()
+                                                            } catch (error: any) {
+                                                                toast.error(error.message || 'Gagal')
+                                                            }
+                                                        }}
+                                                        className="text-emerald-600"
+                                                    >
+                                                        <Ticket className="mr-2 h-4 w-4" />
+                                                        Terbitkan Antrian
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() => {
+                                                            setSelectedPendaftar(p)
+                                                            setIsFormOpen(true)
+                                                        }}
+                                                    >
+                                                        <UserCog className="mr-2 h-4 w-4" />
+                                                        Edit Data
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        onClick={() => {
+                                                            setPendaftarToNotify(p as Pendaftar)
+                                                            setIsWANotifyDialogOpen(true)
+                                                        }}
+                                                        disabled={!p.noHandphone || !p.noAntrian}
+                                                    >
+                                                        <MessageSquare className="mr-2 h-4 w-4 text-emerald-500" />
+                                                        Kirim Ulang WA
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                                                        onClick={() => {
+                                                            setPendaftarToDelete(p as Pendaftar)
+                                                            setIsDeleteDialogOpen(true)
+                                                        }}
+                                                    >
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Hapus
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <h4 className="font-bold text-slate-800 text-sm leading-tight uppercase line-clamp-1">{p.nmLengkap}</h4>
+                                            <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                                <Building2 className="h-3 w-3 text-slate-400" />
+                                                <span className="truncate">{p.asalSekolah || '-'}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center justify-between pt-1 border-t border-slate-50">
+                                            <div className="flex gap-1.5">
+                                                <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${p.tahap === '1' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                                                    T-{p.tahap}
+                                                </span>
+                                                <span className="text-[10px] text-slate-500 font-medium truncate max-w-[120px]">{p.jalurMasuk || '-'}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-[10px] text-slate-400 font-medium">
+                                                <Phone className="h-2.5 w-2.5" />
+                                                {p.noHandphone || '-'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </CardContent>
                     {totalPages > 1 && (

@@ -8,13 +8,12 @@ import {
     Bell,
     Volume2,
     Clock,
-    CheckCircle,
     Ticket,
-    ArrowRight,
     Maximize,
     Minimize
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { getJakartaDate } from '@/lib/utils'
 
 export const Route = createFileRoute('/monitor')({
     component: MonitorPage,
@@ -32,7 +31,7 @@ function MonitorPage() {
     const [pendaftar, setPendaftar] = useState<Pendaftar[]>([])
     const [isFullscreen, setIsFullscreen] = useState(false)
     const lastCalledId = useRef<string | null>(null)
-    const today = new Date().toISOString().split('T')[0]
+    const today = getJakartaDate()
 
     const fetchData = async () => {
         try {
@@ -42,7 +41,7 @@ function MonitorPage() {
                     offset: 0,
                 }
             })
-            const todayPendaftar = (result.pendaftar as Pendaftar[]).filter((p: Pendaftar) => p.tglAntrian === today)
+            const todayPendaftar = (result.pendaftar as Pendaftar[]).filter((p: Pendaftar) => p.tglAntrian?.substring(0, 10) === today)
             setPendaftar(todayPendaftar)
 
             // Auto Announcement Logic
@@ -58,7 +57,7 @@ function MonitorPage() {
 
     const announce = (p: Pendaftar) => {
         if (!p.noAntrian) return
-        const text = `Nomor Antrian, ${p.noAntrian.split('').join(' ')}, atas nama, ${p.nmLengkap}, silakan menuju meja pendaftaran.`
+        const text = `Nomor Antrian, ${p.noAntrian.split('').join(' ')}, atas nama, ${p.nmLengkap}, silakan menuju ruang tunggu.`
         const utterance = new SpeechSynthesisUtterance(text)
         utterance.lang = 'id-ID'
         utterance.rate = 0.85
@@ -93,7 +92,7 @@ function MonitorPage() {
     const calling = pendaftar.find((p: Pendaftar) => p.statusAntrian === 'CALLING')
     const inRoom = pendaftar.filter((p: Pendaftar) => p.statusAntrian === 'IN_ROOM')
     const waiting = pendaftar.filter((p: Pendaftar) => p.statusAntrian === 'WAITING').slice(0, 5)
-    const recentDone = pendaftar.filter((p: Pendaftar) => p.statusAntrian === 'DONE').slice(0, 3)
+    // const recentDone = pendaftar.filter((p: Pendaftar) => p.statusAntrian === 'DONE').slice(0, 3)
 
     return (
         <div className="h-screen bg-slate-900 text-slate-100 p-4 font-sans selection:bg-emerald-500/30 overflow-hidden flex flex-col">

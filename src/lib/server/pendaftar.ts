@@ -4,15 +4,18 @@ import { pendaftar } from '@/lib/db/pendaftar-schema'
 import { tahunAjaran } from '@/lib/db/tahun-ajaran-schema'
 import { eq, ilike, sql, asc, and } from 'drizzle-orm'
 import { sendWhatsApp } from './whatsapp'
+import { getJakartaDate } from '@/lib/utils'
+
 
 // Helper to get the next queue number for a specific date
 async function getNextQueueNumber(dateStr: string) {
+    // Explicitly compare using SQL to avoid Drizzle/Driver date conversion issues
     const result = await db
-        .select({ maxNo: sql<number>`max(cast(${pendaftar.noAntrian} as integer))` })
+        .select({ maxNo: sql<number>`COALESCE(max(NULLIF(${pendaftar.noAntrian}, '')::integer), 0)` })
         .from(pendaftar)
-        .where(eq(pendaftar.tglAntrian, dateStr))
+        .where(sql`CAST(${pendaftar.tglAntrian} AS DATE) = ${dateStr}::DATE`)
 
-    return (result[0]?.maxNo || 0) + 1
+    return Number(result[0]?.maxNo || 0) + 1
 }
 
 export const getPendaftarList = createServerFn({
@@ -56,7 +59,10 @@ export const getPendaftarList = createServerFn({
             .where(whereClause)
             .limit(limit)
             .offset(offset)
-            .orderBy(asc(pendaftar.nmLengkap))
+            .orderBy(
+                sql`NULLIF(${pendaftar.noAntrian}, '')::integer ASC NULLS LAST`,
+                asc(pendaftar.nmLengkap)
+            )
 
         const countResult = await db
             .select({ count: sql<number>`count(*)` })
@@ -73,7 +79,6 @@ export const getPendaftarStats = createServerFn({
     method: 'GET',
 })
     .handler(async () => {
-        const { sql } = await import('drizzle-orm')
 
         const stats = await db
             .select({
@@ -128,7 +133,7 @@ interface PendaftarData {
 export const issueQueueNumber = createServerFn({ method: 'POST' })
     .inputValidator((d: { id: string }) => d)
     .handler(async ({ data }) => {
-        const today = new Date().toISOString().split('T')[0]
+        const today = getJakartaDate()
         const nextNo = await getNextQueueNumber(today)
 
         await db
@@ -188,7 +193,7 @@ export const savePendaftar = createServerFn({ method: 'POST' })
 
                 const aktiveTahunAjaran = activeTahun[0]?.tahun || null
 
-                const today = new Date().toISOString().split('T')[0]
+                const today = getJakartaDate()
                 const nextNo = await getNextQueueNumber(today)
 
                 await db.insert(pendaftar).values({
