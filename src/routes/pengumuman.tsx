@@ -65,6 +65,7 @@ function AnnouncementPage() {
         tanggalLahir?: string | null,
         jalur?: string | null
     } | null>(null)
+    const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
 
     useEffect(() => {
         setIsMounted(true)
@@ -107,6 +108,13 @@ function AnnouncementPage() {
         try {
             const data = await checkAnnouncement({ data: { nisn: searchQuery } })
             setResult(data)
+
+            // Generate QR code if result found
+            if (data.found && data.regNo && data.name && data.nisn) {
+                const qrData = `${data.regNo}|${data.name}|${data.nisn}`
+                const qrUrl = await QRCode.toDataURL(qrData, { margin: 1, width: 150 })
+                setQrCodeUrl(qrUrl)
+            }
         } catch (error: any) {
             console.error('Search failed:', error)
             setResult({ found: false })
@@ -390,287 +398,282 @@ function AnnouncementPage() {
     }
 
     return (
-        <div className="min-h-screen w-full bg-[#f8fafc] text-slate-900 font-sans flex flex-col items-center relative select-none overflow-x-hidden">
-            {/* Soft Light Mesh Background */}
-            <div className="fixed top-0 inset-0 overflow-hidden -z-10 bg-[#f8fafc]">
-                <div className="absolute top-[-10%] left-[-10%] w-[80%] h-[80%] bg-emerald-100/40 rounded-full blur-[120px]"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[70%] h-[70%] bg-blue-100/30 rounded-full blur-[120px]"></div>
-                <div className="absolute top-[20%] right-[-5%] w-[50%] h-[50%] bg-emerald-50/20 rounded-full blur-[100px]"></div>
-            </div>
-
-            <header className="w-full py-5 px-6 md:px-12 relative z-30 flex justify-start">
-                <Link to="/">
-                    <Button
-                        variant="ghost"
-                        className="bg-white/90 border border-slate-300 hover:bg-white text-slate-700 hover:text-emerald-800 backdrop-blur-md transition-all gap-2 text-[10px] md:text-[11px] font-black tracking-widest uppercase h-9 md:h-10 px-4 md:px-6 rounded-sm shadow-md"
-                    >
-                        <ArrowLeft className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Beranda</span>
-                    </Button>
-                </Link>
+        <div className="min-h-screen w-full bg-white text-slate-900 font-sans flex flex-col">
+            {/* Header */}
+            <header className="w-full py-4 px-4 md:px-8 border-b border-slate-100 bg-white">
+                <div className="max-w-4xl mx-auto flex items-center justify-between">
+                    <Link to="/">
+                        <Button
+                            variant="ghost"
+                            className="text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 gap-2 text-sm font-medium h-10 px-4 rounded-lg"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Beranda
+                        </Button>
+                    </Link>
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
+                            <Sparkles className="text-white w-4 h-4" />
+                        </div>
+                        <span className="font-bold text-lg tracking-tight hidden sm:block">SPMB <span className="text-emerald-600">SMANSABA</span></span>
+                    </div>
+                </div>
             </header>
 
-            <div className="w-full max-w-2xl relative z-20 flex-1 flex flex-col justify-center my-12 px-6">
-                {!timeLeft.isExpired ? (
-                    /* Premium Light Countdown View */
-                    <div key="countdown-view" className="space-y-8 md:space-y-12 animate-in fade-in zoom-in-95 duration-1000 ease-out">
-                        <div className="text-center space-y-2 md:space-y-3">
-                            <h1 className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-emerald-800">Counting Down</h1>
-                            <h2 className="text-2xl md:text-4xl lg:text-5xl font-black tracking-tighter text-slate-900 leading-tight">
-                                Menuju <span className="text-emerald-700">Pengumuman</span>
-                            </h2>
-                        </div>
+            {/* Main Content */}
+            <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 md:py-12">
+                <div className="w-full max-w-xl">
+                    {!timeLeft.isExpired ? (
+                        /* Countdown View */
+                        <div className="space-y-8 animate-in fade-in duration-500">
+                            {/* Title */}
+                            <div className="text-center space-y-2">
+                                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-700 text-xs font-semibold">
+                                    <Lock className="w-3 h-3" />
+                                    Menunggu Waktu Pengumuman
+                                </div>
+                                <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+                                    Pengumuman Hasil SPMB
+                                </h1>
+                                <p className="text-slate-500 text-sm">
+                                    {tahap} - Tahun Ajaran 2026/2027
+                                </p>
+                            </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                            {[
-                                { label: 'Hari', value: timeLeft.days },
-                                { label: 'Jam', value: timeLeft.hours },
-                                { label: 'Menit', value: timeLeft.minutes },
-                                { label: 'Detik', value: timeLeft.seconds }
-                            ].map((item, i) => (
-                                <div key={i} className="group relative">
-                                    <div className="absolute inset-0 bg-emerald-200/30 rounded-sm blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                    <div className="relative flex flex-col items-center bg-white rounded-sm p-5 md:p-8 border border-slate-200 shadow-[0_10px_40px_rgb(0,0,0,0.06)] transition-all hover:scale-105 hover:shadow-[0_25px_60px_rgb(0,0,0,0.1)]">
-                                        <span className="text-3xl md:text-6xl font-black text-slate-900 tabular-nums tracking-tighter leading-none">
-                                            {String(item.value).padStart(2, '0')}
-                                        </span>
-                                        <span className="text-[10px] md:text-[11px] font-black text-emerald-800 uppercase tracking-[0.2em] mt-2 md:mt-4">
-                                            {item.label}
-                                        </span>
+                            {/* Countdown Timer */}
+                            <div className="bg-slate-50 border border-slate-100 rounded-xl p-6 md:p-8">
+                                <div className="grid grid-cols-4 gap-3 md:gap-4">
+                                    {[
+                                        { label: 'Hari', value: timeLeft.days },
+                                        { label: 'Jam', value: timeLeft.hours },
+                                        { label: 'Menit', value: timeLeft.minutes },
+                                        { label: 'Detik', value: timeLeft.seconds }
+                                    ].map((item, i) => (
+                                        <div key={i} className="text-center">
+                                            <div className="bg-white border border-slate-200 rounded-lg p-3 md:p-4 shadow-sm">
+                                                <span className="text-2xl md:text-4xl font-bold text-slate-900 tabular-nums">
+                                                    {String(item.value).padStart(2, '0')}
+                                                </span>
+                                            </div>
+                                            <span className="text-xs font-medium text-slate-500 mt-2 block">
+                                                {item.label}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Info Card */}
+                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                                <p className="text-amber-800 text-sm text-center">
+                                    <span className="font-semibold">Info:</span> Hasil seleksi akan dapat diakses setelah waktu pengumuman tiba.
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        /* Search View */
+                        <div className="space-y-6 animate-in fade-in duration-500">
+                            {!result || !result.found ? (
+                                <>
+                                    {/* Title */}
+                                    <div className="text-center space-y-2">
+                                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-700 text-xs font-semibold">
+                                            <CheckCircle2 className="w-3 h-3" />
+                                            Pengumuman Telah Dibuka
+                                        </div>
+                                        <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
+                                            Cek Hasil SPMB {tahap}
+                                        </h1>
+                                        <p className="text-slate-500 text-sm">
+                                            Masukkan NISN untuk melihat hasil seleksi
+                                        </p>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
 
-                        <div className="flex items-center justify-center gap-4 text-slate-600 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em]">
-                            <div className="h-px w-8 md:w-16 bg-slate-400 opacity-30"></div>
-                            <span className="flex items-center gap-2 whitespace-nowrap">
-                                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                                SPMB SMANSABA 2026
-                            </span>
-                            <div className="h-px w-8 md:w-16 bg-slate-400 opacity-30"></div>
-                        </div>
-                    </div>
-                ) : (
-                    /* Search View */
-                    <div key="search-view" className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700 max-w-lg mx-auto w-full">
-                        {!result || !result.found ? (
-                            <>
-                                <div className="text-center space-y-1">
-                                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-emerald-900">Cek Hasil SPMB {tahap}</h2>
-                                </div>
-                                <Card className="bg-[#fafffb] border-emerald-100/50 shadow-sm rounded-sm overflow-hidden">
-                                    <CardContent className="p-6 md:p-8 space-y-5">
-                                        <form onSubmit={handleSearch} className="space-y-5">
-                                            <div className="space-y-2">
-                                                <label className="text-xs font-bold text-slate-500 ml-1 uppercase tracking-wider">Masukkan NISN</label>
-                                                <div className="relative group">
-                                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-emerald-600 transition-colors" />
-                                                    <Input
-                                                        placeholder="Masukkan 10 digit NISN"
-                                                        className="h-12 pl-12 pr-12 text-base bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-emerald-400 focus:ring-0 rounded-sm transition-all shadow-sm"
-                                                        value={searchQuery}
-                                                        onChange={(e) => {
-                                                            const val = e.target.value.replace(/\D/g, '').slice(0, 10)
-                                                            setSearchQuery(val)
-                                                        }}
-                                                    />
-                                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold tabular-nums">
-                                                        {searchQuery.length}
-                                                    </span>
+                                    {/* Search Card */}
+                                    <Card className="border-slate-200 shadow-sm rounded-xl overflow-hidden">
+                                        <CardContent className="p-6 space-y-5">
+                                            <form onSubmit={handleSearch} className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <label className="text-sm font-medium text-slate-700">NISN (Nomor Induk Siswa Nasional)</label>
+                                                    <div className="relative">
+                                                        <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                        <Input
+                                                            placeholder="Contoh: 0012345678"
+                                                            className="h-12 pl-10 pr-16 text-base border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-lg"
+                                                            value={searchQuery}
+                                                            onChange={(e) => {
+                                                                const val = e.target.value.replace(/\D/g, '').slice(0, 10)
+                                                                setSearchQuery(val)
+                                                            }}
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium tabular-nums">
+                                                            {searchQuery.length}/10
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <Button
-                                                type="submit"
-                                                disabled={isSearching}
-                                                className="w-full h-12 text-base font-bold bg-[#a0e9bc] hover:bg-[#86d9a5] text-emerald-900 rounded-sm shadow-sm transition-all flex items-center justify-center gap-2"
-                                            >
-                                                {isSearching ? (
-                                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                                ) : (
-                                                    <>
-                                                        <Search className="w-4 h-4" />
-                                                        Cek Hasil
-                                                    </>
-                                                )}
-                                            </Button>
-                                        </form>
-
-                                        <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">Petunjuk</p>
-                                            <ul className="text-xs text-slate-500 font-medium space-y-1.5 list-disc pl-4 text-left">
-                                                <li>Pastikan NISN sesuai dengan kartu peserta.</li>
-                                                <li>Jika data tidak ditemukan, hubungi panitia SPMB.</li>
-                                                <li>Pengumuman ini bersifat final dan mengikat.</li>
-                                            </ul>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </>
-                        ) : (
-                            /* Premium Result View - Single Page Fit */
-                            <div className="animate-in zoom-in-95 fade-in duration-500 ease-out w-full max-w-2xl mx-auto flex flex-col justify-center">
-                                <Card className={`bg-white border-t-0 my-auto shadow-2xl rounded-sm overflow-hidden relative transition-all duration-500 border ${result.status === 'LULUS' ? 'border-emerald-200' : 'border-red-200'}`}>
-                                    {/* Refresh Icon Button */}
-                                    <Button
-                                        onClick={() => setResult(null)}
-                                        variant="ghost"
-                                        size="icon"
-                                        className={`absolute top-3 right-3 transition-colors z-20 rounded-sm w-8 h-8 ${result.status === 'LULUS' ? 'text-emerald-400 hover:text-emerald-600' : 'text-red-300 hover:text-red-500'}`}
-                                    >
-                                        <RotateCcw className="w-4 h-4" />
-                                    </Button>
-
-                                    {/* Merged Header & Content */}
-                                    <div className="p-5 md:p-8 space-y-6">
-                                        {/* Horizontal Header */}
-                                        <div className={`p-6 rounded-sm flex items-center gap-5 transition-all ${result.status === 'LULUS' ? 'bg-emerald-50 border border-emerald-100' : 'bg-red-50 border border-red-100'}`}>
-                                            <div className={`flex-shrink-0 flex items-center justify-center w-16 h-16 rounded-full ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                                <div className={`${result.status === 'LULUS' ? 'bg-emerald-600' : 'bg-red-600'} text-white rounded-full p-2 block shadow-lg animate-bounce`}>
-                                                    {result.status === 'LULUS' ? (
-                                                        <CheckCircle2 className="w-8 h-8" />
+                                                <Button
+                                                    type="submit"
+                                                    disabled={isSearching || searchQuery.length !== 10}
+                                                    className="w-full h-12 text-base font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm"
+                                                >
+                                                    {isSearching ? (
+                                                        <Loader2 className="w-5 h-5 animate-spin" />
                                                     ) : (
-                                                        <XCircle className="w-8 h-8" />
+                                                        <>
+                                                            <Search className="w-4 h-4 mr-2" />
+                                                            Cek Hasil
+                                                        </>
                                                     )}
+                                                </Button>
+                                            </form>
+
+                                            {/* Not Found Message */}
+                                            {!result?.found && result !== null && (
+                                                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-center">
+                                                    <XCircle className="w-5 h-5 text-red-500 mx-auto mb-2" />
+                                                    <p className="text-red-700 text-sm font-medium">Data tidak ditemukan</p>
+                                                    <p className="text-red-600 text-xs mt-1">Pastikan NISN yang dimasukkan benar</p>
                                                 </div>
+                                            )}
+
+                                            {/* Instructions */}
+                                            <div className="pt-4 border-t border-slate-100">
+                                                <p className="text-xs font-medium text-slate-500 mb-2">Petunjuk:</p>
+                                                <ul className="text-xs text-slate-500 space-y-1 list-disc pl-4">
+                                                    <li>NISN terdiri dari 10 digit angka</li>
+                                                    <li>Pastikan NISN sesuai dengan kartu peserta</li>
+                                                    <li>Jika data tidak ditemukan, hubungi panitia SPMB</li>
+                                                </ul>
                                             </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex flex-col">
-                                                    <h1 className={`text-xl font-black tracking-tight uppercase leading-tight ${result.status === 'LULUS' ? 'text-emerald-900' : 'text-red-900'}`}>
-                                                        {result.status === 'LULUS' ? 'SELAMAT!' : 'MOHON MAAF,'}
-                                                    </h1>
-                                                    <p className={`text-lg font-bold uppercase leading-tight mb-1 ${result.status === 'LULUS' ? 'text-emerald-600' : 'text-red-600'}`}>
-                                                        {result.status === 'LULUS' ? 'ANDA DINYATAKAN LULUS' : 'ANDA BELUM LULUS'}
+                                        </CardContent>
+                                    </Card>
+                                </>
+                            ) : (
+                                /* Result View */
+                                <div className="animate-in fade-in zoom-in-95 duration-300">
+                                    <Card className={`border-2 shadow-lg rounded-xl overflow-hidden ${result.status === 'LULUS' ? 'border-emerald-200' : 'border-red-200'}`}>
+                                        {/* Result Header */}
+                                        <div className={`p-6 ${result.status === 'LULUS' ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+                                                {/* QR Code */}
+                                                {qrCodeUrl && (
+                                                    <div className="flex-shrink-0">
+                                                        <div className="bg-white p-2 rounded-lg shadow-sm border border-slate-200">
+                                                            <img src={qrCodeUrl} alt="QR Code" className="w-24 h-24 sm:w-28 sm:h-28" />
+                                                        </div>
+                                                        <p className="text-[10px] text-slate-500 text-center mt-1">Scan untuk verifikasi</p>
+                                                    </div>
+                                                )}
+                                                {/* Status Info */}
+                                                <div className="text-center sm:text-left">
+                                                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-3 ${result.status === 'LULUS' ? 'bg-emerald-100' : 'bg-red-100'}`}>
+                                                        {result.status === 'LULUS' ? (
+                                                            <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+                                                        ) : (
+                                                            <XCircle className="w-6 h-6 text-red-600" />
+                                                        )}
+                                                    </div>
+                                                    <h2 className={`text-xl font-bold ${result.status === 'LULUS' ? 'text-emerald-900' : 'text-red-900'}`}>
+                                                        {result.status === 'LULUS' ? 'SELAMAT! ANDA LULUS' : 'MOHON MAAF'}
+                                                    </h2>
+                                                    <p className={`text-sm ${result.status === 'LULUS' ? 'text-emerald-700' : 'text-red-700'}`}>
+                                                        {result.status === 'LULUS' ? 'SPMB SMAN 1 Bantarujeg' : 'Anda belum diterima'}
                                                     </p>
-                                                    <p className="text-slate-500 font-medium text-xs truncate">Penerimaan Siswa Baru SMAN 1 Bantarujeg</p>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {result.status === 'LULUS' && (
-                                            <Button
-                                                onClick={() => generateCoverMapPDF(result)}
-                                                variant="outline"
-                                                className="w-full h-11 border-emerald-200 hover:bg-emerald-50 text-emerald-700 font-bold gap-2 rounded-sm transition-all"
-                                            >
-                                                <Printer className="w-4 h-4" />
-                                                Cetak Cover Map
-                                            </Button>
-                                        )}
-
-                                        {/* Data Grid */}
-                                        <div className="space-y-3">
-                                            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 uppercase tracking-tight">
+                                        {/* Student Data */}
+                                        <CardContent className="p-6 space-y-4">
+                                            <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                                                <User className="w-4 h-4 text-slate-400" />
                                                 Data Siswa
                                             </h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
-                                                {/* Left Column */}
-                                                <div className="space-y-2">
-                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
-                                                        <div className={`p-2 rounded-sm ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                                            <User className="w-4 h-4" />
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">Nama Lengkap</p>
-                                                            <p className="text-xs font-bold text-slate-900 leading-tight uppercase truncate">{result.name}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
-                                                        <div className={`p-2 rounded-sm ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                                            <Hash className="w-4 h-4" />
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">No. Peserta</p>
-                                                            <p className="text-xs font-bold text-slate-900 tracking-tight truncate">{result.regNo}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
-                                                        <div className={`p-2 rounded-sm ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                                            <Calendar className="w-4 h-4" />
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">Tgl Lahir</p>
-                                                            <p className="text-xs font-bold text-slate-900 uppercase truncate">
-                                                                {result.tempatLahir}, {formatDate(result.tanggalLahir)}
-                                                            </p>
-                                                        </div>
-                                                    </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                <div className="p-3 bg-slate-50 rounded-lg">
+                                                    <p className="text-xs text-slate-500 mb-1">Nama Lengkap</p>
+                                                    <p className="text-sm font-semibold text-slate-900 uppercase">{result.name}</p>
                                                 </div>
-                                                {/* Right Column */}
-                                                <div className="space-y-2">
-                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
-                                                        <div className={`p-2 rounded-sm flex items-center justify-center w-8 h-8 ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                                            <span className="font-bold text-xs">#</span>
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">Asal Sekolah</p>
-                                                            <p className="text-xs font-bold text-slate-900 leading-tight uppercase truncate">{result.sekolahAsal}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
-                                                        <div className={`p-2 rounded-sm ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                                            <Building className="w-4 h-4" />
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">NISN</p>
-                                                            <p className="text-xs font-bold text-slate-900 tracking-tight truncate">{result.nisn || '-'}</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className={`flex gap-3 items-center group p-2 rounded-sm transition-all border ${result.status === 'LULUS' ? 'hover:bg-emerald-50 hover:border-emerald-100 border-transparent' : 'hover:bg-red-50 hover:border-red-100 border-transparent'}`}>
-                                                        <div className={`p-2 rounded-sm ${result.status === 'LULUS' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
-                                                            <Trophy className="w-4 h-4" />
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">Jalur</p>
-                                                            <p className="text-xs font-bold text-slate-900 uppercase truncate">{result.jalur || '-'}</p>
-                                                        </div>
-                                                    </div>
+                                                <div className="p-3 bg-slate-50 rounded-lg">
+                                                    <p className="text-xs text-slate-500 mb-1">No. Peserta</p>
+                                                    <p className="text-sm font-semibold text-slate-900">{result.regNo}</p>
+                                                </div>
+                                                <div className="p-3 bg-slate-50 rounded-lg">
+                                                    <p className="text-xs text-slate-500 mb-1">NISN</p>
+                                                    <p className="text-sm font-semibold text-slate-900">{result.nisn || '-'}</p>
+                                                </div>
+                                                <div className="p-3 bg-slate-50 rounded-lg">
+                                                    <p className="text-xs text-slate-500 mb-1">Asal Sekolah</p>
+                                                    <p className="text-sm font-semibold text-slate-900 uppercase">{result.sekolahAsal}</p>
+                                                </div>
+                                                <div className="p-3 bg-slate-50 rounded-lg">
+                                                    <p className="text-xs text-slate-500 mb-1">Tempat, Tanggal Lahir</p>
+                                                    <p className="text-sm font-semibold text-slate-900">{result.tempatLahir}, {formatDate(result.tanggalLahir)}</p>
+                                                </div>
+                                                <div className="p-3 bg-slate-50 rounded-lg">
+                                                    <p className="text-xs text-slate-500 mb-1">Jalur Pendaftaran</p>
+                                                    <p className="text-sm font-semibold text-slate-900 uppercase">{result.jalur || '-'}</p>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div className="pt-3 border-t border-slate-100 flex flex-col gap-1 text-center">
-                                            <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Catatan Penting</p>
-                                            <p className="text-[9px] text-slate-500 font-medium leading-relaxed">
-                                                Simpan tangkapan layar halaman ini sebagai bukti kelulusan sementara.
-                                                <br />
-                                                Informasi daftar ulang akan diberitahukan kemudian.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </Card>
-                            </div>
-                        )}
+                                            {/* Actions */}
+                                            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                                                {result.status === 'LULUS' && (
+                                                    <Button
+                                                        onClick={() => generateCoverMapPDF(result)}
+                                                        className="flex-1 h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg"
+                                                    >
+                                                        <Printer className="w-4 h-4 mr-2" />
+                                                        Cetak Cover Map
+                                                    </Button>
+                                                )}
+                                                <Button
+                                                    onClick={() => setResult(null)}
+                                                    variant="outline"
+                                                    className="flex-1 h-11 border-slate-200 hover:bg-slate-50 font-semibold rounded-lg"
+                                                >
+                                                    <RotateCcw className="w-4 h-4 mr-2" />
+                                                    Cek Ulang
+                                                </Button>
+                                            </div>
 
-                        {!result?.found && result !== null && (
-                            <div className="animate-in fade-in slide-in-from-top-2 duration-300 text-center p-4 bg-red-50 border border-red-100 rounded-sm">
-                                <p className="text-xs text-red-700 font-bold uppercase tracking-wider">Data Tidak Ditemukan!</p>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
+                                            {/* Note */}
+                                            {result.status === 'LULUS' && (
+                                                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                                                    <p className="text-amber-800 text-xs">
+                                                        <span className="font-semibold">Catatan:</span> Simpan tangkapan layar ini sebagai bukti. Informasi daftar ulang akan disampaikan kemudian.
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </main>
 
-            <footer className="w-full py-5 mt-auto border-t border-slate-200/60 bg-white/30 backdrop-blur-md">
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2 text-[13px] font-medium text-slate-500">
+            {/* Footer */}
+            <footer className="w-full py-4 border-t border-slate-100 bg-slate-50">
+                <div className="flex flex-col items-center gap-1 text-xs text-slate-500">
+                    <p>© {new Date().getFullYear()} SPMB Online SMAN 1 Bantarujeg</p>
                     <p className="flex items-center gap-1">
-                        © {new Date().getFullYear()} SPMB Online SMAN 1 BANTARUJEG,
-                    </p>
-                    <p className="flex items-center gap-1.5">
-                        Made with <span className="animate-pulse">💖</span> for better web by
+                        Made with <span className="text-red-500">♥</span> by
                         <a
                             href="https://www.instagram.com/deni_ikbal"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 font-bold text-slate-700 hover:text-pink-600 transition-all group"
+                            className="font-medium text-slate-700 hover:text-emerald-600 inline-flex items-center gap-1"
                         >
-                            <Instagram className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                            <Instagram className="w-3 h-3" />
                             deni_ikbal
                         </a>
                     </p>
                 </div>
             </footer>
-        </div >
+        </div>
     )
 }
