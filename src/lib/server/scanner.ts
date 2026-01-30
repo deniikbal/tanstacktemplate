@@ -8,16 +8,15 @@ export const getStudentByQRData = createServerFn({ method: "GET" })
     .inputValidator((d: { qrData: string }) => d)
     .handler(async ({ data }) => {
         try {
-            // Parse QR data: format is "regNo|name|nisn"
-            const parts = data.qrData.split("|");
-            if (parts.length < 3) {
-                throw new Error("Format QR Code tidak valid");
+            // QR data now contains NISN only (10 digits)
+            const nisn = data.qrData.trim();
+
+            // Validate NISN format (should be 10 digits)
+            if (!/^\d{10}$/.test(nisn)) {
+                throw new Error("Format QR Code tidak valid. NISN harus 10 digit angka.");
             }
 
-            const [regNo, name, nisn] = parts;
-
-            // Find student and related data using manual joins
-            // We search primarily by noDaftar as it is unique
+            // Find student by NISN
             const results = await db
                 .select({
                     kelulusan: kelulusan,
@@ -27,26 +26,14 @@ export const getStudentByQRData = createServerFn({ method: "GET" })
                 .from(student)
                 .innerJoin(kelulusan, eq(student.id, kelulusan.studentId))
                 .leftJoin(daftarUlang, eq(kelulusan.id, daftarUlang.kelulusanId))
-                .where(eq(student.noDaftar, regNo))
+                .where(eq(student.nisn, nisn))
                 .limit(1);
 
             if (results.length === 0) {
-                throw new Error("Data pendaftaran tidak ditemukan");
+                throw new Error("Data siswa dengan NISN tersebut tidak ditemukan");
             }
 
             const row = results[0];
-
-            // Verify name and NISN to ensure QR belongs to this student
-            const dbName = row.student.nmSiswa || "";
-            const dbNisn = row.student.nisn || "";
-
-            const isNameMatch = dbName.toUpperCase() === name.toUpperCase();
-            // NISN might be null/empty in DB or QR, handle both
-            const isNisnMatch = (dbNisn || "").toString() === (nisn || "").toString();
-
-            if (!isNameMatch || !isNisnMatch) {
-                throw new Error("Data pada QR Code (Nama/NISN) tidak cocok dengan pendaftaran");
-            }
 
             return {
                 success: true,

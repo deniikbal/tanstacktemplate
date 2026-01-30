@@ -110,9 +110,12 @@ function AnnouncementPage() {
             setResult(data)
 
             // Generate QR code if result found
-            if (data.found && data.regNo && data.name && data.nisn) {
-                const qrData = `${data.regNo}|${data.name}|${data.nisn}`
-                const qrUrl = await QRCode.toDataURL(qrData, { margin: 1, width: 150 })
+            if (data.found && data.nisn) {
+                const qrUrl = await QRCode.toDataURL(data.nisn, {
+                    margin: 4,
+                    width: 300,
+                    errorCorrectionLevel: 'H'
+                })
                 setQrCodeUrl(qrUrl)
             }
         } catch (error: any) {
@@ -238,9 +241,12 @@ function AnnouncementPage() {
                 }
             })
 
-            // QR Code generation
-            const qrData = `${data.regNo}|${data.name}|${data.nisn}`
-            const qrCodeBase64 = await QRCode.toDataURL(qrData, { margin: 1, width: 100 })
+            // QR Code generation - using NISN only for permanent identification
+            const qrCodeBase64 = await QRCode.toDataURL(data.nisn, {
+                margin: 4,
+                width: 300,
+                errorCorrectionLevel: 'H'
+            })
             doc.addImage(qrCodeBase64, 'PNG', pageWidth - 60, 85, 35, 35)
 
             // Divider Line
