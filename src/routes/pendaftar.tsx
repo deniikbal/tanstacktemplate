@@ -212,13 +212,13 @@ function PendaftaranPage() {
 
                 {/* Live Queue Display */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white border-none shadow-lg overflow-hidden relative">
+                    <Card className="bg-gradient-to-br from-blue-600 to-teal-700 text-white border-none shadow-lg overflow-hidden relative">
                         <div className="absolute top-0 right-0 p-8 opacity-10">
                             <Ticket className="w-32 h-32 rotate-12" />
                         </div>
                         <CardContent className="p-6 relative z-10 flex items-center justify-between">
                             <div className="space-y-1">
-                                <p className="text-emerald-100 font-medium flex items-center gap-2">
+                                <p className="text-blue-100 font-medium flex items-center gap-2">
                                     <Bell className="w-4 h-4 animate-bounce" />
                                     Sedang Dipanggil
                                 </p>
@@ -227,13 +227,13 @@ function PendaftaranPage() {
                                         `#${pendaftarInfo.pendaftar.find(p => p.statusAntrian === 'CALLING')?.noAntrian}` :
                                         '-'}
                                 </h2>
-                                <p className="text-emerald-100 text-sm font-medium">
+                                <p className="text-blue-100 text-sm font-medium">
                                     {pendaftarInfo?.pendaftar.find(p => p.statusAntrian === 'CALLING')?.nmLengkap || 'Belum ada panggilan'}
                                 </p>
                             </div>
                             <div className="text-right hidden sm:block">
                                 <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 inline-block">
-                                    <p className="text-[10px] uppercase font-bold tracking-wider text-emerald-50">Sisa Antrian</p>
+                                    <p className="text-[10px] uppercase font-bold tracking-wider text-blue-50">Sisa Antrian</p>
                                     <p className="text-2xl font-black">
                                         {pendaftarInfo?.pendaftar.filter(p =>
                                             p.tglAntrian?.substring(0, 10) === getJakartaDate() &&
@@ -303,13 +303,13 @@ function PendaftaranPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-slate-200 shadow-sm overflow-hidden group hover:border-emerald-400 transition-all">
+                    <Card className="border-slate-200 shadow-sm overflow-hidden group hover:border-blue-400 transition-all">
                         <CardContent className="p-0">
                             <div className="flex items-stretch h-20">
-                                <div className="w-2 bg-emerald-500 group-hover:bg-emerald-600 transition-colors" />
+                                <div className="w-2 bg-blue-500 group-hover:bg-blue-600 transition-colors" />
                                 <div className="flex-1 p-3 flex items-center gap-3">
-                                    <div className="p-2 bg-emerald-50 rounded-lg">
-                                        <CheckCircle2 className="h-6 w-6 text-emerald-600" />
+                                    <div className="p-2 bg-blue-50 rounded-lg">
+                                        <CheckCircle2 className="h-6 w-6 text-blue-600" />
                                     </div>
                                     <div>
                                         <p className="text-sm font-medium text-slate-500">Sudah Verifikasi</p>
@@ -447,7 +447,7 @@ function PendaftaranPage() {
                                         setSelectedPendaftar({})
                                         setIsFormOpen(true)
                                     }}
-                                    className="bg-emerald-600 hover:bg-emerald-700 shadow-sm h-9 text-xs w-full md:w-auto"
+                                    className="bg-blue-600 hover:bg-blue-700 shadow-sm h-9 text-xs w-full md:w-auto"
                                 >
                                     <Plus className="mr-1 h-3.5 w-3.5" />
                                     Tambah
@@ -497,7 +497,7 @@ function PendaftaranPage() {
                                                                 p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
                                                                     p.statusAntrian === 'SKIPPED' ? 'bg-red-500' :
                                                                         p.statusAntrian === 'DONE' ? 'bg-slate-400' :
-                                                                            'bg-emerald-600'} hover:opacity-90 text-white font-black px-3 py-1 text-sm shadow-sm w-fit`}>
+                                                                            'bg-blue-600'} hover:opacity-90 text-white font-black px-3 py-1 text-sm shadow-sm w-fit`}>
                                                                 #{p.noAntrian}
                                                             </Badge>
                                                             <span className="text-[10px] font-bold text-slate-500 uppercase">
@@ -551,7 +551,7 @@ function PendaftaranPage() {
                                                                 Terlewat
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'DONE' } }).then(fetchPendaftar)}>
-                                                                <CheckCircle className="mr-2 h-4 w-4 text-emerald-500" />
+                                                                <CheckCircle className="mr-2 h-4 w-4 text-blue-500" />
                                                                 Selesai
                                                             </DropdownMenuItem>
                                                             <div className="h-px bg-slate-100 my-1" />
@@ -565,7 +565,7 @@ function PendaftaranPage() {
                                                                         toast.error(error.message || 'Gagal menerbitkan antrian')
                                                                     }
                                                                 }}
-                                                                className="text-emerald-600"
+                                                                className="text-blue-600"
                                                             >
                                                                 <Ticket className="mr-2 h-4 w-4" />
                                                                 Terbitkan Antrian
@@ -586,7 +586,7 @@ function PendaftaranPage() {
                                                                 }}
                                                                 disabled={!p.noHandphone || !p.noAntrian}
                                                             >
-                                                                <MessageSquare className="mr-2 h-4 w-4 text-emerald-500" />
+                                                                <MessageSquare className="mr-2 h-4 w-4 text-blue-500" />
                                                                 Kirim Ulang WA
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
@@ -628,13 +628,13 @@ function PendaftaranPage() {
                                 </div>
                             ) : (
                                 pendaftarInfo.pendaftar.map((p) => (
-                                    <div key={p.id} className="p-4 bg-white border border-slate-200 rounded-md shadow-sm hover:border-emerald-300 transition-all space-y-3 relative overflow-hidden">
+                                    <div key={p.id} className="p-4 bg-white border border-slate-200 rounded-md shadow-sm hover:border-blue-300 transition-all space-y-3 relative overflow-hidden">
                                         {/* Colored accent bar */}
                                         <div className={`absolute top-0 left-0 w-1 h-full ${p.statusAntrian === 'CALLING' ? 'bg-amber-500 animate-pulse' :
                                             p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
                                                 p.statusAntrian === 'SKIPPED' ? 'bg-red-500' :
                                                     p.statusAntrian === 'DONE' ? 'bg-slate-400' :
-                                                        'bg-emerald-600'
+                                                        'bg-blue-600'
                                             }`} />
                                         <div className="flex justify-between items-start">
                                             <div>
@@ -644,7 +644,7 @@ function PendaftaranPage() {
                                                             p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
                                                                 p.statusAntrian === 'SKIPPED' ? 'bg-red-500' :
                                                                     p.statusAntrian === 'DONE' ? 'bg-slate-400' :
-                                                                        'bg-emerald-600'} text-white font-black px-2 py-0.5 text-xs shadow-sm w-fit`}>
+                                                                        'bg-blue-600'} text-white font-black px-2 py-0.5 text-xs shadow-sm w-fit`}>
                                                             #{p.noAntrian}
                                                         </Badge>
                                                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
@@ -690,7 +690,7 @@ function PendaftaranPage() {
                                                         Terlewat
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'DONE' } }).then(fetchPendaftar)}>
-                                                        <CheckCircle className="mr-2 h-4 w-4 text-emerald-500" />
+                                                        <CheckCircle className="mr-2 h-4 w-4 text-blue-500" />
                                                         Selesai
                                                     </DropdownMenuItem>
                                                     <div className="h-px bg-slate-100 my-1" />
@@ -704,7 +704,7 @@ function PendaftaranPage() {
                                                                 toast.error(error.message || 'Gagal')
                                                             }
                                                         }}
-                                                        className="text-emerald-600"
+                                                        className="text-blue-600"
                                                     >
                                                         <Ticket className="mr-2 h-4 w-4" />
                                                         Terbitkan Antrian
@@ -725,7 +725,7 @@ function PendaftaranPage() {
                                                         }}
                                                         disabled={!p.noHandphone || !p.noAntrian}
                                                     >
-                                                        <MessageSquare className="mr-2 h-4 w-4 text-emerald-500" />
+                                                        <MessageSquare className="mr-2 h-4 w-4 text-blue-500" />
                                                         Kirim Ulang WA
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
@@ -863,7 +863,7 @@ function PendaftaranPage() {
                                 handleResendWA()
                             }}
                             disabled={isSendingWA}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                             {isSendingWA ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Kirim Sekarang'}
                         </AlertDialogAction>
@@ -1011,7 +1011,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
                                 <button
                                     key={idx}
                                     type="button"
-                                    className="w-full text-left px-3 py-2 text-sm hover:bg-emerald-50 border-b border-slate-100 flex flex-col group"
+                                    className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 border-b border-slate-100 flex flex-col group"
                                     onMouseDown={(e) => e.preventDefault()}
                                     onClick={() => {
                                         setSekolahQuery(s.sekolah)
@@ -1019,7 +1019,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
                                     }}
                                 >
                                     <div className="flex items-center gap-2">
-                                        <span className="font-medium text-slate-900 group-hover:text-emerald-700">{s.sekolah}</span>
+                                        <span className="font-medium text-slate-900 group-hover:text-blue-700">{s.sekolah}</span>
                                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${s.status === 'N' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}`}>
                                             {s.status === 'N' ? 'Negeri' : 'Swasta'}
                                         </span>
@@ -1087,7 +1087,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
             </div>
             <DialogFooter className="pt-4 border-t gap-2">
                 <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>Batal</Button>
-                <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700 min-w-[100px]">
+                <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 min-w-[100px]">
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     Simpan
                 </Button>

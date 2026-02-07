@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 import LoginForm from '@/components/shadcn-studio/blocks/login-page-01/login-form'
 
@@ -23,7 +23,7 @@ function LoginPage() {
             <LoginForm />
             <p className='text-slate-500 text-center text-sm'>
               New on our platform?{' '}
-              <Link to='/signup' className='text-cyan-600 font-medium hover:underline'>
+              <Link to='/signup' className='text-blue-600 font-medium hover:underline'>
                 Create an account
               </Link>
             </p>

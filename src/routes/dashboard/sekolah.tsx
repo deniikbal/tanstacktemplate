@@ -127,8 +127,8 @@ function SekolahManagement() {
         <div className="p-6 space-y-6">
             {/* Page Header with Icon */}
             <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-100 rounded-lg">
-                    <Building2 className="w-6 h-6 text-emerald-600" />
+                <div className="p-2 bg-blue-100 rounded-lg">
+                    <Building2 className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Data Sekolah</h1>
@@ -140,14 +140,14 @@ function SekolahManagement() {
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle className="flex items-center gap-2">
-                            <Building2 className="w-5 h-5 text-emerald-600" />
+                            <Building2 className="w-5 h-5 text-blue-600" />
                             Daftar Sekolah
                         </CardTitle>
                         <CardDescription>
                             Database sekolah SMP/MTS untuk referensi pendaftaran.
                         </CardDescription>
                     </div>
-                    <Button onClick={() => { setEditingSekolah(null); setIsDialogOpen(true) }} className="bg-emerald-600 hover:bg-emerald-700">
+                    <Button onClick={() => { setEditingSekolah(null); setIsDialogOpen(true) }} className="bg-blue-600 hover:bg-blue-700">
                         <Plus className="w-4 h-4 mr-2" />
                         Tambah
                     </Button>
@@ -205,7 +205,7 @@ function SekolahManagement() {
                                 {loading ? (
                                     <TableRow>
                                         <TableCell colSpan={6} className="h-24 text-center">
-                                            <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+                                            <Loader2 className="h-6 w-6 animate-spin mx-auto text-blue-600" />
                                         </TableCell>
                                     </TableRow>
                                 ) : data.sekolah.length === 0 ? (
@@ -216,7 +216,7 @@ function SekolahManagement() {
                                     </TableRow>
                                 ) : (
                                     data.sekolah.map((item) => (
-                                        <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                                        <TableRow key={item.id} className="hover:bg-blue-50+/50 transition-colors">
                                             <TableCell className="font-medium px-4">{item.sekolah}</TableCell>
                                             <TableCell className="px-4">{item.npsn || '-'}</TableCell>
                                             <TableCell className="px-4">{item.bentuk || '-'}</TableCell>
@@ -272,7 +272,7 @@ function SekolahManagement() {
                                             setPageSize(e.target.value)
                                             setPage(1)
                                         }}
-                                        className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                        className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
                                     >
                                         <option value="10">10</option>
                                         <option value="25">25</option>
@@ -314,7 +314,7 @@ function SekolahManagement() {
                                                     key={p}
                                                     onClick={() => setPage(p as number)}
                                                     className={`min-w-[32px] h-8 px-3 py-1.5 text-sm rounded-md transition-colors ${page === p
-                                                        ? 'bg-emerald-600 text-white font-medium'
+                                                        ? 'bg-blue-600 text-white font-medium'
                                                         : 'text-slate-600 hover:bg-slate-100'
                                                         }`}
                                                 >
@@ -448,7 +448,7 @@ function SekolahDialog({ open, onOpenChange, initialData, onSuccess }: {
                     </div>
                     <DialogFooter className="pt-4 border-t">
                         <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>Batal</Button>
-                        <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700">
+                        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">
                             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                             Simpan Perubahan
                         </Button>

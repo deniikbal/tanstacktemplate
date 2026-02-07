@@ -32,7 +32,7 @@ function RouteComponent() {
           </Link>
           <Link
             to="/demo/start/ssr/data-only"
-            className="text-2xl font-bold py-6 px-8 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-center shadow-lg transform transition-all hover:scale-105 hover:shadow-green-500/50 border-2 border-green-400"
+            className="text-2xl font-bold py-6 px-8 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-center shadow-lg transform transition-all hover:scale-105 hover:shadow-blue-500/50 border-2 border-blue-400"
           >
             Data Only
           </Link>

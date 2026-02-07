@@ -194,7 +194,7 @@ function SettingsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     )
   }
@@ -202,8 +202,8 @@ function SettingsPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-emerald-100 rounded-lg">
-          <Settings className="w-6 h-6 text-emerald-600" />
+        <div className="p-2 bg-blue-100 rounded-lg">
+          <Settings className="w-6 h-6 text-blue-600" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Pengaturan</h1>
@@ -215,7 +215,7 @@ function SettingsPage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <GraduationCap className="w-5 h-5 text-emerald-600" />
+              <GraduationCap className="w-5 h-5 text-blue-600" />
               Tahun Ajaran
             </CardTitle>
             <CardDescription>
@@ -224,7 +224,7 @@ function SettingsPage() {
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-emerald-600 hover:bg-emerald-700">
+              <Button className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="w-4 h-4 mr-2" />
                 Tambah Tahun Ajaran
               </Button>
@@ -282,7 +282,7 @@ function SettingsPage() {
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                   Batal
                 </Button>
-                <Button onClick={handleAdd} disabled={isAdding} className="bg-emerald-600 hover:bg-emerald-700">
+                <Button onClick={handleAdd} disabled={isAdding} className="bg-blue-600 hover:bg-blue-700">
                   {isAdding ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
                   Tambah
                 </Button>
@@ -325,7 +325,7 @@ function SettingsPage() {
                     </TableCell>
                     <TableCell>
                       {item.isAktif ? (
-                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
+                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
                           Aktif
                         </Badge>
                       ) : (
@@ -347,7 +347,7 @@ function SettingsPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleSetActive(item)}
-                            className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                             title="Set sebagai aktif"
                           >
                             <Check className="w-4 h-4" />
@@ -415,8 +415,8 @@ function SettingsPage() {
             </div>
           </div>
           {editTanggal && editJam && (
-            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
-              <p className="text-sm text-emerald-800">
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
                 <strong>Preview:</strong>{' '}
                 {new Date(`${editTanggal}T${editJam}:00`).toLocaleString('id-ID', {
                   weekday: 'long',
@@ -433,7 +433,7 @@ function SettingsPage() {
             <Button variant="outline" onClick={() => setEditItem(null)}>
               Batal
             </Button>
-            <Button onClick={handleEdit} disabled={isEditing} className="bg-emerald-600 hover:bg-emerald-700">
+            <Button onClick={handleEdit} disabled={isEditing} className="bg-blue-600 hover:bg-blue-700">
               {isEditing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
               Simpan
             </Button>

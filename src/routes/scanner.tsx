@@ -98,7 +98,7 @@ function ScannerPage() {
       <div className="w-full max-w-md">
         <header className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-emerald-600 p-2 rounded-lg">
+            <div className="bg-blue-600 p-2 rounded-lg">
               <QrCode className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -119,21 +119,21 @@ function ScannerPage() {
           )}
         </header>
 
-        <div className="mb-6 bg-emerald-50 border border-emerald-100 p-3 rounded-xl flex items-center justify-between">
+        <div className="mb-6 bg-blue-50 border border-blue-100 p-3 rounded-xl flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="w-8 h-8 rounded-lg">
               <AvatarImage src={session.user.image || ''} />
-              <AvatarFallback className="bg-emerald-600 text-white text-[10px]">{session.user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="bg-blue-600 text-white text-[10px]">{session.user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Petugas Aktif</p>
+              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Petugas Aktif</p>
               <p className="text-sm font-bold text-slate-900">{session.user.name}</p>
             </div>
           </div>
         </div>
 
         {scanning ? (
-          <Card className="overflow-hidden border-2 border-emerald-100 shadow-xl">
+          <Card className="overflow-hidden border-2 border-blue-100 shadow-xl">
             <div className="aspect-square relative flex items-center justify-center bg-black">
               <Scanner
                 onScan={handleScan}
@@ -144,7 +144,7 @@ function ScannerPage() {
               />
               <div className="absolute inset-0 border-[40px] border-black/40 pointer-events-none flex items-center justify-center">
                 <div className="w-full aspect-square border-2 border-white/80 rounded-lg relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-emerald-500 animate-[scan_2s_linear_infinite]" />
+                  <div className="absolute top-0 left-0 w-full h-[2px] bg-blue-500 animate-[scan_2s_linear_infinite]" />
                 </div>
               </div>
             </div>
@@ -157,17 +157,17 @@ function ScannerPage() {
           </Card>
         ) : loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <Loader2 className="w-12 h-12 text-emerald-600 animate-spin" />
+            <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
             <p className="text-slate-600 font-medium">Mencari data siswa...</p>
           </div>
         ) : data ? (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Student Info Card */}
             <Card className="border-none shadow-lg bg-white overflow-hidden">
-              <div className="bg-emerald-600 p-5 text-white flex justify-between items-center">
+              <div className="bg-blue-600 p-5 text-white flex justify-between items-center">
                 <div>
                   <h2 className="text-xl font-black tracking-tight leading-tight mb-1">{data.student.nmSiswa}</h2>
-                  <p className="text-emerald-100 text-xs font-bold uppercase tracking-widest">{data.student.noDaftar}</p>
+                  <p className="text-blue-100 text-xs font-bold uppercase tracking-widest">{data.student.noDaftar}</p>
                 </div>
                 <Badge variant="outline" className="bg-white/20 text-white border-white/20 px-3 py-1 font-bold text-[10px] uppercase tracking-tighter backdrop-blur-md">
                   {data.student.jalur}
@@ -178,14 +178,14 @@ function ScannerPage() {
                   <div className="space-y-1">
                     <Label className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Asal Sekolah</Label>
                     <div className="flex items-start gap-2 text-sm font-semibold text-slate-800 leading-snug">
-                      <School className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <School className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
                       <span>{data.student.sekolahAsal}</span>
                     </div>
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Jenis Kelamin</Label>
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-                      <User className="w-4 h-4 text-emerald-600" />
+                      <User className="w-4 h-4 text-blue-600" />
                       <span>{data.student.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
                     </div>
                   </div>
@@ -195,13 +195,13 @@ function ScannerPage() {
                   <div className="space-y-1">
                     <Label className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Telepon Ortu</Label>
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-                      <Phone className="w-4 h-4 text-emerald-600" />
+                      <Phone className="w-4 h-4 text-blue-600" />
                       <span>{data.student.teleponOrtu || '-'}</span>
                     </div>
                   </div>
                   <div className="space-y-1 flex flex-col justify-center items-end">
                     <div className={`px-4 py-1.5 rounded-full text-xs font-black border-2 flex items-center gap-2 ${data.student.status === 'LULUS'
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-500/30'
+                      ? 'bg-blue-50 text-blue-700 border-blue-500/30'
                       : 'bg-rose-50 text-rose-700 border-rose-500/30'
                       }`}>
                       {data.student.status === 'LULUS' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
@@ -232,13 +232,13 @@ function ScannerPage() {
                       checked={!!data.daftarUlang[item.id]}
                       onCheckedChange={(checked) => handleToggleCheck(item.id, !!checked)}
                       disabled={saving}
-                      className="w-5 h-5 rounded-md border-slate-300 data-[state=checked]:bg-emerald-600"
+                      className="w-5 h-5 rounded-md border-slate-300 data-[state=checked]:bg-blue-600"
                     />
                     <Label htmlFor={item.id} className="text-sm font-medium text-slate-700 cursor-pointer flex-1">
                       {item.label}
                     </Label>
                     {data.daftarUlang[item.id] ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <CheckCircle2 className="w-4 h-4 text-blue-500" />
                     ) : (
                       <div className="w-4 h-4 rounded-full border-2 border-slate-200" />
                     )}
@@ -256,7 +256,7 @@ function ScannerPage() {
               </CardContent>
             </Card>
 
-            <Button onClick={resetScanner} className="w-full bg-emerald-600 hover:bg-emerald-700 h-12 rounded-xl text-md font-bold shadow-emerald-200 shadow-lg mb-8">
+            <Button onClick={resetScanner} className="w-full bg-blue-600 hover:bg-blue-700 h-12 rounded-xl text-md font-bold shadow-blue-200 shadow-lg mb-8">
               Selesai & Scan Siswa Lain
             </Button>
           </div>

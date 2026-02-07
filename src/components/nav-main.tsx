@@ -52,7 +52,7 @@ export function NavMain({
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         tooltip={item.title}
-                        className={isItemActive ? "text-emerald-600 font-medium" : ""}
+                        className={isItemActive ? "text-blue-600 font-medium" : ""}
                       >
                         {item.icon && <item.icon />}
                         <span>{item.title}</span>
@@ -68,7 +68,7 @@ export function NavMain({
                               <SidebarMenuSubButton asChild isActive={isSubItemActive}>
                                 <Link
                                   to={subItem.url}
-                                  className={isSubItemActive ? "text-emerald-600 font-medium" : ""}
+                                  className={isSubItemActive ? "text-blue-600 font-medium" : ""}
                                 >
                                   <span>{subItem.title}</span>
                                 </Link>
@@ -84,7 +84,7 @@ export function NavMain({
                     asChild
                     tooltip={item.title}
                     isActive={pathname === item.url}
-                    className={pathname === item.url ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-600 font-medium" : ""}
+                    className={pathname === item.url ? "bg-blue-50 text-blue-600 hover:bg-blue-50 hover:text-blue-600 font-medium" : ""}
                   >
                     <Link to={item.url}>
                       {item.icon && <item.icon />}

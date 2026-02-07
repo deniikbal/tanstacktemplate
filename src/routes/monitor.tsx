@@ -95,12 +95,12 @@ function MonitorPage() {
     // const recentDone = pendaftar.filter((p: Pendaftar) => p.statusAntrian === 'DONE').slice(0, 3)
 
     return (
-        <div className="h-screen bg-slate-900 text-slate-100 p-4 font-sans selection:bg-emerald-500/30 overflow-hidden flex flex-col">
+        <div className="h-screen bg-slate-900 text-slate-100 p-4 font-sans selection:bg-blue-500/30 overflow-hidden flex flex-col">
             <div className="max-w-[1600px] mx-auto w-full flex-1 flex flex-col gap-4">
                 {/* Header & Stats Combined */}
                 <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-4 shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-emerald-600 rounded-xl shadow-lg shadow-emerald-600/20">
+                        <div className="p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-600/20">
                             <Users className="w-5 h-5 text-white" />
                         </div>
                         <div>
@@ -111,9 +111,9 @@ function MonitorPage() {
 
                     <div className="flex items-center gap-4">
                         <div className="flex gap-2">
-                            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-1 flex items-center gap-2">
-                                <span className="text-xs font-bold uppercase tracking-widest text-emerald-500/70">Selesai:</span>
-                                <span className="text-lg font-black text-emerald-500">{pendaftar.filter((p: Pendaftar) => p.statusAntrian === 'DONE').length}</span>
+                            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl px-4 py-1 flex items-center gap-2">
+                                <span className="text-xs font-bold uppercase tracking-widest text-blue-500/70">Selesai:</span>
+                                <span className="text-lg font-black text-blue-500">{pendaftar.filter((p: Pendaftar) => p.statusAntrian === 'DONE').length}</span>
                             </div>
                             <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-1 flex items-center gap-2">
                                 <span className="text-xs font-bold uppercase tracking-widest text-amber-500/70">Sisa:</span>
@@ -134,8 +134,8 @@ function MonitorPage() {
                                 <span className="text-[10px] font-bold uppercase tracking-wider">{isFullscreen ? 'Keluar' : 'Layar Penuh'}</span>
                             </Button>
                             <div className="flex items-center gap-2 bg-white/5 backdrop-blur px-4 py-2 rounded-xl border border-white/10 h-9">
-                                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                                <span className="text-[10px] font-bold tracking-widest uppercase text-emerald-400">Live</span>
+                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                                <span className="text-[10px] font-bold tracking-widest uppercase text-blue-400">Live</span>
                             </div>
                         </div>
                     </div>
@@ -144,7 +144,7 @@ function MonitorPage() {
                 {/* Main Content Area */}
                 <div className="flex-1 min-h-0 flex flex-col gap-4">
                     {/* Primary Focus: NOW CALLING */}
-                    <Card className="flex-1 bg-gradient-to-br from-emerald-600 to-teal-800 border-none shadow-2xl shadow-emerald-900/40 overflow-hidden relative flex flex-col justify-center min-h-0">
+                    <Card className="flex-1 bg-gradient-to-br from-blue-600 to-blue-800 border-none shadow-2xl shadow-blue-900/40 overflow-hidden relative flex flex-col justify-center min-h-0">
                         <div className="absolute top-0 right-0 p-8 opacity-5">
                             <Volume2 className="w-48 h-48 rotate-12" />
                         </div>
@@ -165,7 +165,7 @@ function MonitorPage() {
                                 <p className="text-3xl md:text-5xl font-bold text-white uppercase tracking-tight">
                                     {calling?.nmLengkap || 'Menunggu Antrian...'}
                                 </p>
-                                <p className="text-emerald-100 text-lg font-medium opacity-80">
+                                <p className="text-blue-100 text-lg font-medium opacity-80">
                                     Silakan menuju Meja Pendaftaran Utama
                                 </p>
                             </div>

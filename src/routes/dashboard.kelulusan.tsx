@@ -5,6 +5,7 @@ import {
   updateKelulusan,
   deleteKelulusan,
   bulkCreateKelulusanFn,
+  bulkDeleteKelulusan,
 } from '@/lib/server/kelulusan'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -61,6 +62,9 @@ function KelulusanPage() {
   const [jalurFilter, setJalurFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
 
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+
   const fetchKelulusan = async () => {
     setIsPending(true)
     try {
@@ -111,13 +115,45 @@ function KelulusanPage() {
     }
   }
 
+  const toggleSelect = (id: number) => {
+    const next = new Set(selectedIds)
+    if (next.has(id)) next.delete(id)
+    else next.add(id)
+    setSelectedIds(next)
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === data.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(data.map((item: any) => item.id)))
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return
+    if (!confirm(`Hapus ${selectedIds.size} data sekaligus?`)) return
+
+    setIsBulkDeleting(true)
+    try {
+      await bulkDeleteKelulusan({ data: { ids: Array.from(selectedIds) } })
+      toast.success('Data berhasil dihapus masal')
+      setSelectedIds(new Set())
+      fetchKelulusan()
+    } catch (err) {
+      toast.error('Gagal menghapus data masal')
+    } finally {
+      setIsBulkDeleting(false)
+    }
+  }
+
   const totalPages = Math.ceil(total / Number(limit))
 
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-emerald-100 rounded-lg">
-          <GraduationCap className="w-6 h-6 text-emerald-600" />
+        <div className="p-2 bg-blue-100 rounded-lg">
+          <GraduationCap className="w-6 h-6 text-blue-600" />
         </div>
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-slate-900">Manajemen Kelulusan</h1>
@@ -174,7 +210,7 @@ function KelulusanPage() {
         <CardHeader className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-center sm:text-left">
             <CardTitle className="text-lg font-bold text-slate-800 flex items-center justify-center sm:justify-start gap-2">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+              <CheckCircle2 className="h-5 w-5 text-blue-600" />
               Daftar Status Kelulusan
             </CardTitle>
             <CardDescription>
@@ -195,11 +231,22 @@ function KelulusanPage() {
                 setEditingData(null)
                 setIsModalOpen(true)
               }}
-              className="bg-emerald-600 hover:bg-emerald-700 flex-1 sm:flex-none"
+              className="bg-blue-600 hover:bg-blue-700 flex-1 sm:flex-none"
             >
               <Plus className="mr-2 h-4 w-4 text-white" />
               Tambah Data
             </Button>
+            {selectedIds.size > 0 && (
+              <Button
+                variant="destructive"
+                onClick={handleBulkDelete}
+                disabled={isBulkDeleting}
+                className="flex-1 sm:flex-none"
+              >
+                {isBulkDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                Hapus ({selectedIds.size})
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -224,7 +271,7 @@ function KelulusanPage() {
                 setJalurFilter('all')
                 setPage(1)
               }}>
-                <SelectTrigger className="bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500 lg:w-[130px]">
+                <SelectTrigger className="bg-white h-9 border-slate-200 shadow-sm focus:ring-blue-500 lg:w-[130px]">
                   <SelectValue placeholder="Tahap" />
                 </SelectTrigger>
                 <SelectContent>
@@ -238,7 +285,7 @@ function KelulusanPage() {
                 setStatusFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500 lg:w-[130px]">
+                <SelectTrigger className="bg-white h-9 border-slate-200 shadow-sm focus:ring-blue-500 lg:w-[130px]">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -252,7 +299,7 @@ function KelulusanPage() {
                 setJalurFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="col-span-2 lg:w-[180px] bg-white h-9 border-slate-200 shadow-sm focus:ring-emerald-500">
+                <SelectTrigger className="col-span-2 lg:w-[180px] bg-white h-9 border-slate-200 shadow-sm focus:ring-blue-500">
                   <SelectValue placeholder="Pilih Jalur" />
                 </SelectTrigger>
                 <SelectContent>
@@ -295,6 +342,12 @@ function KelulusanPage() {
             <Table>
               <TableHeader className="bg-slate-50/50">
                 <TableRow>
+                  <TableHead className="w-12 text-center text-slate-500 font-semibold">
+                    <Checkbox
+                      checked={data.length > 0 && selectedIds.size === data.length}
+                      onCheckedChange={toggleSelectAll}
+                    />
+                  </TableHead>
                   <TableHead className="w-12 text-center text-slate-500 font-semibold">No</TableHead>
                   <TableHead className="font-semibold text-slate-800">Nama Siswa</TableHead>
                   <TableHead className="font-semibold text-slate-800">NISN / No. Daftar</TableHead>
@@ -324,7 +377,13 @@ function KelulusanPage() {
                   </TableRow>
                 ) : (
                   data.map((item: any, index: number) => (
-                    <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                    <TableRow key={item.id} className={`${selectedIds.has(item.id) ? 'bg-blue-50/50' : 'hover:bg-slate-50/50'} transition-colors`}>
+                      <TableCell className="text-center">
+                        <Checkbox
+                          checked={selectedIds.has(item.id)}
+                          onCheckedChange={() => toggleSelect(item.id)}
+                        />
+                      </TableCell>
                       <TableCell className="text-center text-slate-400">{(page - 1) * Number(limit) + index + 1}</TableCell>
                       <TableCell>
                         <div className="flex flex-col gap-1">
@@ -333,7 +392,7 @@ function KelulusanPage() {
                             <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-slate-50 text-slate-500 border-slate-200">
                               {item.tahap}
                             </Badge>
-                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-emerald-50 text-emerald-600 border-emerald-100 uppercase">
+                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-blue-50 text-blue-600 border-blue-100 uppercase">
                               {item.jalur}
                             </Badge>
                           </div>
@@ -385,7 +444,7 @@ function KelulusanPage() {
           <div className="md:hidden divide-y divide-slate-100">
             {isPending ? (
               <div className="p-8 text-center flex flex-col items-center gap-3">
-                <Loader2 className="h-8 w-8 animate-spin text-emerald-500/20" />
+                <Loader2 className="h-8 w-8 animate-spin text-blue-500/20" />
                 <p className="text-sm text-slate-400 font-medium">Memuat data kelulusan...</p>
               </div>
             ) : data.length === 0 ? (
@@ -407,7 +466,7 @@ function KelulusanPage() {
                           <Badge variant="outline" className="text-[9px] h-3.5 px-1 bg-slate-50 text-slate-500 border-slate-200 uppercase">
                             {item.tahap}
                           </Badge>
-                          <Badge className="text-[9px] h-3.5 px-1 bg-emerald-50 text-emerald-600 border-emerald-100 uppercase hover:bg-emerald-50 shadow-none">
+                          <Badge className="text-[9px] h-3.5 px-1 bg-blue-50 text-blue-600 border-blue-100 uppercase hover:bg-blue-50 shadow-none">
                             {item.jalur}
                           </Badge>
                         </div>
@@ -476,7 +535,7 @@ function KelulusanPage() {
                       setLimit(e.target.value)
                       setPage(1)
                     }}
-                    className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -518,7 +577,7 @@ function KelulusanPage() {
                           key={p}
                           onClick={() => setPage(p as number)}
                           className={`min-w-[32px] h-8 px-3 py-1.5 text-sm rounded-md transition-colors ${page === p
-                            ? 'bg-emerald-600 text-white font-medium'
+                            ? 'bg-blue-600 text-white font-medium'
                             : 'text-slate-600 hover:bg-slate-100'
                             }`}
                         >
@@ -549,7 +608,7 @@ function KelulusanPage() {
 function StatusBadge({ status }: { status: string }) {
   if (status === 'LULUS') {
     return (
-      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200 flex w-fit gap-1 items-center px-2 py-0.5">
+      <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-blue-200 flex w-fit gap-1 items-center px-2 py-0.5">
         <CheckCircle2 className="h-3 w-3" />
         LULUS
       </Badge>
@@ -706,7 +765,7 @@ function GraduationModal({
               </div>
             )}
             {selectedStudent && (
-              <div className="bg-emerald-50 border border-emerald-100 p-2 rounded-md text-xs flex justify-between items-center mt-1">
+              <div className="bg-blue-50 border border-blue-100 p-2 rounded-md text-xs flex justify-between items-center mt-1">
                 <span>Terpilih: <strong>{selectedStudent.nmSiswa}</strong></span>
                 <Button variant="ghost" size="sm" className="h-6 px-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50" onClick={() => setSelectedStudent(null)} disabled={!!editingData}>Ganti</Button>
               </div>
@@ -769,7 +828,7 @@ function GraduationModal({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={submitting}>Batal</Button>
-          <Button onClick={handleSubmit} disabled={submitting || !selectedStudent} className="bg-emerald-600 hover:bg-emerald-700">
+          <Button onClick={handleSubmit} disabled={submitting || !selectedStudent} className="bg-blue-600 hover:bg-blue-700">
             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {editingData ? 'Simpan Perubahan' : 'Tambah Data'}
           </Button>
@@ -859,7 +918,7 @@ function BulkGraduationModal({
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-emerald-600" />
+            <Users className="h-5 w-5 text-blue-600" />
             Bulk Tambah Data Kelulusan
           </DialogTitle>
           <DialogDescription>
@@ -867,7 +926,7 @@ function BulkGraduationModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden flex flex-col gap-4 py-4">
+        <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 py-4">
           <div className="grid gap-2">
             <Label>1. Cari & Pilih Siswa ({selectedIds.size} terpilih)</Label>
             <div className="relative">
@@ -904,7 +963,7 @@ function BulkGraduationModal({
                   <div
                     key={s.id}
                     className={`flex items-center space-x-3 p-3 rounded-md transition-colors border cursor-pointer select-none ${selectedIds.has(s.id)
-                      ? 'bg-emerald-50 border-emerald-200 ring-1 ring-emerald-100'
+                      ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-100'
                       : 'bg-white hover:bg-slate-50 border-slate-200'
                       }`}
                     onClick={() => toggleSelect(s.id)}
@@ -916,7 +975,7 @@ function BulkGraduationModal({
                         NISN: {s.nisn} <span className="mx-1">•</span> NO: {s.noDaftar}
                       </div>
                     </div>
-                    {selectedIds.has(s.id) && <Check className="h-4 w-4 text-emerald-600 shrink-0" />}
+                    {selectedIds.has(s.id) && <Check className="h-4 w-4 text-blue-600 shrink-0" />}
                   </div>
                 ))}
               </div>
@@ -987,7 +1046,7 @@ function BulkGraduationModal({
           <Button
             onClick={handleSubmit}
             disabled={submitting || selectedIds.size === 0}
-            className="bg-emerald-600 hover:bg-emerald-700 font-bold min-w-[150px]"
+            className="bg-blue-600 hover:bg-blue-700 font-bold min-w-[150px]"
           >
             {submitting ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

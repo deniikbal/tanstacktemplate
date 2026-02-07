@@ -44,13 +44,13 @@ function DashboardIndexPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 shadow-sm overflow-hidden group hover:border-emerald-400 transition-all bg-white">
+        <Card className="border-slate-200 shadow-sm overflow-hidden group hover:border-blue-400 transition-all bg-white">
           <CardContent className="p-0">
             <div className="flex items-stretch h-20">
-              <div className="w-1.5 bg-emerald-500 group-hover:bg-emerald-600 transition-colors" />
+              <div className="w-1.5 bg-blue-500 group-hover:bg-blue-600 transition-colors" />
               <div className="flex-1 p-3 flex items-center gap-3">
-                <div className="p-2 bg-emerald-50 rounded-lg">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                <div className="p-2 bg-blue-50 rounded-lg">
+                  <CheckCircle2 className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
                   <p className="text-xs font-medium text-slate-500">Sudah Verifikasi</p>
@@ -112,9 +112,9 @@ function DashboardIndexPage() {
         <div className="col-span-3 min-h-[400px] rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-slate-900 mb-4">Informasi Sistem</h3>
           <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-100">
-              <p className="text-sm font-medium text-emerald-800">Status Server</p>
-              <p className="text-xs text-emerald-600 mt-1">Berjalan normal melalui database Neon.tech</p>
+            <div className="p-4 rounded-lg bg-blue-50 border border-blue-100">
+              <p className="text-sm font-medium text-blue-800">Status Server</p>
+              <p className="text-xs text-blue-600 mt-1">Berjalan normal melalui database Neon.tech</p>
             </div>
             <div className="p-4 rounded-lg bg-blue-50 border border-blue-100">
               <p className="text-sm font-medium text-blue-800">Periode Pendaftaran</p>

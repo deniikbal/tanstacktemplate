@@ -162,8 +162,8 @@ function DashboardPendaftarPage() {
     <div className="p-6 space-y-6">
       {/* Page Header with Icon */}
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-emerald-100 rounded-lg">
-          <Users className="w-6 h-6 text-emerald-600" />
+        <div className="p-2 bg-blue-100 rounded-lg">
+          <Users className="w-6 h-6 text-blue-600" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Data Pendaftar</h1>
@@ -175,7 +175,7 @@ function DashboardPendaftarPage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <UserCog className="w-5 h-5 text-emerald-600" />
+              <UserCog className="w-5 h-5 text-blue-600" />
               Daftar Calon Pendaftar
             </CardTitle>
             <CardDescription>
@@ -187,7 +187,7 @@ function DashboardPendaftarPage() {
               setSelectedPendaftar({})
               setIsFormOpen(true)
             }}
-            className="bg-emerald-600 hover:bg-emerald-700"
+            className="bg-blue-600 hover:bg-blue-700"
           >
             <Plus className="w-4 h-4 mr-2" />
             Tambah
@@ -325,7 +325,7 @@ function DashboardPendaftarPage() {
                               p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
                                 p.statusAntrian === 'SKIPPED' ? 'bg-red-500' :
                                   p.statusAntrian === 'DONE' ? 'bg-slate-400' :
-                                    'bg-emerald-600'} hover:opacity-90 text-white font-black px-3 py-1 text-sm shadow-sm w-fit`}>
+                                    'bg-blue-600'} hover:opacity-90 text-white font-black px-3 py-1 text-sm shadow-sm w-fit`}>
                               #{p.noAntrian}
                             </Badge>
                             <span className="text-[10px] font-bold text-slate-500 uppercase">
@@ -384,7 +384,7 @@ function DashboardPendaftarPage() {
                                   toast.error(error.message || 'Gagal menerbitkan antrian')
                                 }
                               }}
-                              className="text-emerald-600 focus:text-emerald-700 focus:bg-emerald-50"
+                              className="text-blue-600 focus:text-blue-700 focus:bg-blue-50"
                             >
                               <Ticket className="mr-2 h-4 w-4" />
                               Ambil Antrian
@@ -462,7 +462,7 @@ function DashboardPendaftarPage() {
                       setLimit(e.target.value)
                       setPage(1)
                     }}
-                    className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -504,7 +504,7 @@ function DashboardPendaftarPage() {
                           key={p}
                           onClick={() => setPage(p as number)}
                           className={`min-w-[32px] h-8 px-3 py-1.5 text-sm rounded-md transition-colors ${page === p
-                            ? 'bg-emerald-600 text-white font-medium'
+                            ? 'bg-blue-600 text-white font-medium'
                             : 'text-slate-600 hover:bg-slate-100'
                             }`}
                         >
@@ -716,7 +716,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
                 <button
                   key={idx}
                   type="button"
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-emerald-50 border-b border-slate-100 flex flex-col group"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-blue-100 border-b border-slate-100 flex flex-col group"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     setSekolahQuery(s.sekolah)
@@ -724,7 +724,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
                   }}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-slate-900 group-hover:text-emerald-700">{s.sekolah}</span>
+                    <span className="font-medium text-slate-900 group-hover:text-blue-700">{s.sekolah}</span>
                     <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${s.status === 'N' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}`}>
                       {s.status === 'N' ? 'Negeri' : 'Swasta'}
                     </span>
@@ -792,7 +792,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
       </div>
       <DialogFooter className="pt-4 border-t gap-2">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>Batal</Button>
-        <Button type="submit" disabled={loading} className="bg-emerald-600 hover:bg-emerald-700 min-w-[100px]">
+        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 min-w-[100px]">
           {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Simpan
         </Button>

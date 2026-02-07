@@ -188,3 +188,11 @@ export const bulkCreateKelulusanFn = createServerFn({ method: "POST" })
             skipped: studentIds.length - newStudentIds.length,
         };
     });
+export const bulkDeleteKelulusan = createServerFn({ method: "POST" })
+    .inputValidator((d: { ids: number[] }) => d)
+    .handler(async ({ data }) => {
+        const { ids } = data;
+        if (!ids || ids.length === 0) return { success: true };
+        await db.delete(kelulusan).where(inArray(kelulusan.id, ids));
+        return { success: true };
+    });

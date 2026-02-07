@@ -24,7 +24,7 @@ function SignupPage() {
 
             <p className='text-slate-500 text-center text-sm'>
               Already have an account?{' '}
-              <Link to='/login' className='text-cyan-600 font-medium hover:underline'>
+              <Link to='/login' className='text-blue-600 font-medium hover:underline'>
                 Sign in instead
               </Link>
             </p>
