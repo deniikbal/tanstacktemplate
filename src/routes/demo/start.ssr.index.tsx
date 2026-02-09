@@ -37,6 +37,14 @@ function RouteComponent() {
             Data Only
           </Link>
         </div>
+
+        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col items-center">
+          <p className="text-zinc-500 uppercase tracking-widest text-sm font-bold mb-4">Add More</p>
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-xs font-black text-zinc-600 tracking-[0.3em] uppercase">TanStack</span>
+            <h2 className="text-2xl font-bold text-white/90">TanStack Router v1</h2>
+          </div>
+        </div>
       </div>
     </div>
   )

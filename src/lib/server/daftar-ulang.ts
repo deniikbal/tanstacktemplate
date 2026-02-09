@@ -1,48 +1,68 @@
 import { db } from "@/lib/db";
-import { daftarUlang, kelulusan } from "@/lib/db/schema";
-import { eq, count, desc } from "drizzle-orm";
+import { daftarUlang, kelulusan, student } from "@/lib/db/schema";
+import { eq, count, desc, and, ilike, or } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/middleware";
 
 export const getDaftarUlangList = createServerFn({ method: "GET" })
-    .inputValidator((d: { page?: number; limit?: number }) => d)
+    .inputValidator((d: { page?: number; limit?: number; search?: string; jalur?: string }) => d)
     .handler(async ({ data }) => {
         const page = data?.page || 1;
         const limit = data?.limit || 10;
+        const search = data?.search || "";
+        const jalur = data?.jalur || "all";
         const offset = (page - 1) * limit;
 
-        const whereClause = eq(kelulusan.status, "LULUS");
+        let whereClause = eq(kelulusan.status, "LULUS");
+
+        if (jalur !== "all") {
+            whereClause = and(whereClause, eq(kelulusan.jalur, jalur)) as any;
+        }
+
+        if (search) {
+            whereClause = and(
+                whereClause,
+                or(
+                    ilike(student.nmSiswa, `%${search}%`),
+                    ilike(student.sekolahAsal, `%${search}%`)
+                )
+            ) as any;
+        }
 
         // Get total count
         const [totalRes] = await db
             .select({ value: count() })
             .from(kelulusan)
+            .innerJoin(student, eq(kelulusan.studentId, student.id))
             .where(whereClause);
 
         const total = totalRes.value;
 
         // Get paginated results
-        const results = await db.query.kelulusan.findMany({
-            where: whereClause,
-            with: {
-                student: true,
-                daftarUlang: true,
-            },
-            limit: limit,
-            offset: offset,
-            orderBy: [desc(kelulusan.id)],
-        });
+        const results = await db
+            .select({
+                kelulusan: kelulusan,
+                student: student,
+                daftarUlang: daftarUlang,
+            })
+            .from(kelulusan)
+            .innerJoin(student, eq(kelulusan.studentId, student.id))
+            .leftJoin(daftarUlang, eq(kelulusan.id, daftarUlang.kelulusanId))
+            .where(whereClause)
+            .limit(limit)
+            .offset(offset)
+            .orderBy(desc(kelulusan.id));
 
         const students = results.map((item: any) => ({
-            id: item.id,
-            studentId: item.studentId,
+            id: item.kelulusan.id,
+            studentId: item.kelulusan.studentId,
             nmSiswa: item.student.nmSiswa,
             sekolahAsal: item.student.sekolahAsal,
             jenisKelamin: item.student.jenisKelamin,
             teleponSiswa: item.student.teleponSiswa,
             teleponOrtu: item.student.teleponOrtu,
-            jalur: item.jalur,
-            tahap: item.tahap,
+            jalur: item.kelulusan.jalur,
+            tahap: item.kelulusan.tahap,
             daftarUlang: item.daftarUlang || {
                 skl: false,
                 tatib: false,

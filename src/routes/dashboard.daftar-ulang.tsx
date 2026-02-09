@@ -14,6 +14,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { toast } from 'sonner'
 import { Loader2, ClipboardList, Search, CheckCircle2, AlertCircle, XCircle, Phone, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getDaftarUlangList, upsertDaftarUlang } from '@/lib/server/daftar-ulang'
@@ -26,6 +33,7 @@ function DaftarUlangPage() {
   const [data, setData] = useState<any[]>([])
   const [isPending, setIsPending] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [jalurFilter, setJalurFilter] = useState('all')
   const [savingId, setSavingId] = useState<number | null>(null)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -35,7 +43,14 @@ function DaftarUlangPage() {
   const fetchDaftarUlang = async () => {
     setIsPending(true)
     try {
-      const res = await getDaftarUlangList({ data: { page, limit } })
+      const res = await getDaftarUlangList({
+        data: {
+          page,
+          limit,
+          search: searchTerm,
+          jalur: jalurFilter
+        }
+      })
       setData(res.students)
       setTotalPages(res.totalPages)
       setTotal(res.total)
@@ -48,7 +63,19 @@ function DaftarUlangPage() {
 
   useEffect(() => {
     fetchDaftarUlang()
-  }, [page])
+  }, [page, jalurFilter])
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (page !== 1) {
+        setPage(1)
+      } else {
+        fetchDaftarUlang()
+      }
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
 
   const calculateKeterangan = (daftarUlang: any) => {
     const isComplete = daftarUlang.skl && daftarUlang.tatib && daftarUlang.kk &&
@@ -98,10 +125,6 @@ function DaftarUlangPage() {
   }
 
 
-  const filteredData = data.filter(item =>
-    item.nmSiswa.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.sekolahAsal?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
 
   const statsSudah = data.filter(item =>
     item.daftarUlang.skl && item.daftarUlang.tatib && item.daftarUlang.kk &&
@@ -185,14 +208,36 @@ function DaftarUlangPage() {
                 Verifikasi kelengkapan berkas siswa yang dinyatakan Lulus.
               </CardDescription>
             </div>
-            <div className="relative w-full md:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Cari nama atau asal sekolah..."
-                className="pl-9 bg-white h-9 border-slate-200"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Cari nama atau asal sekolah..."
+                  className="pl-9 bg-white h-9 border-slate-200 text-xs"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Select value={jalurFilter} onValueChange={(v) => {
+                setJalurFilter(v)
+                setPage(1)
+              }}>
+                <SelectTrigger className="w-full md:w-40 h-9 bg-white border-slate-200 text-xs font-medium">
+                  <SelectValue placeholder="Semua Jalur" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Jalur</SelectItem>
+                  <SelectItem value="KETM">KETM</SelectItem>
+                  <SelectItem value="DOMISILI">DOMISILI</SelectItem>
+                  <SelectItem value="AFIRMASI">AFIRMASI</SelectItem>
+                  <SelectItem value="ANAK GURU">ANAK GURU</SelectItem>
+                  <SelectItem value="MUTASI">MUTASI</SelectItem>
+                  <SelectItem value="Kejuaraan Akademik">Kejuaraan Akademik</SelectItem>
+                  <SelectItem value="Kejuaraan Non Akademik">Kejuaraan Non Akademik</SelectItem>
+                  <SelectItem value="Kepemimpinan">Kepemimpinan</SelectItem>
+                  <SelectItem value="Prestasi Raport">Prestasi Raport</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardHeader>
@@ -225,14 +270,14 @@ function DaftarUlangPage() {
                       </div>
                     </TableCell>
                   </TableRow>
-                ) : filteredData.length === 0 ? (
+                ) : data.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={11} className="text-center h-32 text-muted-foreground">
                       <p>Tidak ada data siswa yang lulus.</p>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredData.map((item, index) => (
+                  data.map((item, index) => (
                     <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
                       <TableCell className="text-center text-slate-400 font-medium">{(page - 1) * limit + index + 1}</TableCell>
                       <TableCell>
@@ -364,12 +409,12 @@ function DaftarUlangPage() {
                 <Loader2 className="h-8 w-8 animate-spin opacity-20" />
                 <p className="text-sm">Memuat data siswa...</p>
               </div>
-            ) : filteredData.length === 0 ? (
+            ) : data.length === 0 ? (
               <div className="p-8 text-center text-slate-400">
                 <p className="text-sm">Tidak ada data siswa yang ditemukan.</p>
               </div>
             ) : (
-              filteredData.map((item, index) => (
+              data.map((item, index) => (
                 <div key={item.id} className="p-4 space-y-4">
                   <div className="flex justify-between items-start">
                     <div className="flex gap-3">
@@ -462,7 +507,7 @@ function DaftarUlangPage() {
           {/* Simple Pagination Footer */}
           <div className="border-t border-slate-100 p-4 flex items-center justify-between bg-slate-50/50 rounded-b-lg">
             <div className="text-xs text-slate-500">
-              Menampilkan <span className="font-medium text-slate-700">{filteredData.length}</span> dari <span className="font-medium text-slate-700">{total}</span> siswa
+              Menampilkan <span className="font-medium text-slate-700">{data.length}</span> dari <span className="font-medium text-slate-700">{total}</span> siswa
             </div>
             <div className="flex gap-2">
               <Button

@@ -1,18 +1,17 @@
 import {
   getAllKelulusan,
-  searchStudents,
-  createKelulusanFn,
   updateKelulusan,
   deleteKelulusan,
-  bulkCreateKelulusanFn,
   bulkDeleteKelulusan,
+  syncKelulusan,
+  getJalurStats,
 } from '@/lib/server/kelulusan'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Plus, Search, Loader2, Users, Check, Trash2, Pencil, GraduationCap, AlertCircle, CheckCircle2, XCircle, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { Search, Loader2, Trash2, Pencil, GraduationCap, AlertCircle, CheckCircle2, XCircle, ChevronLeft, ChevronRight, MoreHorizontal, RefreshCw } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -48,9 +47,10 @@ function KelulusanPage() {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState('10')
   const [isPending, setIsPending] = useState(true)
+  const [jalurStats, setJalurStats] = useState<any[]>([])
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false)
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editingData, setEditingData] = useState<any>(null)
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -63,6 +63,7 @@ function KelulusanPage() {
   const [statusFilter, setStatusFilter] = useState('all')
 
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+  const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false)
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   const fetchKelulusan = async () => {
@@ -93,6 +94,27 @@ function KelulusanPage() {
     }, 500)
     return () => clearTimeout(timer)
   }, [page, limit, searchTerm, tahapFilter, jalurFilter, statusFilter])
+
+  const fetchStats = async () => {
+    try {
+      const stats = await getJalurStats()
+      setJalurStats(stats as any[])
+    } catch (err) {
+      console.error('Failed to fetch stats', err)
+    }
+  }
+
+  useEffect(() => {
+    fetchStats()
+  }, [])
+
+  const statsMap = React.useMemo(() => {
+    const map: Record<string, number> = {}
+    jalurStats.forEach(s => {
+      map[s.jalur] = s.count
+    })
+    return map
+  }, [jalurStats])
 
   const handleDelete = (id: number) => {
     setDataToDelete(id)
@@ -130,15 +152,18 @@ function KelulusanPage() {
     }
   }
 
-  const handleBulkDelete = async () => {
+  const handleBulkDelete = () => {
     if (selectedIds.size === 0) return
-    if (!confirm(`Hapus ${selectedIds.size} data sekaligus?`)) return
+    setIsBulkDeleteDialogOpen(true)
+  }
 
+  const executeBulkDelete = async () => {
     setIsBulkDeleting(true)
     try {
       await bulkDeleteKelulusan({ data: { ids: Array.from(selectedIds) } })
       toast.success('Data berhasil dihapus masal')
       setSelectedIds(new Set())
+      setIsBulkDeleteDialogOpen(false)
       fetchKelulusan()
     } catch (err) {
       toast.error('Gagal menghapus data masal')
@@ -161,22 +186,26 @@ function KelulusanPage() {
         </div>
       </div>
 
-      <GraduationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        editingData={editingData}
+      <SyncModal
+        isOpen={isSyncModalOpen}
+        onClose={() => setIsSyncModalOpen(false)}
         onSuccess={() => {
           fetchKelulusan()
-          setIsModalOpen(false)
+          setIsSyncModalOpen(false)
         }}
       />
 
-      <BulkGraduationModal
-        isOpen={isBulkModalOpen}
-        onClose={() => setIsBulkModalOpen(false)}
+      <EditGraduationModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false)
+          setEditingData(null)
+        }}
+        data={editingData}
         onSuccess={() => {
           fetchKelulusan()
-          setIsBulkModalOpen(false)
+          setIsEditModalOpen(false)
+          setEditingData(null)
         }}
       />
 
@@ -206,6 +235,33 @@ function KelulusanPage() {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={isBulkDeleteDialogOpen} onOpenChange={setIsBulkDeleteDialogOpen}>
+        <AlertDialogContent className="w-[95vw] sm:max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Masal Data Kelulusan?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin menghapus <strong>{selectedIds.size}</strong> data sekaligus?
+              <br />
+              Tindakan ini tidak dapat dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-row gap-2 justify-end">
+            <AlertDialogCancel disabled={isBulkDeleting} className="mt-0">Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault()
+                executeBulkDelete()
+              }}
+              disabled={isBulkDeleting}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              {isBulkDeleting ? 'Menghapus...' : 'Hapus Semua'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+
       <Card className="shadow-sm border-slate-200">
         <CardHeader className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-center sm:text-left">
@@ -219,22 +275,11 @@ function KelulusanPage() {
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <Button
-              variant="outline"
-              onClick={() => setIsBulkModalOpen(true)}
-              className="flex-1 sm:flex-none"
+              onClick={() => setIsSyncModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 flex-1 sm:flex-none font-bold"
             >
-              <Users className="mr-2 h-4 w-4 text-slate-500" />
-              Bulk Tambah
-            </Button>
-            <Button
-              onClick={() => {
-                setEditingData(null)
-                setIsModalOpen(true)
-              }}
-              className="bg-blue-600 hover:bg-blue-700 flex-1 sm:flex-none"
-            >
-              <Plus className="mr-2 h-4 w-4 text-white" />
-              Tambah Data
+              <RefreshCw className="mr-2 h-4 w-4 text-white" />
+              Sinkronkan Data Siswa
             </Button>
             {selectedIds.size > 0 && (
               <Button
@@ -376,65 +421,80 @@ function KelulusanPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  data.map((item: any, index: number) => (
-                    <TableRow key={item.id} className={`${selectedIds.has(item.id) ? 'bg-blue-50/50' : 'hover:bg-slate-50/50'} transition-colors`}>
-                      <TableCell className="text-center">
-                        <Checkbox
-                          checked={selectedIds.has(item.id)}
-                          onCheckedChange={() => toggleSelect(item.id)}
-                        />
-                      </TableCell>
-                      <TableCell className="text-center text-slate-400">{(page - 1) * Number(limit) + index + 1}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <span className="font-bold text-slate-700">{item.studentName}</span>
-                          <div className="flex gap-1">
-                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-slate-50 text-slate-500 border-slate-200">
-                              {item.tahap}
-                            </Badge>
-                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-blue-50 text-blue-600 border-blue-100 uppercase">
-                              {item.jalur}
-                            </Badge>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="text-sm text-slate-600 font-medium">{item.studentNisn}</span>
-                          <span className="text-xs text-muted-foreground uppercase">{item.noDaftar || '-'}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-slate-600">
-                        {item.sekolahAsal || '-'}
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status={item.status} />
-                      </TableCell>
-                      <TableCell className="text-right pr-6">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => {
-                              setEditingData(item)
-                              setIsModalOpen(true)
-                            }}>
-                              <Pencil className="mr-2 h-4 w-4" />
-                              Edit Data
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => handleDelete(item.id)}>
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Hapus Data
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  data.map((item: any, index: number) => {
+                    const showHeader = index === 0 || data[index - 1].jalur !== item.jalur
+                    return (
+                      <React.Fragment key={item.id}>
+                        {showHeader && (
+                          <TableRow className="bg-slate-100/30 hover:bg-slate-100/30">
+                            <TableCell colSpan={7} className="py-2 px-6">
+                              <div className="flex items-center gap-2">
+                                <Badge className={`${getJalurColor(item.jalur)} text-white border-none px-2 text-[10px] font-bold uppercase tracking-wider flex gap-2 h-5`}>
+                                  <span>JALUR: {item.jalur}</span>
+                                  <span className="bg-black/20 px-1 rounded-sm text-[11px] font-black min-w-[1.5rem] text-center">{statsMap[item.jalur] || 0}</span>
+                                </Badge>
+                                <div className="h-px flex-1 bg-slate-200" />
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                        <TableRow className={`${selectedIds.has(item.id) ? 'bg-blue-50/50' : 'hover:bg-slate-50/50'} transition-colors group`}>
+                          <TableCell className="text-center">
+                            <Checkbox
+                              checked={selectedIds.has(item.id)}
+                              onCheckedChange={() => toggleSelect(item.id)}
+                            />
+                          </TableCell>
+                          <TableCell className="text-center text-slate-400">{(page - 1) * Number(limit) + index + 1}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              <span className="font-bold text-slate-700 group-hover:text-blue-600 transition-colors uppercase tracking-tight">{item.studentName}</span>
+                              <div className="flex gap-1">
+                                <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-slate-50 text-slate-500 border-slate-200">
+                                  {item.tahap}
+                                </Badge>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <span className="text-sm text-slate-600 font-medium">{item.studentNisn}</span>
+                              <span className="text-[10px] text-muted-foreground uppercase font-semibold">{item.noDaftar || '-'}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-slate-600">
+                            {item.sekolahAsal || '-'}
+                          </TableCell>
+                          <TableCell>
+                            <StatusBadge status={item.status} />
+                          </TableCell>
+                          <TableCell className="text-right pr-6">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <span className="sr-only">Open menu</span>
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => {
+                                  setEditingData(item)
+                                  setIsEditModalOpen(true)
+                                }}>
+                                  <Pencil className="mr-2 h-4 w-4" />
+                                  Edit Data
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => handleDelete(item.id)}>
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Hapus Data
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    )
+                  })
                 )}
               </TableBody>
             </Table>
@@ -453,69 +513,80 @@ function KelulusanPage() {
                 <p className="text-sm">Tidak ada data ditemukan.</p>
               </div>
             ) : (
-              data.map((item: any, index: number) => (
-                <div key={item.id} className="p-4 bg-white hover:bg-slate-50/50 transition-colors">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-start gap-2.5">
-                      <div className="mt-1 flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-400">
-                        {(page - 1) * Number(limit) + index + 1}
+              data.map((item: any, index: number) => {
+                const showHeader = index === 0 || data[index - 1].jalur !== item.jalur
+                return (
+                  <React.Fragment key={item.id}>
+                    {showHeader && (
+                      <div className="px-4 py-1.5 bg-slate-50 border-y border-slate-100 flex items-center gap-2 sticky top-0 z-10">
+                        <Badge className={`${getJalurColor(item.jalur)} text-white h-5 px-2 text-[9px] font-black uppercase tracking-widest border-none flex gap-2`}>
+                          <span>JALUR: {item.jalur}</span>
+                          <span className="bg-black/20 px-1 rounded-sm text-[10px] min-w-[1.2rem] text-center">{statsMap[item.jalur] || 0}</span>
+                        </Badge>
+                        <div className="h-px flex-1 bg-slate-200/50" />
                       </div>
-                      <div className="flex flex-col">
-                        <span className="font-bold text-slate-800 leading-tight">{item.studentName}</span>
-                        <div className="flex flex-wrap gap-1 mt-1.5">
-                          <Badge variant="outline" className="text-[9px] h-3.5 px-1 bg-slate-50 text-slate-500 border-slate-200 uppercase">
-                            {item.tahap}
-                          </Badge>
-                          <Badge className="text-[9px] h-3.5 px-1 bg-blue-50 text-blue-600 border-blue-100 uppercase hover:bg-blue-50 shadow-none">
-                            {item.jalur}
-                          </Badge>
+                    )}
+                    <div className="p-4 bg-white hover:bg-slate-50/50 transition-colors">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-start gap-2.5">
+                          <div className="mt-1 flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-400">
+                            {(page - 1) * Number(limit) + index + 1}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-black text-slate-800 leading-tight uppercase tracking-tight">{item.studentName}</span>
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                              <Badge variant="outline" className="text-[9px] h-3.5 px-1 bg-slate-50 text-slate-500 border-slate-200 uppercase">
+                                {item.tahap}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 -mr-1">
+                              <MoreHorizontal className="h-4 w-4 text-slate-400" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem onClick={() => {
+                              setEditingData(item)
+                              setIsEditModalOpen(true)
+                            }}>
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Edit Data
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                              onClick={() => handleDelete(item.id)}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Hapus Data
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+
+                      <div className="space-y-1.5 ml-7">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-slate-400">NISN / No. Daftar</span>
+                          <div className="text-right">
+                            <div className="font-bold text-slate-600">{item.studentNisn}</div>
+                            <div className="text-[10px] text-slate-400 uppercase font-black">{item.noDaftar || '-'}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-slate-400">Asal Sekolah</span>
+                          <span className="font-semibold text-slate-600">{item.sekolahAsal || '-'}</span>
+                        </div>
+                        <div className="flex items-center justify-between pt-2">
+                          <span className="text-xs text-slate-400 font-medium">Status Kelulusan</span>
+                          <StatusBadge status={item.status} />
                         </div>
                       </div>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 -mr-1">
-                          <MoreHorizontal className="h-4 w-4 text-slate-400" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40">
-                        <DropdownMenuItem onClick={() => {
-                          setEditingData(item)
-                          setIsModalOpen(true)
-                        }}>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Edit Data
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive focus:bg-destructive/10"
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Hapus Data
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-
-                  <div className="space-y-1.5 ml-7">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400">NISN / No. Daftar</span>
-                      <div className="text-right">
-                        <div className="font-medium text-slate-600">{item.studentNisn}</div>
-                        <div className="text-[10px] text-slate-400 uppercase">{item.noDaftar || '-'}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-400">Asal Sekolah</span>
-                      <span className="font-medium text-slate-600">{item.sekolahAsal || '-'}</span>
-                    </div>
-                    <div className="flex items-center justify-between pt-2">
-                      <span className="text-xs text-slate-400 font-medium">Status Kelulusan</span>
-                      <StatusBadge status={item.status} />
-                    </div>
-                  </div>
-                </div>
-              ))
+                  </React.Fragment>
+                )
+              })
             )}
           </div>
 
@@ -601,8 +672,22 @@ function KelulusanPage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </div >
   )
+}
+
+
+function getJalurColor(jalur: string) {
+  const j = jalur?.toUpperCase() || ''
+  if (j.includes('KETM')) return 'bg-rose-600 hover:bg-rose-700'
+  if (j.includes('DOMISILI')) return 'bg-emerald-600 hover:bg-emerald-700'
+  if (j.includes('AFIRMASI')) return 'bg-amber-600 hover:bg-amber-700'
+  if (j.includes('GURU')) return 'bg-indigo-600 hover:bg-indigo-700'
+  if (j.includes('MUTASI')) return 'bg-violet-600 hover:bg-violet-700'
+  if (j.includes('AKADEMIK')) return 'bg-sky-600 hover:bg-sky-700'
+  if (j.includes('RAPORT')) return 'bg-cyan-600 hover:bg-cyan-700'
+  if (j.includes('PEMIMPIN')) return 'bg-orange-600 hover:bg-orange-700'
+  return 'bg-slate-600 hover:bg-slate-700'
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -625,199 +710,189 @@ function StatusBadge({ status }: { status: string }) {
   return null
 }
 
-function GraduationModal({
+function SyncModal({
   isOpen,
   onClose,
-  editingData,
   onSuccess,
 }: {
   isOpen: boolean
   onClose: () => void
-  editingData?: any
   onSuccess: () => void
 }) {
-  const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [students, setStudents] = useState<any[]>([])
-  const [selectedStudent, setSelectedStudent] = useState<any>(null)
-  const [formData, setFormData] = useState({
-    jalur: 'ZONASI',
-    status: 'LULUS',
-    tahap: 'Tahap 1',
-  })
+  const [tahap, setTahap] = useState('Tahap 1')
+  const [status, setStatus] = useState('LULUS')
 
-  useEffect(() => {
-    if (editingData) {
-      setSelectedStudent({
-        id: editingData.studentId,
-        nmSiswa: editingData.studentName,
-        nisn: editingData.studentNisn,
-        noDaftar: editingData.noDaftar,
-      })
-      setFormData({
-        jalur: editingData.jalur,
-        status: editingData.status,
-        tahap: editingData.tahap,
-      })
-      setSearch(editingData.studentName)
-    } else if (isOpen) {
-      setSelectedStudent(null)
-      setFormData({
-        jalur: 'ZONASI',
-        status: 'LULUS',
-        tahap: 'Tahap 1',
-      })
-      setSearch('')
-      setStudents([])
-    }
-  }, [editingData, isOpen])
-
-  const handleSearch = async (val: string) => {
-    setSearch(val)
-    if (val.length < 2) {
-      setStudents([])
-      return
-    }
-
+  const handleSync = async () => {
     setLoading(true)
     try {
-      const results = await searchStudents({ data: { q: val } })
-      setStudents(results || [])
+      const res = await syncKelulusan({ data: { tahap, status } })
+      toast.success(`${res.synced} data siswa baru berhasil disinkronkan ke tabel kelulusan dengan status ${status}.`)
+      onSuccess()
+    } catch (err: any) {
+      toast.error(err.message || 'Gagal sinkronisasi data')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleSubmit = async () => {
-    if (!selectedStudent) {
-      toast.error('Pilih siswa terlebih dahulu')
-      return
-    }
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[450px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <RefreshCw className="h-5 w-5 text-blue-600" />
+            Sinkronisasi Data Kelulusan
+          </DialogTitle>
+          <DialogDescription>
+            Menarik semua data siswa yang belum ada di Manajemen Kelulusan secara otomatis.
+          </DialogDescription>
+        </DialogHeader>
 
-    setSubmitting(true)
+        <div className="grid gap-5 py-4">
+          <div className="space-y-2 w-full">
+            <Label className="text-sm font-bold text-slate-700">Pilih Tahap Kelulusan</Label>
+            <Select value={tahap} onValueChange={setTahap}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Tahap 1">Tahap 1</SelectItem>
+                <SelectItem value="Tahap 2">Tahap 2</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-muted-foreground italic">
+              *Jalur pendaftaran akan disesuaikan otomatis dengan data di profil siswa.
+            </p>
+          </div>
+
+          <div className="space-y-2 w-full">
+            <Label className="text-sm font-bold text-slate-700">Status Kelulusan Default</Label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="LULUS">LULUS</SelectItem>
+                <SelectItem value="TIDAK LULUS">TIDAK LULUS</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-muted-foreground italic">
+              *Semua siswa baru yang masuk akan diberikan status ini.
+            </p>
+          </div>
+        </div>
+
+        <DialogFooter className="sm:justify-between gap-2 border-t pt-4">
+          <Button variant="outline" onClick={onClose} disabled={loading} className="flex-1 sm:flex-none">
+            Batal
+          </Button>
+          <Button onClick={handleSync} disabled={loading} className="bg-blue-600 hover:bg-blue-700 font-bold flex-1 sm:flex-none">
+            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+            Mulai Sinkronisasi
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function EditGraduationModal({
+  isOpen,
+  onClose,
+  data,
+  onSuccess,
+}: {
+  isOpen: boolean
+  onClose: () => void
+  data?: any
+  onSuccess: () => void
+}) {
+  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    status: 'LULUS',
+    tahap: 'Tahap 1',
+    jalur: '',
+  })
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        status: data.status,
+        tahap: data.tahap,
+        jalur: data.jalur,
+      })
+    }
+  }, [data])
+
+  const handleUpdate = async () => {
+    if (!data) return
+    setLoading(true)
     try {
-      if (editingData) {
-        await updateKelulusan({
-          data: {
-            id: editingData.id,
-            data: {
-              ...formData,
-              studentId: selectedStudent.id,
-            },
-          },
-        })
-        toast.success('Data kelulusan berhasil diperbarui')
-      } else {
-        await createKelulusanFn({
-          data: {
-            ...formData,
-            studentId: selectedStudent.id,
-          },
-        })
-        toast.success('Data kelulusan berhasil ditambahkan')
-      }
+      await updateKelulusan({
+        data: {
+          id: data.id,
+          data: formData,
+        },
+      })
+      toast.success('Data kelulusan berhasil diperbarui')
       onSuccess()
     } catch (err: any) {
-      toast.error(err.message || 'Gagal menyimpan data')
+      toast.error(err.message || 'Gagal memperbarui data')
     } finally {
-      setSubmitting(false)
+      setLoading(false)
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
-          <DialogTitle>{editingData ? 'Edit Data Kelulusan' : 'Tambah Data Kelulusan'}</DialogTitle>
+          <DialogTitle>Edit Status Kelulusan</DialogTitle>
+          <DialogDescription>
+            Memperbarui status atau tahap untuk <strong>{data?.studentName}</strong>.
+          </DialogDescription>
         </DialogHeader>
+
         <div className="grid gap-4 py-4">
-          <div className="grid gap-2 relative">
-            <Label htmlFor="search">Cari Siswa (Nama/NISN/No.Daftar)</Label>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="search"
-                placeholder="Ketik minimal 2 huruf..."
-                className="pl-8"
-                value={search}
-                onChange={(e) => handleSearch(e.target.value)}
-                disabled={!!editingData}
-              />
-            </div>
-            {loading && <div className="text-xs text-muted-foreground flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" /> Mencari...</div>}
-            {students.length > 0 && !selectedStudent && (
-              <div className="border rounded-md mt-1 divide-y shadow-md max-h-[200px] overflow-auto bg-white z-[100] absolute w-full top-full">
-                {students.map(s => (
-                  <div
-                    key={s.id}
-                    className="p-2 hover:bg-slate-50 cursor-pointer text-sm"
-                    onClick={() => {
-                      setSelectedStudent(s)
-                      setSearch(s.nmSiswa)
-                      setStudents([])
-                    }}
-                  >
-                    <div className="font-medium">{s.nmSiswa}</div>
-                    <div className="text-xs text-muted-foreground">NISN: {s.nisn} | No. Daftar: {s.noDaftar}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {selectedStudent && (
-              <div className="bg-blue-50 border border-blue-100 p-2 rounded-md text-xs flex justify-between items-center mt-1">
-                <span>Terpilih: <strong>{selectedStudent.nmSiswa}</strong></span>
-                <Button variant="ghost" size="sm" className="h-6 px-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50" onClick={() => setSelectedStudent(null)} disabled={!!editingData}>Ganti</Button>
-              </div>
-            )}
+          <div className="grid gap-2">
+            <Label>Tahap</Label>
+            <Select value={formData.tahap} onValueChange={(v) => setFormData({ ...formData, tahap: v })}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Tahap 1">Tahap 1</SelectItem>
+                <SelectItem value="Tahap 2">Tahap 2</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <Label>Tahap Pendaftaran</Label>
-              <Select value={formData.tahap} onValueChange={(v) => setFormData({ ...formData, tahap: v, jalur: v === 'Tahap 1' ? 'KETM' : 'Kejuaraan Akademik' })}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih Tahap" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Tahap 1">Tahap 1</SelectItem>
-                  <SelectItem value="Tahap 2">Tahap 2</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <Label>Jalur Pendaftaran</Label>
-              <Select value={formData.jalur} onValueChange={(v) => setFormData({ ...formData, jalur: v })}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Pilih Jalur" />
-                </SelectTrigger>
-                <SelectContent>
-                  {formData.tahap === 'Tahap 1' ? (
-                    <>
-                      <SelectItem value="KETM">KETM</SelectItem>
-                      <SelectItem value="DOMISILI">DOMISILI</SelectItem>
-                      <SelectItem value="AFIRMASI">AFIRMASI</SelectItem>
-                      <SelectItem value="ANAK GURU">ANAK GURU</SelectItem>
-                      <SelectItem value="MUTASI">MUTASI</SelectItem>
-                    </>
-                  ) : (
-                    <>
-                      <SelectItem value="Kejuaraan Akademik">Kejuaraan Akademik</SelectItem>
-                      <SelectItem value="Kejuaraan Non Akademik">Kejuaraan Non Akademik</SelectItem>
-                      <SelectItem value="Kepemimpinan">Kepemimpinan</SelectItem>
-                      <SelectItem value="Prestasi Raport">Prestasi Raport</SelectItem>
-                    </>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="grid gap-2">
+            <Label>Jalur Pendaftaran</Label>
+            <Select value={formData.jalur} onValueChange={(v) => setFormData({ ...formData, jalur: v })}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="KETM">KETM</SelectItem>
+                <SelectItem value="DOMISILI">DOMISILI</SelectItem>
+                <SelectItem value="AFIRMASI">AFIRMASI</SelectItem>
+                <SelectItem value="ANAK GURU">ANAK GURU</SelectItem>
+                <SelectItem value="MUTASI">MUTASI</SelectItem>
+                <SelectItem value="Kejuaraan Akademik">Kejuaraan Akademik</SelectItem>
+                <SelectItem value="Kejuaraan Non Akademik">Kejuaraan Non Akademik</SelectItem>
+                <SelectItem value="Kepemimpinan">Kepemimpinan</SelectItem>
+                <SelectItem value="Prestasi Raport">Prestasi Raport</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid gap-2">
             <Label>Hasil / Status</Label>
             <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-              <SelectTrigger className="w-full text-left">
-                <SelectValue placeholder="Pilih Status" />
+              <SelectTrigger className="w-full">
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="LULUS">LULUS</SelectItem>
@@ -826,234 +901,12 @@ function GraduationModal({
             </Select>
           </div>
         </div>
+
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={submitting}>Batal</Button>
-          <Button onClick={handleSubmit} disabled={submitting || !selectedStudent} className="bg-blue-600 hover:bg-blue-700">
-            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {editingData ? 'Simpan Perubahan' : 'Tambah Data'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog >
-  )
-}
-
-function BulkGraduationModal({
-  isOpen,
-  onClose,
-  onSuccess,
-}: {
-  isOpen: boolean
-  onClose: () => void
-  onSuccess: () => void
-}) {
-  const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [students, setStudents] = useState<any[]>([])
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [formData, setFormData] = useState({
-    jalur: 'ZONASI',
-    status: 'LULUS',
-    tahap: 'Tahap 1',
-  })
-
-  useEffect(() => {
-    if (isOpen) {
-      setSearch('')
-      setStudents([])
-      setSelectedIds(new Set())
-      setFormData({ jalur: 'ZONASI', status: 'LULUS', tahap: 'Tahap 1' })
-    }
-  }, [isOpen])
-
-  const handleSearch = async (val: string) => {
-    setSearch(val)
-    if (val.length < 2) {
-      setStudents([])
-      return
-    }
-
-    setLoading(true)
-    try {
-      const results = await searchStudents({ data: { q: val } })
-      setStudents(results || [])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const toggleSelect = (id: string) => {
-    const next = new Set(selectedIds)
-    if (next.has(id)) next.delete(id)
-    else next.add(id)
-    setSelectedIds(next)
-  }
-
-  const handleSubmit = async () => {
-    if (selectedIds.size === 0) {
-      toast.error('Pilih minimal satu siswa')
-      return
-    }
-
-    setSubmitting(true)
-    try {
-      const res = await bulkCreateKelulusanFn({
-        data: {
-          studentIds: Array.from(selectedIds),
-          ...formData,
-        },
-      })
-      toast.success(`${res.imported} data berhasil ditambahkan, ${res.skipped} dilewati (sudah ada).`)
-      onSuccess()
-    } catch (err: any) {
-      toast.error(err.message || 'Gagal memproses data bulk')
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-blue-600" />
-            Bulk Tambah Data Kelulusan
-          </DialogTitle>
-          <DialogDescription>
-            Pilih beberapa siswa untuk diberikan status kelulusan yang sama secara massal.
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-4 py-4">
-          <div className="grid gap-2">
-            <Label>1. Cari & Pilih Siswa ({selectedIds.size} terpilih)</Label>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Cari berdasarkan Nama, NISN, atau No. Daftar..."
-                className="pl-8"
-                value={search}
-                onChange={(e) => handleSearch(e.target.value)}
-              />
-            </div>
-
-            <div className="h-[250px] border rounded-md p-2 bg-slate-50/50 mt-2 overflow-y-auto">
-              {loading && (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground opacity-30" />
-                </div>
-              )}
-
-              {!loading && students.length === 0 && search.length >= 2 && (
-                <div className="text-center py-8 text-muted-foreground text-sm italic">
-                  Siswa tidak ditemukan.
-                </div>
-              )}
-
-              {!loading && students.length === 0 && search.length < 2 && (
-                <div className="text-center py-8 text-muted-foreground text-sm italic opacity-50">
-                  Masukkan nama atau NISN untuk mencari...
-                </div>
-              )}
-
-              <div className="space-y-1">
-                {students.map((s) => (
-                  <div
-                    key={s.id}
-                    className={`flex items-center space-x-3 p-3 rounded-md transition-colors border cursor-pointer select-none ${selectedIds.has(s.id)
-                      ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-100'
-                      : 'bg-white hover:bg-slate-50 border-slate-200'
-                      }`}
-                    onClick={() => toggleSelect(s.id)}
-                  >
-                    <Checkbox id={`student-${s.id}`} checked={selectedIds.has(s.id)} onCheckedChange={() => toggleSelect(s.id)} />
-                    <div className="flex-1 min-w-0 pointer-events-none">
-                      <div className="font-semibold text-slate-700 text-sm truncate">{s.nmSiswa}</div>
-                      <div className="text-[10px] uppercase font-bold text-slate-400">
-                        NISN: {s.nisn} <span className="mx-1">•</span> NO: {s.noDaftar}
-                      </div>
-                    </div>
-                    {selectedIds.has(s.id) && <Check className="h-4 w-4 text-blue-600 shrink-0" />}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-slate-50 border p-4 rounded-lg space-y-4 shadow-inner">
-            <Label className="font-bold text-slate-800 text-sm">2. Atur Status Massal</Label>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label className="text-[10px] uppercase font-bold text-slate-500">Tahap</Label>
-                <Select value={formData.tahap} onValueChange={(v) => setFormData({ ...formData, tahap: v, jalur: v === 'Tahap 1' ? 'KETM' : 'Kejuaraan Akademik' })}>
-                  <SelectTrigger className="bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Tahap 1">Tahap 1</SelectItem>
-                    <SelectItem value="Tahap 2">Tahap 2</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label className="text-[10px] uppercase font-bold text-slate-500">Jalur</Label>
-                <Select value={formData.jalur} onValueChange={(v) => setFormData({ ...formData, jalur: v })}>
-                  <SelectTrigger className="bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {formData.tahap === 'Tahap 1' ? (
-                      <>
-                        <SelectItem value="KETM">KETM</SelectItem>
-                        <SelectItem value="DOMISILI">DOMISILI</SelectItem>
-                        <SelectItem value="AFIRMASI">AFIRMASI</SelectItem>
-                        <SelectItem value="ANAK GURU">ANAK GURU</SelectItem>
-                        <SelectItem value="MUTASI">MUTASI</SelectItem>
-                      </>
-                    ) : (
-                      <>
-                        <SelectItem value="Kejuaraan Akademik">Kejuaraan Akademik</SelectItem>
-                        <SelectItem value="Kejuaraan Non Akademik">Kejuaraan Non Akademik</SelectItem>
-                        <SelectItem value="Kepemimpinan">Kepemimpinan</SelectItem>
-                        <SelectItem value="Prestasi Raport">Prestasi Raport</SelectItem>
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className="grid gap-2">
-              <Label className="text-[10px] uppercase font-bold text-slate-500">Hasil / Status</Label>
-              <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="LULUS">LULUS</SelectItem>
-                  <SelectItem value="TIDAK LULUS">TIDAK LULUS</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-
-        <DialogFooter className="pt-2 border-t mt-auto">
-          <Button variant="outline" onClick={onClose} disabled={submitting}>
-            Batal
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={submitting || selectedIds.size === 0}
-            className="bg-blue-600 hover:bg-blue-700 font-bold min-w-[150px]"
-          >
-            {submitting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Users className="mr-2 h-4 w-4" />
-            )}
-            SIMPAN {selectedIds.size} SISWA
+          <Button variant="outline" onClick={onClose} disabled={loading}>Batal</Button>
+          <Button onClick={handleUpdate} disabled={loading} className="bg-blue-600 hover:bg-blue-700">
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Simpan Perubahan
           </Button>
         </DialogFooter>
       </DialogContent>

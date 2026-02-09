@@ -37,8 +37,9 @@ export const student = pgTable("student", {
     tglLulus: date("tgl_lulus"), // JSON: tgl_lulus
     noTranskrip: text("no_transkrip"), // JSON: no_transkrip
 
-    // Academic Year
+    // Academic Year & Path
     tahunAjaran: text("tahun_ajaran"), // e.g., "2026/2027"
+    jalur: text("jalur"), // JSON: jalur
 
     // System Metadata
     createdAt: timestamp("created_at").defaultNow(),

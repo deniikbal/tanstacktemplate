@@ -101,14 +101,16 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
 }) {
   const filteredNavMain = data.navMain.filter(item => {
     // If user is not admin, hide adminOnly items
-    if (user.role !== 'admin' && (item as any).adminOnly) return false
+    const userRole = user.role?.toLowerCase()
+    if (userRole !== 'admin' && (item as any).adminOnly) return false
     return true
   }).map(item => {
     if (item.items) {
       return {
         ...item,
         items: item.items.filter(subItem => {
-          if (user.role !== 'admin' && (subItem as any).adminOnly) return false
+          const userRole = user.role?.toLowerCase()
+          if (userRole !== 'admin' && (subItem as any).adminOnly) return false
           return true
         })
       }

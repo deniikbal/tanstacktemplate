@@ -55,10 +55,16 @@ function DashboardLayout() {
     }
 
     // Protection for non-admin users
-    if (session?.user?.role !== 'admin') {
+    const userRole = session?.user?.role?.toLowerCase()
+    if (userRole !== 'admin') {
       const restrictedPaths = ['/dashboard/users', '/dashboard/students', '/dashboard/settings', '/dashboard/sekolah']
-      const currentPath = matches[matches.length - 1]?.pathname
-      if (restrictedPaths.includes(currentPath)) {
+      const currentPath = matches[matches.length - 1]?.pathname || ''
+
+      const isRestricted = restrictedPaths.some(path =>
+        currentPath === path || currentPath.startsWith(`${path}/`)
+      )
+
+      if (isRestricted) {
         toast.error('Anda tidak memiliki akses ke halaman ini')
         navigate({ to: '/dashboard' })
       }

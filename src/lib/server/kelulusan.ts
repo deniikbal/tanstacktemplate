@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { kelulusan } from "../db/kelulusan-schema";
 import { student } from "../db/student-schema";
-import { and, eq, desc, ilike, or, inArray, count } from "drizzle-orm";
+import { and, eq, ilike, or, inArray, count, asc } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
 
 export const getAllKelulusan = createServerFn({ method: "GET" })
@@ -68,7 +68,7 @@ export const getAllKelulusan = createServerFn({ method: "GET" })
                 .from(kelulusan)
                 .leftJoin(student, eq(kelulusan.studentId, student.id))
                 .where(whereClause)
-                .orderBy(desc(kelulusan.id))
+                .orderBy(asc(kelulusan.status), asc(kelulusan.jalur), asc(student.nmSiswa))
                 .limit(limit)
                 .offset(offset);
 
@@ -87,50 +87,38 @@ export const getAllKelulusan = createServerFn({ method: "GET" })
         }
     });
 
-export const createKelulusan = async (data: any) => {
-    await db.insert(kelulusan).values(data);
-};
-
-export const searchStudents = createServerFn({ method: "GET" })
-    .inputValidator((d: { q: string }) => d)
+export const syncKelulusan = createServerFn({ method: "POST" })
+    .inputValidator((d: { tahap: string, status: string }) => d)
     .handler(async ({ data }) => {
-        const { q } = data;
-        if (!q || q.length < 2) return [];
+        const { tahap, status } = data;
 
-        return await db
-            .select({
-                id: student.id,
-                nmSiswa: student.nmSiswa,
-                nisn: student.nisn,
-                noDaftar: student.noDaftar,
-            })
-            .from(student)
-            .where(
-                or(
-                    ilike(student.nmSiswa, `%${q}%`),
-                    ilike(student.nisn, `%${q}%`),
-                    ilike(student.noDaftar, `%${q}%`)
-                )
-            )
-            .limit(10);
-    });
+        // 1. Get all students
+        const allStudents = await db.select().from(student);
 
-export const createKelulusanFn = createServerFn({ method: "POST" })
-    .inputValidator((d: any) => d)
-    .handler(async ({ data }) => {
-        // Check for duplicate
-        const existing = await db
-            .select({ id: kelulusan.id })
-            .from(kelulusan)
-            .where(eq(kelulusan.studentId, data.studentId))
-            .limit(1);
+        // 2. Get existing student IDs in kelulusan
+        const existingRecords = await db.select({ studentId: kelulusan.studentId }).from(kelulusan);
+        const existingIds = new Set(existingRecords.map((r: { studentId: string }) => r.studentId));
 
-        if (existing.length > 0) {
-            throw new Error("Siswa ini sudah memiliki data kelulusan.");
+        // 3. Filter students not in kelulusan
+        const newStudents = allStudents.filter((s: any) => !existingIds.has(s.id));
+
+        if (newStudents.length === 0) {
+            return { synced: 0 };
         }
 
-        await createKelulusan(data);
-        return { success: true };
+        // 4. Batch insert new records
+        const values = newStudents.map((s: any) => ({
+            studentId: s.id,
+            jalur: s.jalur || '-',
+            status: status || 'LULUS',
+            tahap,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }));
+
+        await db.insert(kelulusan).values(values);
+
+        return { synced: newStudents.length };
     });
 
 export const updateKelulusan = createServerFn({ method: "POST" })
@@ -147,47 +135,7 @@ export const deleteKelulusan = createServerFn({ method: "POST" })
         await db.delete(kelulusan).where(eq(kelulusan.id, data.id));
         return { success: true };
     });
-export const bulkCreateKelulusanFn = createServerFn({ method: "POST" })
-    .inputValidator((d: { studentIds: string[]; jalur: string; status: string; tahap: string }) => d)
-    .handler(async ({ data }) => {
-        const { studentIds, jalur, status, tahap } = data;
 
-        if (!studentIds || studentIds.length === 0) {
-            return { imported: 0, skipped: 0 };
-        }
-
-        // 1. Get existing student IDs in kelulusan table
-        const existingRecords = await db
-            .select({ studentId: kelulusan.studentId })
-            .from(kelulusan)
-            .where(inArray(kelulusan.studentId, studentIds));
-
-        const existingIds = new Set(existingRecords.map((r: { studentId: string }) => r.studentId));
-
-        // 2. Filter out students that already have graduation data
-        const newStudentIds = studentIds.filter(id => !existingIds.has(id));
-
-        if (newStudentIds.length === 0) {
-            return { imported: 0, skipped: studentIds.length };
-        }
-
-        // 3. Batch insert new records
-        const values = newStudentIds.map(id => ({
-            studentId: id,
-            jalur,
-            status,
-            tahap,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        }));
-
-        await db.insert(kelulusan).values(values);
-
-        return {
-            imported: newStudentIds.length,
-            skipped: studentIds.length - newStudentIds.length,
-        };
-    });
 export const bulkDeleteKelulusan = createServerFn({ method: "POST" })
     .inputValidator((d: { ids: number[] }) => d)
     .handler(async ({ data }) => {
@@ -196,3 +144,22 @@ export const bulkDeleteKelulusan = createServerFn({ method: "POST" })
         await db.delete(kelulusan).where(inArray(kelulusan.id, ids));
         return { success: true };
     });
+
+export const getJalurStats = createServerFn({ method: "GET" })
+    .handler(async () => {
+        try {
+            const results = await db
+                .select({
+                    jalur: kelulusan.jalur,
+                    count: count(),
+                })
+                .from(kelulusan)
+                .groupBy(kelulusan.jalur);
+
+            return results;
+        } catch (error) {
+            console.error("Error fetching jalur stats:", error);
+            throw error;
+        }
+    });
+

@@ -153,6 +153,7 @@ interface UpdateStudentData {
     diterimaTanggal?: string | null
     noIjasahnas?: string | null
     noTranskrip?: string | null
+    jalur?: string | null
 }
 
 export const updateStudent = createServerFn({ method: 'POST' })
@@ -201,6 +202,7 @@ export const updateStudent = createServerFn({ method: 'POST' })
                     diterimaTanggal: cleanData.diterimaTanggal,
                     noIjasahnas: cleanData.noIjasahnas,
                     noTranskrip: cleanData.noTranskrip,
+                    jalur: cleanData.jalur,
                     updatedAt: new Date(),
                 })
                 .where(eq(student.id, cleanData.id))
@@ -228,6 +230,7 @@ interface StudentImportData {
     pekerjaan_ibu?: string
     nm_wali?: string
     pekerjaan_wali?: string
+    jalur?: string
 }
 
 export const bulkImportStudents = createServerFn({ method: 'POST' })
@@ -274,6 +277,7 @@ export const bulkImportStudents = createServerFn({ method: 'POST' })
                     pekerjaanIbu: row.pekerjaan_ibu || null,
                     nmWali: row.nm_wali || null,
                     pekerjaanWali: row.pekerjaan_wali || null,
+                    jalur: row.jalur || null,
                     tahunAjaran: aktiveTahunAjaran,
                     createdAt: new Date(),
                     updatedAt: new Date(),
@@ -305,6 +309,7 @@ interface SingleStudentImportData {
     pekerjaan_ibu?: string
     nm_wali?: string
     pekerjaan_wali?: string
+    jalur?: string
 }
 
 export const importBatchStudents = createServerFn({ method: 'POST' })
@@ -343,6 +348,7 @@ export const importBatchStudents = createServerFn({ method: 'POST' })
             pekerjaanIbu: row.pekerjaan_ibu || null,
             nmWali: row.nm_wali || null,
             pekerjaanWali: row.pekerjaan_wali || null,
+            jalur: row.jalur || null,
             tahunAjaran: aktiveTahunAjaran,
             createdAt: new Date(),
             updatedAt: new Date(),

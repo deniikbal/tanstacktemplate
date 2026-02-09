@@ -31,6 +31,7 @@ import {
     ChevronRight,
     GraduationCap
 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
@@ -108,6 +109,7 @@ interface Student {
     diterimaTanggal: string | null
     noIjasahnas: string | null
     noTranskrip: string | null
+    jalur: string | null
     // Meta
     createdAt: Date | null
 }
@@ -129,6 +131,7 @@ interface ImportStudent {
     pekerjaan_ibu?: string
     nm_wali?: string
     pekerjaan_wali?: string
+    jalur?: string
 }
 
 function StudentsPage() {
@@ -147,7 +150,7 @@ function StudentsPage() {
 
     // Pagination State
     const [page, setPage] = useState(1)
-    const [pageSize] = useState('10')
+    const [pageSize, setPageSize] = useState('10')
 
     // Bulk Delete State
     const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -405,6 +408,7 @@ function StudentsPage() {
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">No Daftar</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Nama Lengkap</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">NISN</TableHead>
+                                    <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Jalur</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Asal Sekolah</TableHead>
                                     <TableHead className="w-[70px] px-6 py-2 h-10"></TableHead>
                                 </TableRow>
@@ -424,6 +428,9 @@ function StudentsPage() {
                                             </TableCell>
                                             <TableCell className="px-6 py-2">
                                                 <Skeleton className="h-5 w-[100px] bg-slate-200" />
+                                            </TableCell>
+                                            <TableCell className="px-6 py-2">
+                                                <Skeleton className="h-5 w-[150px] bg-slate-200" />
                                             </TableCell>
                                             <TableCell className="px-6 py-2">
                                                 <Skeleton className="h-5 w-[200px] bg-slate-200" />
@@ -452,6 +459,13 @@ function StudentsPage() {
                                             <TableCell className="text-slate-600 px-6 py-2">{s.noDaftar || '-'}</TableCell>
                                             <TableCell className="font-medium text-slate-900 px-6 py-2">{s.nmSiswa || '-'}</TableCell>
                                             <TableCell className="text-slate-600 px-6 py-2">{s.nisn || '-'}</TableCell>
+                                            <TableCell className="px-6 py-2">
+                                                {s.jalur ? (
+                                                    <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-100 uppercase font-bold">
+                                                        {s.jalur}
+                                                    </Badge>
+                                                ) : '-'}
+                                            </TableCell>
                                             <TableCell className="text-slate-600 px-6 py-2">{s.sekolahAsal || '-'}</TableCell>
                                             <TableCell className="px-6 py-2">
                                                 <DropdownMenu>
@@ -495,6 +509,23 @@ function StudentsPage() {
                             {' '}- <span className="font-medium text-slate-900">{Math.min(studentsInfo?.total || 0, page * Number(pageSize))}</span>
                             {' '}dari <span className="font-medium text-slate-900">{studentsInfo?.total || 0}</span> data
                         </p>
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs text-slate-400 font-medium">Baris:</span>
+                            <Select value={pageSize} onValueChange={(val) => {
+                                setPageSize(val)
+                                setPage(1)
+                            }}>
+                                <SelectTrigger className="w-[70px] bg-white h-7 border-slate-200 shadow-sm focus:ring-blue-500 text-xs">
+                                    <SelectValue placeholder="10" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="25">25</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                    <SelectItem value="100">100</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                     {totalPages > 1 && (
                         <div className="flex items-center gap-1">
@@ -608,6 +639,7 @@ function StudentsPage() {
                                             <TableHead className="font-semibold">Nama Siswa</TableHead>
                                             <TableHead className="font-semibold">Tempat Lahir</TableHead>
                                             <TableHead className="font-semibold">Tanggal Lahir</TableHead>
+                                            <TableHead className="font-semibold">Jalur</TableHead>
                                             <TableHead className="font-semibold">JK</TableHead>
                                             <TableHead className="font-semibold">Agama</TableHead>
                                         </TableRow>
@@ -620,6 +652,13 @@ function StudentsPage() {
                                                 <TableCell className="font-medium">{row.nm_siswa}</TableCell>
                                                 <TableCell>{row.tempat_lahir || '-'}</TableCell>
                                                 <TableCell>{row.tanggal_lahir || '-'}</TableCell>
+                                                <TableCell>
+                                                    {row.jalur ? (
+                                                        <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-100 uppercase font-bold">
+                                                            {row.jalur}
+                                                        </Badge>
+                                                    ) : '-'}
+                                                </TableCell>
                                                 <TableCell>{row.jenis_kelamin || '-'}</TableCell>
                                                 <TableCell>{row.agama || '-'}</TableCell>
                                             </TableRow>
@@ -805,6 +844,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     diterimaTanggal: formData.get('diterimaTanggal') as string || null,
                     noIjasahnas: formData.get('noIjasahnas') as string || null,
                     noTranskrip: formData.get('noTranskrip') as string || null,
+                    jalur: formData.get('jalur') as string || null,
                 }
             })
             toast.success('Data siswa berhasil diperbarui')
@@ -888,7 +928,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                             <Label htmlFor="edit-teleponSiswa" className="text-xs">Telepon Siswa</Label>
                             <Input id="edit-teleponSiswa" name="teleponSiswa" defaultValue={student?.teleponSiswa || ''} className="h-8" />
                         </div>
-                        <div className="col-span-3 space-y-1">
+                        <div className="col-span-2 space-y-1">
                             <Label htmlFor="edit-alamatSiswa" className="text-xs">Alamat Siswa</Label>
                             <textarea
                                 id="edit-alamatSiswa"
@@ -897,6 +937,25 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                                 className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 rows={2}
                             />
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="edit-jalur" className="text-xs">Jalur Pendaftaran</Label>
+                            <Select name="jalur" defaultValue={student?.jalur || ''}>
+                                <SelectTrigger id="edit-jalur" className="w-full h-8">
+                                    <SelectValue placeholder="Pilih Jalur" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="KETM">KETM</SelectItem>
+                                    <SelectItem value="DOMISILI">DOMISILI</SelectItem>
+                                    <SelectItem value="AFIRMASI">AFIRMASI</SelectItem>
+                                    <SelectItem value="ANAK GURU">ANAK GURU</SelectItem>
+                                    <SelectItem value="MUTASI">MUTASI</SelectItem>
+                                    <SelectItem value="Kejuaraan Akademik">Kejuaraan Akademik</SelectItem>
+                                    <SelectItem value="Kejuaraan Non Akademik">Kejuaraan Non Akademik</SelectItem>
+                                    <SelectItem value="Kepemimpinan">Kepemimpinan</SelectItem>
+                                    <SelectItem value="Prestasi Raport">Prestasi Raport</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 </TabsContent>
@@ -964,9 +1023,8 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     </div>
                 </TabsContent>
 
-                {/* Tab Kelengkapan */}
-                <TabsContent value="supplementary" forceMount className="space-y-3 mt-3 data-[state=inactive]:hidden">
-                    <div className="grid grid-cols-4 gap-3">
+                <TabsContent value="supplementary" forceMount className="space-y-4 mt-3 data-[state=inactive]:hidden">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                         <div className="space-y-1 relative">
                             <Label htmlFor="edit-sekolahAsal" className="text-xs">Sekolah Asal</Label>
                             <div className="relative">
@@ -1022,6 +1080,9 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                             <Label htmlFor="edit-diterimaTanggal" className="text-xs">Tanggal Diterima</Label>
                             <Input id="edit-diterimaTanggal" name="diterimaTanggal" type="date" defaultValue={student?.diterimaTanggal || ''} className="h-8" />
                         </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-1">
                             <Label htmlFor="edit-statusDalamKel" className="text-xs">Status Keluarga</Label>
                             <Select name="statusDalamKel" defaultValue={student?.statusDalamKel || ''}>
@@ -1036,16 +1097,17 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                             </Select>
                         </div>
                     </div>
-                    <div className="grid grid-cols-4 gap-3">
-                        <div className="space-y-1">
+
+                    <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
+                        <div className="space-y-1 md:col-span-1">
                             <Label htmlFor="edit-anakKe" className="text-xs">Anak Ke-</Label>
                             <Input id="edit-anakKe" name="anakKe" defaultValue={student?.anakKe || ''} className="h-8" />
                         </div>
-                        <div className="space-y-1">
+                        <div className="space-y-1 md:col-span-2">
                             <Label htmlFor="edit-noIjasahnas" className="text-xs">No. Ijazah Nasional</Label>
                             <Input id="edit-noIjasahnas" name="noIjasahnas" defaultValue={student?.noIjasahnas || ''} className="h-8" />
                         </div>
-                        <div className="col-span-2 space-y-1">
+                        <div className="space-y-1 md:col-span-3">
                             <Label htmlFor="edit-noTranskrip" className="text-xs">No. Transkrip</Label>
                             <Input id="edit-noTranskrip" name="noTranskrip" defaultValue={student?.noTranskrip || ''} className="h-8" />
                         </div>
@@ -1058,7 +1120,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
                 </Button>
             </DialogFooter>
-        </form>
+        </form >
     )
 }
 
