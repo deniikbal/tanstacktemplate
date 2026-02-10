@@ -21,12 +21,6 @@ function LoginPage() {
         <CardContent className="pt-0">
           <div className='space-y-4'>
             <LoginForm />
-            <p className='text-slate-500 text-center text-sm'>
-              New on our platform?{' '}
-              <Link to='/signup' className='text-blue-600 font-medium hover:underline'>
-                Create an account
-              </Link>
-            </p>
           </div>
         </CardContent>
       </Card>

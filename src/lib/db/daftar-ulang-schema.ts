@@ -12,6 +12,11 @@ export const daftarUlang = pgTable("daftar_ulang", {
     pernyataan: boolean("pernyataan").default(false).notNull(),
     keterangan: text("keterangan"),
     petugas: text("petugas"),
+    fileSklId: text("file_skl_id"),
+    fileTatibId: text("file_tatib_id"),
+    fileKkId: text("file_kk_id"),
+    fileBuktiId: text("file_bukti_id"),
+    filePernyataanId: text("file_pernyataan_id"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });

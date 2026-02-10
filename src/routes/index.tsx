@@ -98,9 +98,6 @@ function LandingPage() {
             <a href="#kontak" className="hover:text-blue-700 transition-colors">Kontak</a>
           </div>
           <div className="hidden lg:flex items-center gap-3">
-            <Link to="/login">
-              <Button variant="ghost" className="text-slate-600 font-semibold">Masuk</Button>
-            </Link>
             <Link to="/pengumuman">
               <Button className="bg-blue-700 hover:bg-blue-800 font-semibold shadow-lg shadow-blue-700/20 px-6">
                 Pengumuman
@@ -133,9 +130,6 @@ function LandingPage() {
                   <a href="#kontak" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">Kontak</a>
                 </div>
                 <div className="mt-auto p-6 border-t bg-slate-50/50 space-y-3">
-                  <Link to="/login" onClick={() => setIsOpen(false)} className="block">
-                    <Button variant="outline" className="w-full h-11 border-slate-200 text-slate-600 font-semibold">Masuk</Button>
-                  </Link>
                   <Link to="/pengumuman" onClick={() => setIsOpen(false)} className="block">
                     <Button className="w-full h-11 bg-blue-700 hover:bg-blue-800 font-semibold shadow-lg shadow-blue-700/20">
                       Pengumuman
@@ -180,11 +174,11 @@ function LandingPage() {
             </div>
             <div className="grid grid-cols-3 gap-3 pt-4">
               <div className="bg-white border border-slate-200 rounded-xl p-4 text-center shadow-sm">
-                <div className="text-2xl md:text-3xl font-black text-slate-900">500+</div>
+                <div className="text-2xl md:text-3xl font-black text-slate-900">480</div>
                 <div className="text-xs md:text-sm text-slate-500 font-medium">Siswa Diterima</div>
               </div>
               <div className="bg-white border border-slate-200 rounded-xl p-4 text-center shadow-sm">
-                <div className="text-2xl md:text-3xl font-black text-slate-900">4</div>
+                <div className="text-2xl md:text-3xl font-black text-slate-900">5</div>
                 <div className="text-xs md:text-sm text-slate-500 font-medium">Jalur Pendaftaran</div>
               </div>
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center shadow-sm">
@@ -585,11 +579,17 @@ function LandingPage() {
                     <h4 className="text-center font-bold text-base md:text-lg mb-4 md:mb-6 leading-tight">Jalur & Kuota SMA Tahap 2</h4>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="space-y-2">
-                        <div className="bg-white text-blue-700 font-bold px-4 py-4 rounded-sm text-sm h-[70px] flex items-center justify-center text-center leading-tight">
-                          Prestasi Akademik
+                        <div className="bg-white text-blue-700 font-bold px-4 py-3 rounded-sm text-sm flex items-center justify-center text-center leading-tight">
+                          Prestasi Nilai Rapor
                         </div>
-                        <div className="bg-white text-blue-700 font-bold px-4 py-4 rounded-sm text-sm h-[70px] flex items-center justify-center text-center leading-tight">
-                          Prestasi Non-Akademik
+                        <div className="bg-white text-blue-700 font-bold px-4 py-3 rounded-sm text-sm flex items-center justify-center text-center leading-tight">
+                          Kejuaraan Akademik
+                        </div>
+                        <div className="bg-white text-blue-700 font-bold px-4 py-3 rounded-sm text-sm flex items-center justify-center text-center leading-tight">
+                          Kejuaraan Non-Akademik
+                        </div>
+                        <div className="bg-white text-blue-700 font-bold px-4 py-3 rounded-sm text-sm flex items-center justify-center text-center leading-tight">
+                          Prestasi Kepemimpinan (OSIS, dll)
                         </div>
                       </div>
                       <div className="bg-white text-blue-700 font-bold px-4 py-4 rounded-sm flex flex-col items-center justify-center text-center gap-1">
@@ -728,7 +728,7 @@ function LandingPage() {
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-blue-600 shrink-0" />
-                <span>Jl. Siliwangi No.1, Bantarujeg, Majalengka, Jawa Barat</span>
+                <span>Jl. Siliwangi No.119, Bantarujeg, Majalengka, Jawa Barat</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-blue-600 shrink-0" />

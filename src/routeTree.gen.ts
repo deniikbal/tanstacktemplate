@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StudentLoginRouteImport } from './routes/student-login'
+import { Route as StudentDashboardRouteImport } from './routes/student-dashboard'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as PengumumanRouteImport } from './routes/pengumuman'
@@ -35,6 +37,16 @@ import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr
 import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
 import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ssr.data-only'
 
+const StudentLoginRoute = StudentLoginRouteImport.update({
+  id: '/student-login',
+  path: '/student-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentDashboardRoute = StudentDashboardRouteImport.update({
+  id: '/student-dashboard',
+  path: '/student-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -170,6 +182,8 @@ export interface FileRoutesByFullPath {
   '/pengumuman': typeof PengumumanRoute
   '/scanner': typeof ScannerRoute
   '/signup': typeof SignupRoute
+  '/student-dashboard': typeof StudentDashboardRoute
+  '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
   '/dashboard/kelulusan': typeof DashboardKelulusanRoute
@@ -196,6 +210,8 @@ export interface FileRoutesByTo {
   '/pengumuman': typeof PengumumanRoute
   '/scanner': typeof ScannerRoute
   '/signup': typeof SignupRoute
+  '/student-dashboard': typeof StudentDashboardRoute
+  '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
   '/dashboard/kelulusan': typeof DashboardKelulusanRoute
@@ -224,6 +240,8 @@ export interface FileRoutesById {
   '/pengumuman': typeof PengumumanRoute
   '/scanner': typeof ScannerRoute
   '/signup': typeof SignupRoute
+  '/student-dashboard': typeof StudentDashboardRoute
+  '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
   '/dashboard/kelulusan': typeof DashboardKelulusanRoute
@@ -253,6 +271,8 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/scanner'
     | '/signup'
+    | '/student-dashboard'
+    | '/student-login'
     | '/api/admin-setup'
     | '/dashboard/daftar-ulang'
     | '/dashboard/kelulusan'
@@ -279,6 +299,8 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/scanner'
     | '/signup'
+    | '/student-dashboard'
+    | '/student-login'
     | '/api/admin-setup'
     | '/dashboard/daftar-ulang'
     | '/dashboard/kelulusan'
@@ -306,6 +328,8 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/scanner'
     | '/signup'
+    | '/student-dashboard'
+    | '/student-login'
     | '/api/admin-setup'
     | '/dashboard/daftar-ulang'
     | '/dashboard/kelulusan'
@@ -334,6 +358,8 @@ export interface RootRouteChildren {
   PengumumanRoute: typeof PengumumanRoute
   ScannerRoute: typeof ScannerRoute
   SignupRoute: typeof SignupRoute
+  StudentDashboardRoute: typeof StudentDashboardRoute
+  StudentLoginRoute: typeof StudentLoginRoute
   ApiAdminSetupRoute: typeof ApiAdminSetupRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DemoApiNamesRoute: typeof DemoApiNamesRoute
@@ -347,6 +373,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/student-login': {
+      id: '/student-login'
+      path: '/student-login'
+      fullPath: '/student-login'
+      preLoaderRoute: typeof StudentLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student-dashboard': {
+      id: '/student-dashboard'
+      path: '/student-dashboard'
+      fullPath: '/student-dashboard'
+      preLoaderRoute: typeof StudentDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -560,6 +600,8 @@ const rootRouteChildren: RootRouteChildren = {
   PengumumanRoute: PengumumanRoute,
   ScannerRoute: ScannerRoute,
   SignupRoute: SignupRoute,
+  StudentDashboardRoute: StudentDashboardRoute,
+  StudentLoginRoute: StudentLoginRoute,
   ApiAdminSetupRoute: ApiAdminSetupRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   DemoApiNamesRoute: DemoApiNamesRoute,

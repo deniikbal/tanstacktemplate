@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { toast } from 'sonner'
-import { Loader2, ClipboardList, Search, CheckCircle2, AlertCircle, XCircle, Phone, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Loader2, ClipboardList, Search, CheckCircle2, AlertCircle, XCircle, Phone, MessageCircle, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
 import { getDaftarUlangList, upsertDaftarUlang } from '@/lib/server/daftar-ulang'
 
 export const Route = createFileRoute('/dashboard/daftar-ulang')({
@@ -332,39 +332,74 @@ function DaftarUlangPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Checkbox
-                          checked={item.daftarUlang.skl}
-                          onCheckedChange={(checked) => handleCheckboxChange(item.id, 'skl', checked as boolean)}
-                          className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                        />
+                        <div className="flex flex-col items-center gap-1">
+                          <Checkbox
+                            checked={item.daftarUlang.skl}
+                            onCheckedChange={(checked) => handleCheckboxChange(item.id, 'skl', checked as boolean)}
+                            className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                          />
+                          {item.daftarUlang.fileSklId && (
+                            <a href={`https://drive.google.com/file/d/${item.daftarUlang.fileSklId}/view`} target="_blank" rel="noreferrer" title="Lihat Berkas">
+                              <FileText className="h-3 w-3 text-blue-500 hover:text-blue-700" />
+                            </a>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Checkbox
-                          checked={item.daftarUlang.tatib}
-                          onCheckedChange={(checked) => handleCheckboxChange(item.id, 'tatib', checked as boolean)}
-                          className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                        />
+                        <div className="flex flex-col items-center gap-1">
+                          <Checkbox
+                            checked={item.daftarUlang.tatib}
+                            onCheckedChange={(checked) => handleCheckboxChange(item.id, 'tatib', checked as boolean)}
+                            className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                          />
+                          {item.daftarUlang.fileTatibId && (
+                            <a href={`https://drive.google.com/file/d/${item.daftarUlang.fileTatibId}/view`} target="_blank" rel="noreferrer" title="Lihat Berkas">
+                              <FileText className="h-3 w-3 text-blue-500 hover:text-blue-700" />
+                            </a>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Checkbox
-                          checked={item.daftarUlang.kk}
-                          onCheckedChange={(checked) => handleCheckboxChange(item.id, 'kk', checked as boolean)}
-                          className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                        />
+                        <div className="flex flex-col items-center gap-1">
+                          <Checkbox
+                            checked={item.daftarUlang.kk}
+                            onCheckedChange={(checked) => handleCheckboxChange(item.id, 'kk', checked as boolean)}
+                            className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                          />
+                          {item.daftarUlang.fileKkId && (
+                            <a href={`https://drive.google.com/file/d/${item.daftarUlang.fileKkId}/view`} target="_blank" rel="noreferrer" title="Lihat Berkas">
+                              <FileText className="h-3 w-3 text-blue-500 hover:text-blue-700" />
+                            </a>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Checkbox
-                          checked={item.daftarUlang.bukti}
-                          onCheckedChange={(checked) => handleCheckboxChange(item.id, 'bukti', checked as boolean)}
-                          className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                        />
+                        <div className="flex flex-col items-center gap-1">
+                          <Checkbox
+                            checked={item.daftarUlang.bukti}
+                            onCheckedChange={(checked) => handleCheckboxChange(item.id, 'bukti', checked as boolean)}
+                            className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                          />
+                          {item.daftarUlang.fileBuktiId && (
+                            <a href={`https://drive.google.com/file/d/${item.daftarUlang.fileBuktiId}/view`} target="_blank" rel="noreferrer" title="Lihat Berkas">
+                              <FileText className="h-3 w-3 text-blue-500 hover:text-blue-700" />
+                            </a>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Checkbox
-                          checked={item.daftarUlang.pernyataan}
-                          onCheckedChange={(checked) => handleCheckboxChange(item.id, 'pernyataan', checked as boolean)}
-                          className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                        />
+                        <div className="flex flex-col items-center gap-1">
+                          <Checkbox
+                            checked={item.daftarUlang.pernyataan}
+                            onCheckedChange={(checked) => handleCheckboxChange(item.id, 'pernyataan', checked as boolean)}
+                            className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                          />
+                          {item.daftarUlang.filePernyataanId && (
+                            <a href={`https://drive.google.com/file/d/${item.daftarUlang.filePernyataanId}/view`} target="_blank" rel="noreferrer" title="Lihat Berkas">
+                              <FileText className="h-3 w-3 text-blue-500 hover:text-blue-700" />
+                            </a>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-center min-w-[100px]">
