@@ -43,24 +43,18 @@ function StudentDashboard() {
 
   const fetchProfile = async () => {
     try {
-      console.log('[Client] All cookies:', document.cookie)
       const session = getClientSession()
-      console.log('[Client] Parsed session:', session)
       if (!session) {
-        console.log('[Client] No session found, redirecting to login')
         navigate({ to: '/student-login' as any })
         return
       }
-      console.log('[Client] Calling getFullStudentProfile with studentId:', session.id)
       const data = await getFullStudentProfile({ data: { studentId: session.id } })
-      console.log('[Client] Profile data received:', data ? 'yes' : 'null')
       if (!data) {
         navigate({ to: '/student-login' as any })
         return
       }
       setProfile(data)
     } catch (error: any) {
-      console.error('[Client] fetchProfile error:', error?.message || error)
       toast.error('Gagal mengambil data profil')
       navigate({ to: '/student-login' as any })
     } finally {

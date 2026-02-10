@@ -37,30 +37,22 @@ export const loginStudent = createServerFn({ method: 'POST' })
 export const getFullStudentProfile = createServerFn({ method: 'POST' })
     .inputValidator((d: { studentId: string }) => d)
     .handler(async ({ data }) => {
-        console.log('[Server] getFullStudentProfile called with data:', JSON.stringify(data))
         const { studentId } = data
-        console.log('[Server] studentId:', studentId, 'type:', typeof studentId)
 
-        try {
-            const result = await db
-                .select({
-                    student: student,
-                    kelulusan: kelulusan,
-                    daftarUlang: daftarUlang,
-                })
-                .from(student)
-                .leftJoin(kelulusan, eq(student.id, kelulusan.studentId))
-                .leftJoin(daftarUlang, eq(kelulusan.id, daftarUlang.kelulusanId))
-                .where(eq(student.id, studentId))
-                .limit(1)
+        const result = await db
+            .select({
+                student: student,
+                kelulusan: kelulusan,
+                daftarUlang: daftarUlang,
+            })
+            .from(student)
+            .leftJoin(kelulusan, eq(student.id, kelulusan.studentId))
+            .leftJoin(daftarUlang, eq(kelulusan.id, daftarUlang.kelulusanId))
+            .where(eq(student.id, studentId))
+            .limit(1)
 
-            console.log('[Server] Query result count:', result.length)
-            if (result.length === 0) return null
-            return result[0]
-        } catch (err) {
-            console.error('[Server] DB query error:', err)
-            throw err
-        }
+        if (result.length === 0) return null
+        return result[0]
     })
 
 export const logoutStudent = createServerFn({ method: 'POST' })
