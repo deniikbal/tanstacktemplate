@@ -21,8 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog"
 import { toast } from 'sonner'
-import { Loader2, ClipboardList, Search, CheckCircle2, AlertCircle, XCircle, Phone, MessageCircle, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
+import { Loader2, ClipboardList, Search, CheckCircle2, AlertCircle, XCircle, Phone, MessageCircle, ChevronLeft, ChevronRight, FileText, X } from 'lucide-react'
 import { getDaftarUlangList, upsertDaftarUlang } from '@/lib/server/daftar-ulang'
 
 export const Route = createFileRoute('/dashboard/daftar-ulang')({
@@ -38,6 +46,20 @@ function DaftarUlangPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [total, setTotal] = useState(0)
+  const [globalStats, setGlobalStats] = useState({ sudah: 0, belum: 0, belumLengkap: 0 })
+  const [previewConfig, setPreviewConfig] = useState<{
+    isOpen: boolean,
+    driveId: string,
+    label: string,
+    studentId: number | null,
+    field: string | null
+  }>({
+    isOpen: false,
+    driveId: '',
+    label: '',
+    studentId: null,
+    field: null
+  })
   const limit = 10
 
   const fetchDaftarUlang = async () => {
@@ -54,6 +76,9 @@ function DaftarUlangPage() {
       setData(res.students)
       setTotalPages(res.totalPages)
       setTotal(res.total)
+      if (res.stats) {
+        setGlobalStats(res.stats)
+      }
     } catch (err) {
       toast.error('Gagal mengambil data daftar ulang')
     } finally {
@@ -115,6 +140,9 @@ function DaftarUlangPage() {
           description: `Status berkas: ${keteranganStatus}`,
           duration: 2000,
         });
+
+        // Refresh stats after change
+        fetchDaftarUlang();
       } catch (err) {
         toast.error('Gagal menyimpan perubahan otomatis');
         // Optional: revert local state on error
@@ -123,20 +151,6 @@ function DaftarUlangPage() {
       }
     }
   }
-
-
-
-  const statsSudah = data.filter(item =>
-    item.daftarUlang.skl && item.daftarUlang.tatib && item.daftarUlang.kk &&
-    item.daftarUlang.bukti && item.daftarUlang.pernyataan
-  ).length
-
-  const statsBelumDaftar = data.filter(item =>
-    !item.daftarUlang.skl && !item.daftarUlang.tatib && !item.daftarUlang.kk &&
-    !item.daftarUlang.bukti && !item.daftarUlang.pernyataan
-  ).length
-
-  const statsBelumLengkap = data.length - statsSudah - statsBelumDaftar
 
   return (
     <div className="p-6 space-y-6">
@@ -159,7 +173,7 @@ function DaftarUlangPage() {
             <div>
               <p className="text-xs font-medium text-blue-600 uppercase tracking-wider">Sudah Daftar Ulang</p>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-blue-700">{statsSudah}</span>
+                <span className="text-2xl font-bold text-blue-700">{globalStats.sudah}</span>
                 <span className="text-xs text-blue-600/70">Siswa</span>
               </div>
             </div>
@@ -174,7 +188,7 @@ function DaftarUlangPage() {
             <div>
               <p className="text-xs font-medium text-rose-600 uppercase tracking-wider">Belum Daftar Ulang</p>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-rose-700">{statsBelumDaftar}</span>
+                <span className="text-2xl font-bold text-rose-700">{globalStats.belum}</span>
                 <span className="text-xs text-rose-600/70">Siswa</span>
               </div>
             </div>
@@ -189,7 +203,7 @@ function DaftarUlangPage() {
             <div>
               <p className="text-xs font-medium text-orange-600 uppercase tracking-wider">Belum Lengkap</p>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-orange-700">{statsBelumLengkap}</span>
+                <span className="text-2xl font-bold text-orange-700">{globalStats.belumLengkap}</span>
                 <span className="text-xs text-orange-600/70">Siswa</span>
               </div>
             </div>
@@ -339,9 +353,19 @@ function DaftarUlangPage() {
                             className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                           />
                           {item.daftarUlang.fileSklId && (
-                            <a href={`https://drive.google.com/file/d/${item.daftarUlang.fileSklId}/view`} target="_blank" rel="noreferrer" title="Lihat Berkas">
-                              <FileText className="h-3 w-3 text-blue-500 hover:text-blue-700" />
-                            </a>
+                            <button
+                              onClick={() => setPreviewConfig({
+                                isOpen: true,
+                                driveId: item.daftarUlang.fileSklId,
+                                label: `SKL: ${item.nmSiswa}`,
+                                studentId: item.id,
+                                field: 'skl'
+                              })}
+                              className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                              title="Lihat Berkas"
+                            >
+                              <FileText className="h-3.5 w-3.5 text-blue-500" />
+                            </button>
                           )}
                         </div>
                       </TableCell>
@@ -353,9 +377,19 @@ function DaftarUlangPage() {
                             className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                           />
                           {item.daftarUlang.fileTatibId && (
-                            <a href={`https://drive.google.com/file/d/${item.daftarUlang.fileTatibId}/view`} target="_blank" rel="noreferrer" title="Lihat Berkas">
-                              <FileText className="h-3 w-3 text-blue-500 hover:text-blue-700" />
-                            </a>
+                            <button
+                              onClick={() => setPreviewConfig({
+                                isOpen: true,
+                                driveId: item.daftarUlang.fileTatibId,
+                                label: `Tatib: ${item.nmSiswa}`,
+                                studentId: item.id,
+                                field: 'tatib'
+                              })}
+                              className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                              title="Lihat Berkas"
+                            >
+                              <FileText className="h-3.5 w-3.5 text-blue-500" />
+                            </button>
                           )}
                         </div>
                       </TableCell>
@@ -367,9 +401,19 @@ function DaftarUlangPage() {
                             className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                           />
                           {item.daftarUlang.fileKkId && (
-                            <a href={`https://drive.google.com/file/d/${item.daftarUlang.fileKkId}/view`} target="_blank" rel="noreferrer" title="Lihat Berkas">
-                              <FileText className="h-3 w-3 text-blue-500 hover:text-blue-700" />
-                            </a>
+                            <button
+                              onClick={() => setPreviewConfig({
+                                isOpen: true,
+                                driveId: item.daftarUlang.fileKkId,
+                                label: `KK: ${item.nmSiswa}`,
+                                studentId: item.id,
+                                field: 'kk'
+                              })}
+                              className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                              title="Lihat Berkas"
+                            >
+                              <FileText className="h-3.5 w-3.5 text-blue-500" />
+                            </button>
                           )}
                         </div>
                       </TableCell>
@@ -381,9 +425,19 @@ function DaftarUlangPage() {
                             className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                           />
                           {item.daftarUlang.fileBuktiId && (
-                            <a href={`https://drive.google.com/file/d/${item.daftarUlang.fileBuktiId}/view`} target="_blank" rel="noreferrer" title="Lihat Berkas">
-                              <FileText className="h-3 w-3 text-blue-500 hover:text-blue-700" />
-                            </a>
+                            <button
+                              onClick={() => setPreviewConfig({
+                                isOpen: true,
+                                driveId: item.daftarUlang.fileBuktiId,
+                                label: `Bukti: ${item.nmSiswa}`,
+                                studentId: item.id,
+                                field: 'bukti'
+                              })}
+                              className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                              title="Lihat Berkas"
+                            >
+                              <FileText className="h-3.5 w-3.5 text-blue-500" />
+                            </button>
                           )}
                         </div>
                       </TableCell>
@@ -395,9 +449,19 @@ function DaftarUlangPage() {
                             className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                           />
                           {item.daftarUlang.filePernyataanId && (
-                            <a href={`https://drive.google.com/file/d/${item.daftarUlang.filePernyataanId}/view`} target="_blank" rel="noreferrer" title="Lihat Berkas">
-                              <FileText className="h-3 w-3 text-blue-500 hover:text-blue-700" />
-                            </a>
+                            <button
+                              onClick={() => setPreviewConfig({
+                                isOpen: true,
+                                driveId: item.daftarUlang.filePernyataanId,
+                                label: `Pernyataan: ${item.nmSiswa}`,
+                                studentId: item.id,
+                                field: 'pernyataan'
+                              })}
+                              className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                              title="Lihat Berkas"
+                            >
+                              <FileText className="h-3.5 w-3.5 text-blue-500" />
+                            </button>
                           )}
                         </div>
                       </TableCell>
@@ -518,6 +582,21 @@ function DaftarUlangPage() {
                           onCheckedChange={(checked) => handleCheckboxChange(item.id, doc.id, checked as boolean)}
                           className="h-5 w-5 rounded-md border-slate-200 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
                         />
+                        {item.daftarUlang[`file${doc.id.charAt(0).toUpperCase() + doc.id.slice(1)}Id`] && (
+                          <button
+                            onClick={() => setPreviewConfig({
+                              isOpen: true,
+                              driveId: item.daftarUlang[`file${doc.id.charAt(0).toUpperCase() + doc.id.slice(1)}Id`],
+                              label: `${doc.label}: ${item.nmSiswa}`,
+                              studentId: item.id,
+                              field: doc.id
+                            })}
+                            className="mt-1 flex items-center justify-center p-1 bg-blue-50 rounded-md text-blue-600 active:scale-95 transition-transform"
+                          >
+                            <FileText className="h-3 w-3" />
+                            <span className="text-[9px] font-bold ml-0.5">LIHAT</span>
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -569,6 +648,62 @@ function DaftarUlangPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Admin File Preview Modal */}
+      <Dialog
+        open={previewConfig.isOpen}
+        onOpenChange={(open) => setPreviewConfig({ ...previewConfig, isOpen: open })}
+      >
+        <DialogContent
+          className="max-w-[100vw] w-screen h-screen sm:max-w-5xl sm:h-[90vh] p-0 overflow-hidden sm:rounded-3xl border-none shadow-2xl flex flex-col bg-slate-900"
+          showCloseButton={false}
+        >
+          <DialogHeader className="p-4 sm:p-6 bg-white border-b flex flex-row items-center justify-between shrink-0 h-16 sm:h-20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                <FileText className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <DialogTitle className="text-sm sm:text-base font-bold text-slate-900">Preview Berkas Admin</DialogTitle>
+                <DialogDescription className="text-[10px] sm:text-xs text-slate-500 font-medium">{previewConfig.label}</DialogDescription>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {previewConfig.studentId && previewConfig.field && (
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50/50 rounded-xl border border-blue-100/50">
+                  <Checkbox
+                    id="modal-verify"
+                    checked={data.find(s => s.id === previewConfig.studentId)?.daftarUlang[previewConfig.field as string] || false}
+                    onCheckedChange={(checked) => {
+                      if (previewConfig.studentId && previewConfig.field) {
+                        handleCheckboxChange(previewConfig.studentId, previewConfig.field, checked as boolean);
+                      }
+                    }}
+                    className="h-4 w-4 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                  />
+                  <label htmlFor="modal-verify" className="text-[10px] sm:text-xs font-bold text-blue-700 cursor-pointer whitespace-nowrap">
+                    BERKAS SESUAI
+                  </label>
+                </div>
+              )}
+
+              <DialogClose className="p-2 hover:bg-slate-100 rounded-full transition-colors active:scale-95">
+                <X className="h-5 w-5 text-slate-500" />
+              </DialogClose>
+            </div>
+          </DialogHeader>
+          <div className="flex-1 bg-slate-800 relative w-full h-full">
+            {previewConfig.driveId && (
+              <iframe
+                src={`https://drive.google.com/file/d/${previewConfig.driveId}/preview`}
+                className="absolute inset-0 w-full h-full border-none"
+                allow="autoplay"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -43,10 +43,12 @@ export const Route = createRootRoute({
       {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@700&display=swap',
+        crossOrigin: 'anonymous',
       },
       {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/icon?family=Material+Icons+Round',
+        crossOrigin: 'anonymous',
       },
     ],
   }),
@@ -79,7 +81,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         {/* <Header /> */}
         {children}
-        <Toaster position="top-right" richColors />
+        <Toaster position="bottom-center" richColors />
         {/* <TanStackDevtools
           config={{
             position: 'bottom-right',

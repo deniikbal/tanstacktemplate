@@ -8,7 +8,15 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
-import { Loader2, QrCode, User, School, Phone, CheckCircle2, XCircle, RefreshCw, LogOut, Info } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog"
+import { Loader2, QrCode, User, School, Phone, CheckCircle2, XCircle, RefreshCw, LogOut, FileText, X } from 'lucide-react'
 import { getStudentByQRData } from '@/lib/server/scanner'
 import { upsertDaftarUlang } from '@/lib/server/daftar-ulang'
 import { authClient } from '@/lib/auth-client'
@@ -27,6 +35,17 @@ function ScannerPage() {
   const [loading, setLoading] = useState(false)
   const [scanning, setScanning] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [previewConfig, setPreviewConfig] = useState<{
+    isOpen: boolean,
+    driveId: string,
+    label: string,
+    field: string | null
+  }>({
+    isOpen: false,
+    driveId: '',
+    label: '',
+    field: null
+  })
 
   useEffect(() => {
     if (!sessionPending && !session) {
@@ -91,6 +110,7 @@ function ScannerPage() {
   const resetScanner = () => {
     setData(null)
     setScanning(true)
+    setPreviewConfig(prev => ({ ...prev, isOpen: false }))
   }
 
   return (
@@ -237,11 +257,29 @@ function ScannerPage() {
                     <Label htmlFor={item.id} className="text-sm font-medium text-slate-700 cursor-pointer flex-1">
                       {item.label}
                     </Label>
-                    {data.daftarUlang[item.id] ? (
-                      <CheckCircle2 className="w-4 h-4 text-blue-500" />
-                    ) : (
-                      <div className="w-4 h-4 rounded-full border-2 border-slate-200" />
-                    )}
+
+                    <div className="flex items-center gap-2">
+                      {data.daftarUlang[`file${item.id.charAt(0).toUpperCase() + item.id.slice(1)}Id`] && (
+                        <button
+                          onClick={() => setPreviewConfig({
+                            isOpen: true,
+                            driveId: data.daftarUlang[`file${item.id.charAt(0).toUpperCase() + item.id.slice(1)}Id`],
+                            label: `${item.label}: ${data.student.nmSiswa}`,
+                            field: item.id
+                          })}
+                          className="flex items-center justify-center px-2 py-1 bg-blue-50 rounded-lg text-blue-600 active:scale-95 transition-transform"
+                        >
+                          <FileText className="h-3 w-3" />
+                          <span className="text-[10px] font-black ml-1">LIHAT</span>
+                        </button>
+                      )}
+
+                      {data.daftarUlang[item.id] ? (
+                        <CheckCircle2 className="w-5 h-5 text-blue-500" />
+                      ) : (
+                        <div className="w-5 h-5 rounded-full border-2 border-slate-200" />
+                      )}
+                    </div>
                   </div>
                 ))}
 
@@ -281,6 +319,62 @@ function ScannerPage() {
           100% { top: 100%; opacity: 0; }
         }
       `}} />
+
+      {/* Admin File Preview Modal */}
+      <Dialog
+        open={previewConfig.isOpen}
+        onOpenChange={(open) => setPreviewConfig({ ...previewConfig, isOpen: open })}
+      >
+        <DialogContent
+          className="max-w-[100vw] w-screen h-screen sm:max-w-5xl sm:h-[90vh] p-0 overflow-hidden rounded-none sm:rounded-3xl border-none shadow-2xl flex flex-col bg-slate-900"
+          showCloseButton={false}
+        >
+          <DialogHeader className="p-3 sm:p-6 bg-white border-b flex flex-row items-center justify-between shrink-0 h-14 sm:h-20">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-50 rounded-lg sm:rounded-xl flex items-center justify-center">
+                <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-xs sm:text-base font-bold text-slate-900 truncate">Preview Berkas</DialogTitle>
+                <DialogDescription className="text-[9px] sm:text-xs text-slate-500 font-medium truncate">{previewConfig.label}</DialogDescription>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 sm:gap-3">
+              {previewConfig.field && (
+                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-50/50 rounded-lg sm:rounded-xl border border-blue-100/50">
+                  <Checkbox
+                    id="modal-verify-scanner"
+                    checked={data?.daftarUlang?.[previewConfig.field] || false}
+                    onCheckedChange={(checked) => {
+                      if (previewConfig.field && data) {
+                        handleToggleCheck(previewConfig.field, checked as boolean);
+                      }
+                    }}
+                    className="h-4 w-4 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                  />
+                  <label htmlFor="modal-verify-scanner" className="text-[9px] sm:text-xs font-black text-blue-700 cursor-pointer whitespace-nowrap">
+                    SESUAI
+                  </label>
+                </div>
+              )}
+
+              <DialogClose className="p-1.5 sm:p-2 hover:bg-slate-100 rounded-full transition-colors active:scale-95">
+                <X className="h-5 w-5 text-slate-500" />
+              </DialogClose>
+            </div>
+          </DialogHeader>
+          <div className="flex-1 bg-slate-800 relative w-full h-full">
+            {previewConfig.driveId && (
+              <iframe
+                src={`https://drive.google.com/file/d/${previewConfig.driveId}/preview`}
+                className="absolute inset-0 w-full h-full border-none"
+                allow="autoplay"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

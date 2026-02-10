@@ -6,9 +6,10 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogDescription,
     DialogFooter,
 } from '@/components/ui/dialog'
-import { Camera, RefreshCw, Check, X, Scissors, Loader2 } from 'lucide-react'
+import { Camera, RefreshCw, Check, X, Scissors, Loader2, RotateCw } from 'lucide-react'
 import { jsPDF } from 'jspdf'
 
 interface DocumentScannerProps {
@@ -22,6 +23,7 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
     const [image, setImage] = useState<string | null>(null)
     const [crop, setCrop] = useState({ x: 0, y: 0 })
     const [zoom, setZoom] = useState(1)
+    const [rotation, setRotation] = useState(0)
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null)
     const [isCameraActive, setIsCameraActive] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
@@ -115,27 +117,38 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
             image.src = url
         })
 
-    const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<Blob> => {
+    const getCroppedImg = async (imageSrc: string, pixelCrop: any, rotation = 0): Promise<Blob> => {
         const image = await createImage(imageSrc)
         const canvas = document.createElement('canvas')
         const ctx = canvas.getContext('2d')
 
         if (!ctx) throw new Error('No 2d context')
 
-        canvas.width = pixelCrop.width
-        canvas.height = pixelCrop.pixelCropHeight || pixelCrop.height
+        const rotRad = (rotation * Math.PI) / 180
+        const { width: bWidth, height: bHeight } = {
+            width: Math.abs(Math.cos(rotRad) * image.width) + Math.abs(Math.sin(rotRad) * image.height),
+            height: Math.abs(Math.sin(rotRad) * image.width) + Math.abs(Math.cos(rotRad) * image.height),
+        }
 
-        ctx.drawImage(
-            image,
+        canvas.width = bWidth
+        canvas.height = bHeight
+
+        ctx.translate(bWidth / 2, bHeight / 2)
+        ctx.rotate(rotRad)
+        ctx.translate(-image.width / 2, -image.height / 2)
+        ctx.drawImage(image, 0, 0)
+
+        const data = ctx.getImageData(
             pixelCrop.x,
             pixelCrop.y,
             pixelCrop.width,
-            pixelCrop.height,
-            0,
-            0,
-            pixelCrop.width,
             pixelCrop.height
         )
+
+        canvas.width = pixelCrop.width
+        canvas.height = pixelCrop.height
+
+        ctx.putImageData(data, 0, 0)
 
         return new Promise((resolve) => {
             canvas.toBlob((blob) => {
@@ -149,7 +162,7 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
 
         setIsProcessing(true)
         try {
-            const croppedBlob = await getCroppedImg(image, croppedAreaPixels)
+            const croppedBlob = await getCroppedImg(image, croppedAreaPixels, rotation)
             const reader = new FileReader()
 
             reader.onloadend = async () => {
@@ -171,9 +184,10 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
                 const pdfBlob = pdf.output('blob')
                 const file = new File([pdfBlob], 'document_scan.pdf', { type: 'application/pdf' })
 
-                await onUpload(file)
+                onUpload(file)
                 onClose()
                 setImage(null)
+                setRotation(0)
             }
 
             reader.readAsDataURL(croppedBlob)
@@ -188,6 +202,7 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
     const handleClose = () => {
         stopCamera()
         setImage(null)
+        setRotation(0)
         onClose()
     }
 
@@ -200,12 +215,13 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="sm:max-w-[600px] h-[90vh] flex flex-col p-0 overflow-hidden rounded-3xl border-none shadow-2xl">
-                <DialogHeader className="p-6 bg-white border-b shrink-0">
-                    <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <DialogContent className="max-w-[100vw] w-screen h-[100vh] sm:h-[90vh] sm:max-w-[600px] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-none shadow-2xl bg-slate-950">
+                <DialogHeader className="p-4 sm:p-6 bg-white border-b shrink-0 h-20 sm:h-auto flex flex-col justify-center">
+                    <DialogTitle className="text-base sm:text-xl font-bold text-slate-900 flex items-center gap-2">
                         <Scissors className="w-5 h-5 text-blue-600" />
                         Scan {title}
                     </DialogTitle>
+                    <DialogDescription className="text-[10px] sm:text-xs text-slate-500">Ambil foto dokumen & simpan sebagai PDF.</DialogDescription>
                 </DialogHeader>
 
                 <div className="flex-1 relative bg-slate-950 overflow-hidden">
@@ -218,7 +234,7 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
                                 muted
                                 className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-x-8 inset-y-20 border-2 border-white/50 rounded-xl pointer-events-none">
+                            <div className="absolute inset-x-6 inset-y-16 sm:inset-x-8 sm:inset-y-20 border-2 border-white/30 rounded-xl pointer-events-none">
                                 <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-blue-500 -mt-1 -ml-1 rounded-tl-md"></div>
                                 <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-blue-500 -mt-1 -mr-1 rounded-tr-md"></div>
                                 <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-blue-500 -mb-1 -ml-1 rounded-bl-md"></div>
@@ -233,8 +249,10 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
                                 image={image}
                                 crop={crop}
                                 zoom={zoom}
+                                rotation={rotation}
                                 aspect={1 / 1.414} // A4 Aspect Ratio
                                 onCropChange={setCrop}
+                                onRotationChange={setRotation}
                                 onCropComplete={onCropComplete}
                                 onZoomChange={setZoom}
                             />
@@ -243,51 +261,69 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
 
                     {!isCameraActive && !image && (
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Loader2 className="w-10 h-10 text-white animate-spin" />
+                            <div className="text-center space-y-3">
+                                <Loader2 className="w-10 h-10 text-white animate-spin mx-auto" />
+                                <p className="text-white/50 text-[10px] font-medium tracking-wider">MENGAKTIFKAN KAMERA...</p>
+                            </div>
                         </div>
                     )}
                 </div>
 
-                <DialogFooter className="p-6 bg-white border-t flex flex-row items-center justify-between sm:justify-between gap-4 shrink-0">
+                <DialogFooter className="p-4 sm:p-6 bg-white border-t flex flex-row items-center justify-between gap-3 shrink-0">
                     {image ? (
                         <>
-                            <Button
-                                variant="outline"
-                                onClick={() => { setImage(null); startCamera(); }}
-                                className="rounded-xl border-slate-200"
-                            >
-                                <RefreshCw className="w-4 h-4 mr-2" />
-                                Ulang Foto
-                            </Button>
+                            <div className="flex gap-2 shrink-0">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => { setImage(null); startCamera(); setRotation(0); }}
+                                    className="rounded-xl border-slate-200 h-10 sm:h-11"
+                                >
+                                    <RefreshCw className="w-3.5 h-3.5 mr-1.5 sm:mr-2" />
+                                    <span className="text-xs sm:text-sm">Ulang</span>
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setRotation((prev) => (prev + 90) % 360)}
+                                    className="rounded-xl border-slate-200 h-10 sm:h-11"
+                                >
+                                    <RotateCw className="w-3.5 h-3.5 mr-1.5 sm:mr-2" />
+                                    <span className="text-xs sm:text-sm">Putar</span>
+                                </Button>
+                            </div>
                             <Button
                                 onClick={handleProcessAndUpload}
                                 disabled={isProcessing}
-                                className="rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-100"
+                                size="sm"
+                                className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-100 h-10 sm:h-11"
                             >
                                 {isProcessing ? (
                                     <Loader2 className="w-4 h-4 animate-spin mr-2" />
                                 ) : (
                                     <Check className="w-4 h-4 mr-2" />
                                 )}
-                                Simpan & Upload
+                                <span className="text-xs sm:text-sm">Simpan & Upload</span>
                             </Button>
                         </>
                     ) : (
                         <>
                             <Button
                                 variant="outline"
+                                size="sm"
                                 onClick={handleClose}
-                                className="rounded-xl border-slate-200"
+                                className="rounded-xl border-slate-200 h-10 sm:h-11"
                             >
-                                <X className="w-4 h-4 mr-2" />
-                                Batal
+                                <X className="w-4 h-4 mr-1.5 sm:mr-2" />
+                                <span className="text-xs sm:text-sm">Batal</span>
                             </Button>
                             <Button
                                 onClick={capturePhoto}
-                                className="rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-100 h-12 px-8 font-bold"
+                                size="sm"
+                                className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-100 h-11 sm:h-12 font-bold px-4 sm:px-8 transition-transform active:scale-95"
                             >
-                                <Camera className="w-5 h-5 mr-2" />
-                                Ambil Foto
+                                <Camera className="w-5 h-5 mr-1.5 sm:mr-2" />
+                                <span className="text-sm sm:text-base">Ambil Foto Dokumen</span>
                             </Button>
                         </>
                     )}

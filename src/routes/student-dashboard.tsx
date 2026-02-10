@@ -15,13 +15,24 @@ import {
   FileDigit,
   Receipt,
   ClipboardCheck,
-  Eye
+  Eye,
+  Camera,
+  Info,
+  Lightbulb,
+  MousePointerClick
 } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { getFullStudentProfile, logoutStudent } from '@/lib/server/student-auth'
 import { uploadStudentFile } from '@/lib/server/daftar-ulang'
 import { DocumentScanner } from '@/components/DocumentScanner'
-import { Camera } from 'lucide-react'
+
 
 export const Route = createFileRoute('/student-dashboard')({
   component: StudentDashboard,
@@ -45,6 +56,11 @@ function StudentDashboard() {
   const [scannerConfig, setScannerConfig] = useState<{ isOpen: boolean, type: string, label: string }>({
     isOpen: false,
     type: '',
+    label: ''
+  })
+  const [previewConfig, setPreviewConfig] = useState<{ isOpen: boolean, driveId: string, label: string }>({
+    isOpen: false,
+    driveId: '',
     label: ''
   })
   const navigate = useNavigate()
@@ -139,7 +155,7 @@ function StudentDashboard() {
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center space-y-4">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto" />
-          <p className="text-slate-500 font-medium font-inter text-sm">Memvalidasi sesi portal siswa...</p>
+          <p className="text-slate-500 font-medium font-inter text-sm">Sedang memuat...</p>
         </div>
       </div>
     )
@@ -181,27 +197,27 @@ function StudentDashboard() {
 
       <main className="max-w-4xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-500">
         {/* Welcome Card */}
-        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm overflow-hidden relative">
+        <div className="bg-white rounded-[2rem] p-6 sm:p-8 border border-slate-200 shadow-sm overflow-hidden relative">
           <div className="absolute top-0 right-0 p-8 opacity-5">
             <GraduationCap className="w-48 h-48 text-blue-600" />
           </div>
 
           <div className="relative z-10 space-y-6">
             <div className="space-y-2 text-center sm:text-left">
-              <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Selamat Datang, {profile.student.nmSiswa}!</h2>
-              <p className="text-slate-500">Silakan pantau status pendaftaran dan lengkapi berkas Anda di bawah ini.</p>
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight">Selamat Datang, {profile.student.nmSiswa}!</h2>
+              <p className="text-slate-500 text-sm sm:text-base">Silakan pantau status pendaftaran dan lengkapi berkas Anda di bawah ini.</p>
             </div>
 
-            <div className={`p-6 rounded-2xl flex flex-col sm:flex-row items-center gap-6 ${isLulus ? 'bg-emerald-50 border border-emerald-100' : 'bg-rose-50 border border-rose-100'}`}>
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center shrink-0 ${isLulus ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>
-                {isLulus ? <CheckCircle2 className="w-10 h-10" /> : <AlertCircle className="w-10 h-10" />}
+            <div className={`p-5 sm:p-6 rounded-2xl flex flex-col sm:flex-row items-center gap-4 sm:gap-6 ${isLulus ? 'bg-emerald-50 border border-emerald-100' : 'bg-rose-50 border border-rose-100'}`}>
+              <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shrink-0 ${isLulus ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>
+                {isLulus ? <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10" /> : <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10" />}
               </div>
-              <div className="text-center sm:text-left space-y-1">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest opacity-70">Hasil Seleksi</p>
-                <h3 className={`text-4xl font-black italic tracking-tighter ${isLulus ? 'text-emerald-700' : 'text-rose-700'}`}>
+              <div className="text-center sm:text-left space-y-0.5 sm:space-y-1">
+                <p className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest opacity-70">Hasil Seleksi</p>
+                <h3 className={`text-2xl sm:text-4xl font-black italic tracking-tighter ${isLulus ? 'text-emerald-700' : 'text-rose-700'}`}>
                   {isLulus ? 'ANDA LULUS' : 'TIDAK LULUS'}
                 </h3>
-                <p className="text-slate-600 text-sm font-medium">
+                <p className="text-slate-600 text-xs sm:text-sm font-medium leading-relaxed">
                   {isLulus
                     ? `Selamat! Anda dinyatakan lulus pada jalur ${profile.kelulusan.jalur} (${profile.kelulusan.tahap}). Segera lengkapi berkas untuk daftar ulang.`
                     : 'Mohon maaf, Anda belum dinyatakan lulus pada seleksi kali ini. Tetap semangat!'
@@ -212,18 +228,55 @@ function StudentDashboard() {
           </div>
         </div>
 
+        {/* Info & Guide Card */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-150">
+          <div className="bg-blue-600 rounded-3xl p-6 text-white shadow-xl shadow-blue-200 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+              <Lightbulb className="w-20 h-20" />
+            </div>
+            <div className="relative z-10 space-y-3">
+              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <Info className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-sm sm:text-base">Panduan Berkas</h3>
+              <p className="text-blue-50 text-[10px] sm:text-xs leading-relaxed">Pilih salah satu metode unggah yang paling mudah bagi Anda (Scan Foto atau Upload File PDF).</p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm md:col-span-2 flex flex-col sm:flex-row gap-6">
+            <div className="flex-1 space-y-3">
+              <div className="flex items-center gap-2 text-blue-600">
+                <Camera className="w-4 h-4" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Metode 1: Smart Scanner</span>
+              </div>
+              <p className="text-slate-600 text-[11px] leading-relaxed">Gunakan kamera HP untuk memfoto dokumen fisik secara langsung. Sistem akan otomatis merapikan (crop) dan merubahnya menjadi PDF.</p>
+            </div>
+            <div className="w-px h-full bg-slate-100 hidden sm:block" />
+            <div className="flex-1 space-y-3">
+              <div className="flex items-center gap-2 text-slate-400">
+                <Upload className="w-4 h-4" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Metode 2: Upload PDF</span>
+              </div>
+              <p className="text-slate-600 text-[11px] leading-relaxed">Jika Anda sudah memiliki file PDF digital (hasil scan mesin), gunakan tombol Upload untuk mengirim file tersebut.</p>
+            </div>
+          </div>
+        </div>
+
         {isLulus && (
-          <Card className="border-none shadow-xl shadow-slate-200/50 rounded-3xl overflow-hidden animate-in slide-in-from-bottom-4 duration-700">
-            <CardHeader className="bg-white border-b border-slate-100 px-8 py-6">
-              <div className="flex items-center justify-between">
+          <Card className="border-none shadow-xl shadow-slate-200/50 rounded-[2rem] overflow-hidden animate-in slide-in-from-bottom-4 duration-700 delay-300">
+            <CardHeader className="bg-white border-b border-slate-100 px-6 py-5 sm:px-8 sm:py-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-1">
-                  <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800">
+                  <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2 text-slate-800">
                     <ClipboardCheck className="w-5 h-5 text-blue-600" />
-                    Upload Berkas (PDF)
+                    Lengkapi Berkas Daftar Ulang
                   </CardTitle>
-                  <CardDescription>File maksimal 2MB per dokumen.</CardDescription>
+                  <CardDescription className="text-xs sm:text-sm flex items-center gap-1.5">
+                    <MousePointerClick className="w-3.5 h-3.5 text-blue-500" />
+                    Klik tombol "Foto" atau "Upload" pada setiap dokumen.
+                  </CardDescription>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold border border-blue-100 uppercase tracking-wider">
+                <div className="flex items-center self-start sm:self-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold border border-blue-100 uppercase tracking-wider">
                   <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse" />
                   Google Drive Sync
                 </div>
@@ -254,37 +307,30 @@ function StudentDashboard() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2 self-end sm:self-center">
+                      <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                         {driveId && (
                           <Button
                             variant="outline"
                             size="sm"
-                            className="rounded-xl h-10 px-4 font-bold border-slate-200 text-slate-600 hover:bg-slate-50 transition-all active:scale-95"
-                            asChild
+                            className="rounded-xl h-10 px-4 font-bold border-slate-200 text-slate-600 hover:bg-slate-50 transition-all active:scale-95 flex-1 sm:flex-none justify-center"
+                            onClick={() => setPreviewConfig({ isOpen: true, driveId: driveId, label: doc.label })}
                           >
-                            <a
-                              href={`https://drive.google.com/file/d/${driveId}/view`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center"
-                            >
-                              <Eye className="w-4 h-4 mr-2" />
-                              Lihat Berkas
-                            </a>
+                            <Eye className="w-4 h-4 mr-2" />
+                            <span className="whitespace-nowrap">Lihat</span>
                           </Button>
                         )}
                         <Button
                           variant="outline"
                           size="sm"
-                          className="rounded-xl h-10 px-4 font-bold border-slate-200 text-slate-600 hover:bg-slate-50 transition-all active:scale-95"
+                          className="rounded-xl h-10 px-4 font-bold border-slate-200 text-slate-600 hover:bg-slate-50 transition-all active:scale-95 flex-1 sm:flex-none justify-center"
                           onClick={() => setScannerConfig({ isOpen: true, type: doc.id, label: doc.label })}
                           disabled={!!isUploading}
                         >
                           <Camera className="w-4 h-4 mr-2" />
-                          Ambil Foto
+                          <span className="whitespace-nowrap">Foto</span>
                         </Button>
 
-                        <label className="relative">
+                        <label className="relative flex-1 sm:flex-none">
                           <input
                             type="file"
                             className="hidden"
@@ -295,17 +341,17 @@ function StudentDashboard() {
                           <Button
                             variant={driveId ? "outline" : "default"}
                             size="sm"
-                            className={`rounded-xl h-10 px-6 font-bold transition-all ${!driveId ? 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-100 active:scale-95' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+                            className={`w-full rounded-xl h-10 px-6 font-bold transition-all ${!driveId ? 'bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-100 active:scale-95' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                             asChild
                           >
-                            <span>
+                            <div>
                               {isUploading ? (
-                                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                <Loader2 className="w-4 h-4 animate-spin" />
                               ) : (
                                 <Upload className="w-4 h-4 mr-2" />
                               )}
-                              {isUploading ? 'Mengunggah...' : driveId ? 'Ganti Berkas' : 'Upload Berkas'}
-                            </span>
+                              <span className="whitespace-nowrap">{driveId ? 'Ganti' : 'Upload'}</span>
+                            </div>
                           </Button>
                         </label>
                       </div>
@@ -356,6 +402,60 @@ function StudentDashboard() {
         title={scannerConfig.label}
         onUpload={(file) => handleScannerUpload(file, scannerConfig.type)}
       />
+
+      <Dialog
+        open={previewConfig.isOpen}
+        onOpenChange={(open) => setPreviewConfig({ ...previewConfig, isOpen: open })}
+      >
+        <DialogContent className="max-w-[100vw] w-screen h-screen sm:max-w-5xl sm:h-[90vh] p-0 overflow-hidden sm:rounded-3xl border-none shadow-2xl flex flex-col bg-slate-900">
+          <DialogHeader className="p-4 sm:p-6 bg-white border-b flex flex-row items-center justify-between shrink-0 h-16 sm:h-20">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+                <FileText className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <DialogTitle className="text-sm sm:text-base font-bold text-slate-900">Preview: {previewConfig.label}</DialogTitle>
+                <DialogDescription className="text-[10px] sm:text-xs text-slate-500 font-medium">Google Drive Viewer</DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <div className="flex-1 bg-slate-800 relative w-full h-full">
+            {previewConfig.driveId && (
+              <iframe
+                src={`https://drive.google.com/file/d/${previewConfig.driveId}/preview`}
+                className="absolute inset-0 w-full h-full border-none"
+                allow="autoplay"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload Progress Overlay */}
+      {uploadingField && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <Card className="w-[280px] sm:w-[320px] bg-white rounded-3xl border-none shadow-2xl p-6 sm:p-8 text-center space-y-4">
+            <div className="relative w-20 h-20 mx-auto">
+              <div className="absolute inset-0 border-4 border-blue-50/50 rounded-full" />
+              <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Upload className="w-8 h-8 text-blue-600 animate-pulse" />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-bold text-slate-900">Sedang Mengunggah</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Mohon tunggu, berkas <span className="font-bold text-blue-600 uppercase">{uploadingField}</span> sedang disinkronkan ke Google Drive...
+              </p>
+            </div>
+            <div className="pt-2">
+              <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-blue-600 w-2/3 animate-[pulse_2s_ease-in-out_infinite]" />
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
 
       <footer className="max-w-4xl mx-auto px-4 py-12 text-center">
         <div className="w-12 h-1 bg-slate-200 mx-auto rounded-full mb-6" />

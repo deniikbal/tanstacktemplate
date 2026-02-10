@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { daftarUlang, kelulusan, student } from "@/lib/db/schema";
-import { eq, count, desc, and, ilike, or } from "drizzle-orm";
+import { eq, count, and, ilike, or, asc } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/middleware";
 import { createStudentFolder, uploadToDrive, deleteFromDrive } from "./google-drive";
@@ -39,6 +39,35 @@ export const getDaftarUlangList = createServerFn({ method: "GET" })
 
         const total = totalRes.value;
 
+        // --- Calculate Stats for the whole filtered population ---
+        // A student is "Belum" if: no record in daftarUlang OR all 5 docs are false
+        // A student is "Sudah" if: has record in daftarUlang AND all 5 docs are true
+        // Everyone else (who has a record) is "Belum Lengkap"
+
+        const allMatchingStudents = await db
+            .select({
+                daftarUlang: daftarUlang,
+            })
+            .from(kelulusan)
+            .innerJoin(student, eq(kelulusan.studentId, student.id))
+            .leftJoin(daftarUlang, eq(kelulusan.id, daftarUlang.kelulusanId))
+            .where(whereClause);
+
+        let sudah = 0;
+        let belum = 0;
+        let belumLengkap = 0;
+
+        allMatchingStudents.forEach((item: any) => {
+            const du = item.daftarUlang;
+            if (!du || (!du.skl && !du.tatib && !du.kk && !du.bukti && !du.pernyataan)) {
+                belum++;
+            } else if (du.skl && du.tatib && du.kk && du.bukti && du.pernyataan) {
+                sudah++;
+            } else {
+                belumLengkap++;
+            }
+        });
+
         // Get paginated results
         const results = await db
             .select({
@@ -52,7 +81,7 @@ export const getDaftarUlangList = createServerFn({ method: "GET" })
             .where(whereClause)
             .limit(limit)
             .offset(offset)
-            .orderBy(desc(kelulusan.id));
+            .orderBy(asc(student.nmSiswa));
 
         const students = results.map((item: any) => ({
             id: item.kelulusan.id,
@@ -84,6 +113,7 @@ export const getDaftarUlangList = createServerFn({ method: "GET" })
             students,
             total,
             totalPages: Math.ceil(total / limit),
+            stats: { sudah, belum, belumLengkap }
         };
     });
 

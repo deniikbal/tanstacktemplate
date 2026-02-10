@@ -7,8 +7,14 @@ import autoTable from 'jspdf-autotable'
 import QRCode from 'qrcode'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
+import { QRCodeSVG } from 'qrcode.react'
+import * as htmlToImage from 'html-to-image'
+import { useRef } from 'react'
+import { Download, QrCode as QrIcon } from 'lucide-react'
 import { getActiveTahunAjaran } from '@/lib/server/tahun-ajaran'
 import { checkAnnouncement } from '@/lib/server/students'
+import { Badge } from '@/components/ui/badge'
+import { toast } from 'sonner'
 
 export const Route = createFileRoute('/pengumuman')({
     component: AnnouncementPage,
@@ -26,13 +32,24 @@ function AnnouncementPage() {
     const { announcementDate, tahap, tahunAjaran } = Route.useLoaderData()
     const targetDate = new Date(announcementDate).getTime()
 
-    const [timeLeft, setTimeLeft] = useState<{
-        days: number,
-        hours: number,
-        minutes: number,
-        seconds: number,
-        isExpired: boolean
-    }>({ days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: false })
+    const calculateTimeLeft = (target: number) => {
+        const now = new Date().getTime()
+        const distance = target - now
+
+        if (distance <= 0) {
+            return { days: 0, hours: 0, minutes: 0, seconds: 0, isExpired: true }
+        }
+
+        return {
+            days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+            hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+            minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+            seconds: Math.floor((distance % (1000 * 60)) / 1000),
+            isExpired: false
+        }
+    }
+
+    const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(targetDate))
 
     const [isMounted, setIsMounted] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
@@ -49,32 +66,54 @@ function AnnouncementPage() {
         jalur?: string | null
     } | null>(null)
 
+    const identityCardRef = useRef<HTMLDivElement>(null)
+
+    const downloadIdentityCard = async () => {
+        if (!identityCardRef.current || !result) return
+
+        try {
+            const dataUrl = await htmlToImage.toPng(identityCardRef.current, {
+                quality: 1.0,
+                pixelRatio: 2,
+                backgroundColor: '#ffffff',
+                cacheBust: true,
+            })
+            const link = document.createElement('a')
+            link.download = `Kartu_SPMB_${result.name?.replace(/\s+/g, '_')}.png`
+            link.href = dataUrl
+            link.click()
+            toast.success('Kartu identitas berhasil diunduh')
+        } catch (error) {
+            console.error('Failed to download image:', error)
+            toast.error('Gagal mengunduh kartu identitas')
+        }
+    }
+
     useEffect(() => {
         setIsMounted(true)
     }, [])
 
     useEffect(() => {
         if (!isMounted) return
-        const timer = setInterval(() => {
-            const now = new Date().getTime()
-            const distance = targetDate - now
 
-            if (distance < 0) {
+        // Initial check
+        const initial = calculateTimeLeft(targetDate)
+        if (initial.isExpired) {
+            setTimeLeft(initial)
+            return
+        }
+
+        const timer = setInterval(() => {
+            const next = calculateTimeLeft(targetDate)
+            setTimeLeft(next)
+
+            if (next.isExpired) {
                 clearInterval(timer)
-                setTimeLeft(prev => ({ ...prev, isExpired: true }))
-            } else {
-                setTimeLeft({
-                    days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-                    hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-                    minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-                    seconds: Math.floor((distance % (1000 * 60)) / 1000),
-                    isExpired: false
-                })
             }
         }, 1000)
 
         return () => clearInterval(timer)
-    }, [targetDate, isMounted])
+    }, [isMounted, targetDate])
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -547,17 +586,22 @@ function AnnouncementPage() {
                             </div>
                         ) : (
                             /* Result View - Grid Layout */
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in duration-500">
+                            <div className={`grid grid-cols-1 ${result.status === 'LULUS' ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-8 animate-in fade-in duration-500`}>
                                 {/* Left Column - Result Card */}
-                                <div className="lg:col-span-2">
+                                <div className={result.status === 'LULUS' ? 'lg:col-span-2' : 'lg:col-span-1 max-w-4xl mx-auto w-full'}>
                                     <div className={`bg-white dark:bg-slate-800 rounded-2xl shadow-sm border overflow-hidden relative ${result.status === 'LULUS' ? 'border-white/50 dark:border-gray-700' : 'border-red-200 dark:border-red-900'}`}>
                                         {/* Header */}
                                         <div className={`py-10 px-6 text-center border-b ${result.status === 'LULUS' ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-100 dark:border-blue-900/30' : 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/30'}`}>
                                             <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 shadow-lg ring-4 ${result.status === 'LULUS' ? 'bg-blue-600 shadow-blue-500/30 ring-white dark:ring-slate-800' : 'bg-red-600 shadow-red-500/30 ring-white dark:ring-slate-800'}`}>
                                                 <span className="material-icons-round text-4xl text-white">{result.status === 'LULUS' ? 'check' : 'close'}</span>
                                             </div>
-                                            <h1 className={`text-3xl font-bold mb-2 ${result.status === 'LULUS' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
-                                                {result.status === 'LULUS' ? 'SELAMAT! ANDA LULUS' : 'MOHON MAAF'}
+                                            <h1 className={`text-4xl md:text-5xl font-black mb-4 leading-tight ${result.status === 'LULUS' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
+                                                {result.status === 'LULUS' ? (
+                                                    <>
+                                                        SELAMAT !<br />
+                                                        ANDA LULUS
+                                                    </>
+                                                ) : 'MOHON MAAF'}
                                             </h1>
                                             <p className={`font-medium ${result.status === 'LULUS' ? 'text-slate-500 dark:text-slate-400' : 'text-red-700 dark:text-red-300'}`}>
                                                 {result.status === 'LULUS' ? 'Pendaftaran SMAN 1 Bantarujeg' : 'Anda belum diterima di tahap ini'}
@@ -585,6 +629,118 @@ function AnnouncementPage() {
                                                 ))}
                                             </div>
 
+                                            {/* Identity Card Section - New Feature */}
+                                            {result.status === 'LULUS' && (
+                                                <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="h-0.5 flex-1 bg-slate-100 dark:bg-slate-700"></div>
+                                                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Kartu Identitas Digital</h3>
+                                                        <div className="h-0.5 flex-1 bg-slate-100 dark:bg-slate-700"></div>
+                                                    </div>
+
+                                                    <div className="flex flex-col items-center gap-6">
+                                                        {/* The Card that will be exported as Image */}
+                                                        <div
+                                                            ref={identityCardRef}
+                                                            className="w-full max-w-[340px] bg-white rounded-3xl shadow-2xl border-2 border-blue-50 relative overflow-hidden p-6 text-center"
+                                                        >
+                                                            {/* Decorative background */}
+                                                            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-12 -mt-12"></div>
+                                                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/5 rounded-full -ml-10 -mb-10"></div>
+
+                                                            {/* Card Header */}
+                                                            <div className="flex items-center justify-center gap-2 mb-6">
+                                                                <div className="bg-blue-600 p-1.5 rounded-lg shadow-md shadow-blue-500/20">
+                                                                    <QrIcon className="w-5 h-5 text-white" />
+                                                                </div>
+                                                                <div className="text-left">
+                                                                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest leading-none">IDENTITAS SISWA</p>
+                                                                    <p className="text-sm font-black text-slate-900 leading-none mt-0.5">SPMB SMANSABA 2026</p>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Student Main Info */}
+                                                            <div className="space-y-1 mb-6">
+                                                                <h4 className="text-lg font-black text-slate-900 uppercase leading-none truncate px-2">{result.name}</h4>
+                                                                <p className="text-xs font-bold text-slate-400 tracking-[0.15em]">{result.nisn}</p>
+                                                            </div>
+
+                                                            {/* QR Code Container */}
+                                                            <div className="bg-slate-50 p-4 rounded-2xl border-2 border-blue-100/50 inline-block mb-6 shadow-inner">
+                                                                <QRCodeSVG
+                                                                    value={result.nisn || 'SPMB-SMANSABA'}
+                                                                    size={160}
+                                                                    level="H"
+                                                                    includeMargin={false}
+                                                                    className="rounded-lg"
+                                                                />
+                                                            </div>
+
+                                                            {/* Card Footer Info */}
+                                                            <div className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-5">
+                                                                <div className="text-center">
+                                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Jalur Masuk</p>
+                                                                    <Badge variant="outline" className="text-[10px] font-black border-blue-200 text-blue-700 bg-blue-50/50">
+                                                                        {result.jalur}
+                                                                    </Badge>
+                                                                </div>
+                                                                <div className="text-center border-l border-slate-100">
+                                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status</p>
+                                                                    <Badge className="text-[10px] font-black bg-blue-600 border-none">
+                                                                        LULUS
+                                                                    </Badge>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="w-full max-w-[340px]">
+                                                            <Button
+                                                                onClick={downloadIdentityCard}
+                                                                className="w-full bg-slate-900 hover:bg-black text-white py-6 rounded-2xl font-black shadow-xl flex items-center justify-center gap-3 transition-all active:scale-95 group text-base"
+                                                            >
+                                                                <Download className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
+                                                                Simpan Gambar
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Not Lulus Info Cards - New Feature */}
+                                            {result.status !== 'LULUS' && (
+                                                <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+                                                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                                                        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                                                            <span className="material-icons-round text-blue-600 dark:text-blue-400">info</span>
+                                                            Informasi Penting
+                                                        </h3>
+                                                        <ul className="space-y-4">
+                                                            <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
+                                                                <span className="material-icons-round text-lg text-blue-500 mt-0.5">sentiment_satisfied_alt</span>
+                                                                <span>Tetap semangat dan jangan putus asa. Masih banyak peluang lain menunggu Anda.</span>
+                                                            </li>
+                                                            <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
+                                                                <span className="material-icons-round text-lg text-orange-500 mt-0.5">calendar_today</span>
+                                                                <span>Pendaftaran Gelombang 2 akan dibuka pada tanggal 10 Juli 2026.</span>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                                                        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                                                            <span className="material-icons-round text-blue-600 dark:text-blue-400">support_agent</span>
+                                                            Bantuan
+                                                        </h3>
+                                                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                                                            Jika terdapat kesalahan data atau kendala teknis, silakan hubungi panitia.
+                                                        </p>
+                                                        <Button className="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 py-3 rounded-lg font-bold text-sm shadow-none border border-slate-200 transition-all active:scale-95">
+                                                            Hubungi Panitia
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             {/* Action Buttons */}
                                             <div className="mt-8 flex flex-col sm:flex-row gap-4">
                                                 {result.status === 'LULUS' && (
@@ -610,47 +766,49 @@ function AnnouncementPage() {
                                 </div>
 
                                 {/* Right Column - Sidebar */}
-                                <div className="lg:col-span-1 space-y-6">
-                                    {/* Info Penting */}
-                                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                                        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                                            <span className="material-icons-round text-blue-600 dark:text-blue-400">info</span>
-                                            Informasi Penting
-                                        </h3>
-                                        <ul className="space-y-4">
-                                            <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
-                                                <span className="material-icons-round text-lg text-yellow-500 mt-0.5">lightbulb</span>
-                                                <span>Silakan cetak bukti kelulusan sebagai syarat daftar ulang.</span>
-                                            </li>
-                                            <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
-                                                <span className="material-icons-round text-lg text-green-500 mt-0.5">calendar_today</span>
-                                                <span>Jadwal daftar ulang dimulai tanggal 20 - 25 Juni 2026.</span>
-                                            </li>
-                                            <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
-                                                <span className="material-icons-round text-lg text-red-500 mt-0.5">warning</span>
-                                                <span>Siswa yang tidak mendaftar ulang dianggap mengundurkan diri.</span>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                {result.status === 'LULUS' && (
+                                    <div className="lg:col-span-1 space-y-6">
+                                        {/* Info Penting */}
+                                        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                                            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                                                <span className="material-icons-round text-blue-600 dark:text-blue-400">info</span>
+                                                Informasi Penting
+                                            </h3>
+                                            <ul className="space-y-4">
+                                                <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
+                                                    <span className="material-icons-round text-lg text-yellow-500 mt-0.5">lightbulb</span>
+                                                    <span>Silakan cetak bukti kelulusan sebagai syarat daftar ulang.</span>
+                                                </li>
+                                                <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
+                                                    <span className="material-icons-round text-lg text-green-500 mt-0.5">calendar_today</span>
+                                                    <span>Jadwal daftar ulang dimulai tanggal 20 - 25 Juni 2026.</span>
+                                                </li>
+                                                <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
+                                                    <span className="material-icons-round text-lg text-red-500 mt-0.5">warning</span>
+                                                    <span>Siswa yang tidak mendaftar ulang dianggap mengundurkan diri.</span>
+                                                </li>
+                                            </ul>
+                                        </div>
 
-                                    {/* Bantuan */}
-                                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                                        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                                            <span className="material-icons-round text-blue-600 dark:text-blue-400">support_agent</span>
-                                            Bantuan
-                                        </h3>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                                            Jika terdapat kesalahan data atau kendala teknis, silakan hubungi panitia.
-                                        </p>
-                                        <a
-                                            className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                                            href="#"
-                                        >
-                                            <span className="material-icons-round text-lg">chat</span>
-                                            Hubungi Panitia
-                                        </a>
+                                        {/* Bantuan */}
+                                        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                                            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                                                <span className="material-icons-round text-blue-600 dark:text-blue-400">support_agent</span>
+                                                Bantuan
+                                            </h3>
+                                            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                                                Jika terdapat kesalahan data atau kendala teknis, silakan hubungi panitia.
+                                            </p>
+                                            <a
+                                                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                                                href="#"
+                                            >
+                                                <span className="material-icons-round text-lg">chat</span>
+                                                Hubungi Panitia
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         )}
                     </div>

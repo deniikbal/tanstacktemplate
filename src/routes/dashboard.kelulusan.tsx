@@ -174,6 +174,15 @@ function KelulusanPage() {
 
   const totalPages = Math.ceil(total / Number(limit))
 
+  const handleCopy = (text: string, label: string) => {
+    if (!text) return
+    navigator.clipboard.writeText(text)
+    toast.success(`${label} disalin`, {
+      description: text,
+      duration: 1500,
+    })
+  }
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex items-center gap-3">
@@ -458,8 +467,20 @@ function KelulusanPage() {
                           </TableCell>
                           <TableCell>
                             <div className="flex flex-col">
-                              <span className="text-sm text-slate-600 font-medium">{item.studentNisn}</span>
-                              <span className="text-[10px] text-muted-foreground uppercase font-semibold">{item.noDaftar || '-'}</span>
+                              <span
+                                className="text-sm text-slate-600 font-medium hover:text-blue-600 cursor-pointer transition-colors"
+                                onClick={() => handleCopy(item.studentNisn, 'NISN')}
+                                title="Klik untuk salin NISN"
+                              >
+                                {item.studentNisn}
+                              </span>
+                              <span
+                                className="text-[10px] text-muted-foreground uppercase font-semibold hover:text-blue-600 cursor-pointer transition-colors"
+                                onClick={() => handleCopy(item.noDaftar, 'No. Daftar')}
+                                title="Klik untuk salin No. Daftar"
+                              >
+                                {item.noDaftar || '-'}
+                              </span>
                             </div>
                           </TableCell>
                           <TableCell className="text-slate-600">
@@ -570,8 +591,18 @@ function KelulusanPage() {
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-slate-400">NISN / No. Daftar</span>
                           <div className="text-right">
-                            <div className="font-bold text-slate-600">{item.studentNisn}</div>
-                            <div className="text-[10px] text-slate-400 uppercase font-black">{item.noDaftar || '-'}</div>
+                            <div
+                              className="font-bold text-slate-600 hover:text-blue-600 active:scale-95 transition-all cursor-pointer"
+                              onClick={() => handleCopy(item.studentNisn, 'NISN')}
+                            >
+                              {item.studentNisn}
+                            </div>
+                            <div
+                              className="text-[10px] text-slate-400 uppercase font-black hover:text-blue-600 active:scale-95 transition-all cursor-pointer"
+                              onClick={() => handleCopy(item.noDaftar, 'No. Daftar')}
+                            >
+                              {item.noDaftar || '-'}
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center justify-between text-xs">

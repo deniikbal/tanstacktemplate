@@ -58,6 +58,11 @@ export const getStudentByQRData = createServerFn({ method: "GET" })
                     pernyataan: false,
                     keterangan: "",
                     petugas: "",
+                    fileSklId: null,
+                    fileTatibId: null,
+                    fileKkId: null,
+                    fileBuktiId: null,
+                    filePernyataanId: null,
                 },
             };
         } catch (error: any) {
