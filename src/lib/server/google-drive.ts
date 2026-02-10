@@ -38,8 +38,20 @@ export const uploadToDrive = async (file: File, folderId: string, fileName: stri
             fields: 'id, webViewLink',
         })
 
+        const fileId = response.data.id;
+        if (fileId) {
+            // Set file to be public so anyone with link can view it
+            await drive.permissions.create({
+                fileId: fileId,
+                requestBody: {
+                    role: 'reader',
+                    type: 'anyone',
+                },
+            });
+        }
+
         return {
-            id: response.data.id,
+            id: fileId,
             link: response.data.webViewLink
         }
     } catch (error: any) {
@@ -76,5 +88,19 @@ export const createStudentFolder = async (folderName: string, parentFolderId: st
     } catch (error: any) {
         console.error('Google Drive Folder Creation Error:', error)
         throw new Error(`Gagal membuat folder di Google Drive: ${error.message}`)
+    }
+}
+
+export const deleteFromDrive = async (fileId: string) => {
+    try {
+        const drive = getDriveClient()
+        await drive.files.delete({
+            fileId: fileId,
+        })
+        return true
+    } catch (error: any) {
+        // If file already deleted or not found, just log and continue
+        console.warn(`Could not delete file ${fileId} from Drive:`, error.message)
+        return false
     }
 }

@@ -3,7 +3,7 @@ import { daftarUlang, kelulusan, student } from "@/lib/db/schema";
 import { eq, count, desc, and, ilike, or } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/middleware";
-import { createStudentFolder, uploadToDrive } from "./google-drive";
+import { createStudentFolder, uploadToDrive, deleteFromDrive } from "./google-drive";
 
 export const getDaftarUlangList = createServerFn({ method: "GET" })
     .inputValidator((d: { page?: number; limit?: number; search?: string; jalur?: string }) => d)
@@ -198,6 +198,25 @@ export const uploadStudentFile = createServerFn({ method: 'POST' })
             throw new Error('Gagal membuat atau menemukan folder siswa di Google Drive')
         }
 
+        // 1.5 Cek dan hapus berkas lama jika ada
+        const fieldMap: Record<string, 'fileSklId' | 'fileTatibId' | 'fileKkId' | 'fileBuktiId' | 'filePernyataanId'> = {
+            'skl': 'fileSklId',
+            'tatib': 'fileTatibId',
+            'kk': 'fileKkId',
+            'bukti': 'fileBuktiId',
+            'pernyataan': 'filePernyataanId'
+        }
+        const field = fieldMap[type]
+        if (!field) throw new Error('Tipe berkas tidak valid')
+
+        const existingRecord = await db.query.daftarUlang.findFirst({
+            where: eq(daftarUlang.kelulusanId, kelulusanId)
+        })
+
+        if (existingRecord && existingRecord[field]) {
+            await deleteFromDrive(existingRecord[field] as string)
+        }
+
         // 2. Upload file to drive
         const fileName = `${type.toUpperCase()}_${nisn}.pdf`
         const driveResult = await uploadToDrive(file, studentFolderId, fileName)
@@ -207,17 +226,6 @@ export const uploadStudentFile = createServerFn({ method: 'POST' })
         }
 
         // 3. Save drive ID to database
-        const fieldMap: Record<string, 'fileSklId' | 'fileTatibId' | 'fileKkId' | 'fileBuktiId' | 'filePernyataanId'> = {
-            'skl': 'fileSklId',
-            'tatib': 'fileTatibId',
-            'kk': 'fileKkId',
-            'bukti': 'fileBuktiId',
-            'pernyataan': 'filePernyataanId'
-        }
-
-        const field = fieldMap[type]
-        if (!field) throw new Error('Tipe berkas tidak valid')
-
         await saveFileDriveId({
             data: {
                 kelulusanId,

@@ -14,11 +14,14 @@ import {
   ShieldCheck,
   FileDigit,
   Receipt,
-  ClipboardCheck
+  ClipboardCheck,
+  Eye
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { getFullStudentProfile, logoutStudent } from '@/lib/server/student-auth'
 import { uploadStudentFile } from '@/lib/server/daftar-ulang'
+import { DocumentScanner } from '@/components/DocumentScanner'
+import { Camera } from 'lucide-react'
 
 export const Route = createFileRoute('/student-dashboard')({
   component: StudentDashboard,
@@ -39,6 +42,11 @@ function StudentDashboard() {
   const [profile, setProfile] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [uploadingField, setUploadingField] = useState<string | null>(null)
+  const [scannerConfig, setScannerConfig] = useState<{ isOpen: boolean, type: string, label: string }>({
+    isOpen: false,
+    type: '',
+    label: ''
+  })
   const navigate = useNavigate()
 
   const fetchProfile = async () => {
@@ -82,8 +90,8 @@ function StudentDashboard() {
       return
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Ukuran file maksimal 5MB')
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Ukuran file maksimal 2MB')
       return
     }
 
@@ -101,6 +109,26 @@ function StudentDashboard() {
       await fetchProfile() // Refresh data
     } catch (error: any) {
       toast.error(error.message || 'Gagal mengunggah berkas')
+    } finally {
+      setUploadingField(null)
+    }
+  }
+
+  const handleScannerUpload = async (file: File, type: string) => {
+    setUploadingField(type)
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('type', type)
+    formData.append('nisn', profile.student.nisn)
+    formData.append('name', profile.student.nmSiswa)
+    formData.append('kelulusanId', profile.kelulusan.id.toString())
+
+    try {
+      await uploadStudentFile({ data: formData })
+      toast.success(`Berkas ${type.toUpperCase()} berhasil di-scan dan diunggah`)
+      await fetchProfile()
+    } catch (error: any) {
+      toast.error(error.message || 'Gagal mengunggah berkas hasil scan')
     } finally {
       setUploadingField(null)
     }
@@ -130,7 +158,7 @@ function StudentDashboard() {
   return (
     <div className="min-h-screen bg-slate-50 font-inter">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
@@ -193,7 +221,7 @@ function StudentDashboard() {
                     <ClipboardCheck className="w-5 h-5 text-blue-600" />
                     Upload Berkas (PDF)
                   </CardTitle>
-                  <CardDescription>File maksimal 5MB per dokumen.</CardDescription>
+                  <CardDescription>File maksimal 2MB per dokumen.</CardDescription>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold border border-blue-100 uppercase tracking-wider">
                   <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-pulse" />
@@ -227,6 +255,35 @@ function StudentDashboard() {
                       </div>
 
                       <div className="flex items-center gap-2 self-end sm:self-center">
+                        {driveId && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-xl h-10 px-4 font-bold border-slate-200 text-slate-600 hover:bg-slate-50 transition-all active:scale-95"
+                            asChild
+                          >
+                            <a
+                              href={`https://drive.google.com/file/d/${driveId}/view`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center"
+                            >
+                              <Eye className="w-4 h-4 mr-2" />
+                              Lihat Berkas
+                            </a>
+                          </Button>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl h-10 px-4 font-bold border-slate-200 text-slate-600 hover:bg-slate-50 transition-all active:scale-95"
+                          onClick={() => setScannerConfig({ isOpen: true, type: doc.id, label: doc.label })}
+                          disabled={!!isUploading}
+                        >
+                          <Camera className="w-4 h-4 mr-2" />
+                          Ambil Foto
+                        </Button>
+
                         <label className="relative">
                           <input
                             type="file"
@@ -292,6 +349,13 @@ function StudentDashboard() {
           </div>
         </div>
       </main>
+
+      <DocumentScanner
+        isOpen={scannerConfig.isOpen}
+        onClose={() => setScannerConfig({ ...scannerConfig, isOpen: false })}
+        title={scannerConfig.label}
+        onUpload={(file) => handleScannerUpload(file, scannerConfig.type)}
+      />
 
       <footer className="max-w-4xl mx-auto px-4 py-12 text-center">
         <div className="w-12 h-1 bg-slate-200 mx-auto rounded-full mb-6" />
