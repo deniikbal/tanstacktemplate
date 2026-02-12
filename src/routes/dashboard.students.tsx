@@ -185,7 +185,7 @@ function StudentsPage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             fetchStudents()
-        }, 500)
+        }, 300)
         return () => clearTimeout(timer)
     }, [page, searchTerm, pageSize])
 
@@ -380,7 +380,13 @@ function StudentsPage() {
 
                         <div className="flex items-center gap-2 flex-1 md:justify-end max-w-sm">
                             <div className="relative w-full">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                                    {isPending ? (
+                                        <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                                    ) : (
+                                        <Search className="h-4 w-4 text-slate-400" />
+                                    )}
+                                </div>
                                 <Input
                                     placeholder="Cari siswa..."
                                     className="pl-9 bg-white h-8 border-slate-200"
@@ -414,7 +420,7 @@ function StudentsPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {isPending ? (
+                                {isPending && !studentsInfo ? (
                                     Array.from({ length: 5 }).map((_, i) => (
                                         <TableRow key={i}>
                                             <TableCell className="px-4 py-2">
@@ -448,7 +454,7 @@ function StudentsPage() {
                                     </TableRow>
                                 ) : (
                                     studentsInfo.students.map((s) => (
-                                        <TableRow key={s.id} className={`hover:bg-slate-50/50 border-b border-slate-100 transition-colors group ${selectedIds.includes(s.id) ? 'bg-blue-50' : ''}`}>
+                                        <TableRow key={s.id} className={`hover:bg-slate-50/50 border-b border-slate-100 transition-colors group ${selectedIds.includes(s.id) ? 'bg-blue-50' : ''} ${isPending ? 'opacity-50 pointer-events-none' : ''}`}>
                                             <TableCell className="px-4 py-2">
                                                 <Checkbox
                                                     checked={selectedIds.includes(s.id)}

@@ -91,7 +91,7 @@ function KelulusanPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchKelulusan()
-    }, 500)
+    }, 300)
     return () => clearTimeout(timer)
   }, [page, limit, searchTerm, tahapFilter, jalurFilter, statusFilter])
 
@@ -111,7 +111,8 @@ function KelulusanPage() {
   const statsMap = React.useMemo(() => {
     const map: Record<string, number> = {}
     jalurStats.forEach(s => {
-      map[s.jalur] = s.count
+      const key = s.jalur || '-'
+      map[key] = s.count
     })
     return map
   }, [jalurStats])
@@ -200,6 +201,7 @@ function KelulusanPage() {
         onClose={() => setIsSyncModalOpen(false)}
         onSuccess={() => {
           fetchKelulusan()
+          fetchStats()
           setIsSyncModalOpen(false)
         }}
       />
@@ -307,7 +309,13 @@ function KelulusanPage() {
           {/* Filter Bar */}
           <div className="flex flex-col md:flex-row md:items-center gap-3 p-4 border-b border-slate-200 bg-slate-50/50">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                {isPending ? (
+                  <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                ) : (
+                  <Search className="h-4 w-4 text-slate-400" />
+                )}
+              </div>
               <Input
                 placeholder="Cari nama/nisn..."
                 className="pl-9 bg-white h-9 border-slate-200 shadow-sm"
@@ -411,7 +419,7 @@ function KelulusanPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isPending ? (
+                {isPending && !data.length ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center h-32">
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -440,14 +448,14 @@ function KelulusanPage() {
                               <div className="flex items-center gap-2">
                                 <Badge className={`${getJalurColor(item.jalur)} text-white border-none px-2 text-[10px] font-bold uppercase tracking-wider flex gap-2 h-5`}>
                                   <span>JALUR: {item.jalur}</span>
-                                  <span className="bg-black/20 px-1 rounded-sm text-[11px] font-black min-w-[1.5rem] text-center">{statsMap[item.jalur] || 0}</span>
+                                  <span className="bg-black/20 px-1 rounded-sm text-[11px] font-black min-w-[1.5rem] text-center">{statsMap[item.jalur || '-'] || 0}</span>
                                 </Badge>
                                 <div className="h-px flex-1 bg-slate-200" />
                               </div>
                             </TableCell>
                           </TableRow>
                         )}
-                        <TableRow className={`${selectedIds.has(item.id) ? 'bg-blue-50/50' : 'hover:bg-slate-50/50'} transition-colors group`}>
+                        <TableRow className={`${selectedIds.has(item.id) ? 'bg-blue-50/50' : 'hover:bg-slate-50/50'} transition-colors group ${isPending ? 'opacity-50 pointer-events-none' : ''}`}>
                           <TableCell className="text-center">
                             <Checkbox
                               checked={selectedIds.has(item.id)}
@@ -523,7 +531,7 @@ function KelulusanPage() {
 
           {/* Mobile Card View */}
           <div className="md:hidden divide-y divide-slate-100">
-            {isPending ? (
+            {isPending && !data.length ? (
               <div className="p-8 text-center flex flex-col items-center gap-3">
                 <Loader2 className="h-8 w-8 animate-spin text-blue-500/20" />
                 <p className="text-sm text-slate-400 font-medium">Memuat data kelulusan...</p>
@@ -542,12 +550,12 @@ function KelulusanPage() {
                       <div className="px-4 py-1.5 bg-slate-50 border-y border-slate-100 flex items-center gap-2 sticky top-0 z-10">
                         <Badge className={`${getJalurColor(item.jalur)} text-white h-5 px-2 text-[9px] font-black uppercase tracking-widest border-none flex gap-2`}>
                           <span>JALUR: {item.jalur}</span>
-                          <span className="bg-black/20 px-1 rounded-sm text-[10px] min-w-[1.2rem] text-center">{statsMap[item.jalur] || 0}</span>
+                          <span className="bg-black/20 px-1 rounded-sm text-[10px] min-w-[1.2rem] text-center">{statsMap[item.jalur || '-'] || 0}</span>
                         </Badge>
                         <div className="h-px flex-1 bg-slate-200/50" />
                       </div>
                     )}
-                    <div className="p-4 bg-white hover:bg-slate-50/50 transition-colors">
+                    <div className={`p-4 bg-white hover:bg-slate-50/50 transition-colors ${isPending ? 'opacity-50 pointer-events-none' : ''}`}>
                       <div className="flex justify-between items-start mb-2">
                         <div className="flex items-start gap-2.5">
                           <div className="mt-1 flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-[10px] font-bold text-slate-400">

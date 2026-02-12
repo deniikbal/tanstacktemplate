@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { kelulusan } from "../db/kelulusan-schema";
 import { student } from "../db/student-schema";
-import { and, eq, ilike, or, inArray, count, asc } from "drizzle-orm";
+import { and, eq, ilike, or, inArray, count, asc, sql } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
 
 export const getAllKelulusan = createServerFn({ method: "GET" })
@@ -150,10 +150,11 @@ export const getJalurStats = createServerFn({ method: "GET" })
         try {
             const results = await db
                 .select({
-                    jalur: kelulusan.jalur,
-                    count: count(),
+                    jalur: sql<string>`COALESCE(${kelulusan.jalur}, '-')`,
+                    count: sql<number>`CAST(count(*) AS INTEGER)`,
                 })
                 .from(kelulusan)
+                .where(eq(sql`upper(${kelulusan.status})`, 'LULUS'))
                 .groupBy(kelulusan.jalur);
 
             return results;

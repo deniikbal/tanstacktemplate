@@ -93,6 +93,52 @@ export const getPendaftarStats = createServerFn({
         return stats[0] || { total: 0, verified: 0, unverified: 0, tahap1: 0, tahap2: 0 }
     })
 
+export const getRegistrationChartData = createServerFn({
+    method: 'GET',
+})
+    .handler(async () => {
+        // 1. Daily Trend (Last 30 days)
+        const trendData = await db
+            .select({
+                date: sql<string>`TO_CHAR(${pendaftar.createdAt}, 'YYYY-MM-DD')`,
+                count: sql<number>`count(*)`
+            })
+            .from(pendaftar)
+            .where(sql`${pendaftar.createdAt} > NOW() - INTERVAL '30 days'`)
+            .groupBy(sql`TO_CHAR(${pendaftar.createdAt}, 'YYYY-MM-DD')`)
+            .orderBy(sql`TO_CHAR(${pendaftar.createdAt}, 'YYYY-MM-DD')`)
+
+        // 2. Jalur Distribution
+        const jalurData = await db
+            .select({
+                name: sql<string>`COALESCE(${pendaftar.jalurMasuk}, 'Tidak Diketahui')`,
+                value: sql<number>`count(*)`
+            })
+            .from(pendaftar)
+            .groupBy(pendaftar.jalurMasuk)
+
+        // 3. Verification Status
+        const statusData = await db
+            .select({
+                name: sql<string>`CASE 
+                    WHEN ${pendaftar.keterangan} = 'Sudah Verifikasi' THEN 'Terverifikasi' 
+                    ELSE 'Belum Verifikasi' 
+                END`,
+                value: sql<number>`count(*)`
+            })
+            .from(pendaftar)
+            .groupBy(sql`CASE 
+                    WHEN ${pendaftar.keterangan} = 'Sudah Verifikasi' THEN 'Terverifikasi' 
+                    ELSE 'Belum Verifikasi' 
+                END`)
+
+        return {
+            trendData,
+            jalurData,
+            statusData
+        }
+    })
+
 
 
 export const deletePendaftar = createServerFn({ method: 'POST' })

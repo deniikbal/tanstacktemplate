@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { daftarUlang, kelulusan, student } from "@/lib/db/schema";
-import { eq, count, and, ilike, or, asc } from "drizzle-orm";
+import { eq, count, and, ilike, or, asc, sql } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/middleware";
 import { createStudentFolder, uploadToDrive, deleteFromDrive } from "./google-drive";
@@ -30,43 +30,23 @@ export const getDaftarUlangList = createServerFn({ method: "GET" })
             ) as any;
         }
 
-        // Get total count
-        const [totalRes] = await db
-            .select({ value: count() })
-            .from(kelulusan)
-            .innerJoin(student, eq(kelulusan.studentId, student.id))
-            .where(whereClause);
-
-        const total = totalRes.value;
-
-        // --- Calculate Stats for the whole filtered population ---
-        // A student is "Belum" if: no record in daftarUlang OR all 5 docs are false
-        // A student is "Sudah" if: has record in daftarUlang AND all 5 docs are true
-        // Everyone else (who has a record) is "Belum Lengkap"
-
-        const allMatchingStudents = await db
+        // Get total count and stats for the whole filtered population in one efficient query
+        const [statsRes]: any = await db
             .select({
-                daftarUlang: daftarUlang,
+                total: count(),
+                sudah: sql<number>`sum(case when ${daftarUlang.skl} and ${daftarUlang.tatib} and ${daftarUlang.kk} and ${daftarUlang.bukti} and ${daftarUlang.pernyataan} then 1 else 0 end)`,
+                // A student is "Belum" if: no record in daftarUlang OR all 5 docs are false
+                belum: sql<number>`sum(case when ${daftarUlang.id} is null or (not ${daftarUlang.skl} and not ${daftarUlang.tatib} and not ${daftarUlang.kk} and not ${daftarUlang.bukti} and not ${daftarUlang.pernyataan}) then 1 else 0 end)`,
             })
             .from(kelulusan)
             .innerJoin(student, eq(kelulusan.studentId, student.id))
             .leftJoin(daftarUlang, eq(kelulusan.id, daftarUlang.kelulusanId))
             .where(whereClause);
 
-        let sudah = 0;
-        let belum = 0;
-        let belumLengkap = 0;
-
-        allMatchingStudents.forEach((item: any) => {
-            const du = item.daftarUlang;
-            if (!du || (!du.skl && !du.tatib && !du.kk && !du.bukti && !du.pernyataan)) {
-                belum++;
-            } else if (du.skl && du.tatib && du.kk && du.bukti && du.pernyataan) {
-                sudah++;
-            } else {
-                belumLengkap++;
-            }
-        });
+        const total = Number(statsRes?.total || 0);
+        const sudah = Number(statsRes?.sudah || 0);
+        const belum = Number(statsRes?.belum || 0);
+        const belumLengkap = Math.max(0, total - sudah - belum);
 
         // Get paginated results
         const results = await db

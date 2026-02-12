@@ -98,7 +98,7 @@ function DaftarUlangPage() {
       } else {
         fetchDaftarUlang()
       }
-    }, 500)
+    }, 300)
     return () => clearTimeout(timer)
   }, [searchTerm])
 
@@ -224,7 +224,13 @@ function DaftarUlangPage() {
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto">
               <div className="relative w-full md:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <div className="absolute left-3 top-1/2 -translate-y-1/2">
+                  {isPending ? (
+                    <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                  ) : (
+                    <Search className="h-4 w-4 text-slate-400" />
+                  )}
+                </div>
                 <Input
                   placeholder="Cari nama atau asal sekolah..."
                   className="pl-9 bg-white h-9 border-slate-200 text-xs"
@@ -275,7 +281,7 @@ function DaftarUlangPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isPending ? (
+                {isPending && !data.length ? (
                   <TableRow>
                     <TableCell colSpan={11} className="text-center h-32">
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -292,7 +298,7 @@ function DaftarUlangPage() {
                   </TableRow>
                 ) : (
                   data.map((item, index) => (
-                    <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                    <TableRow key={item.id} className={`hover:bg-slate-50/50 transition-colors ${isPending ? 'opacity-50 pointer-events-none' : ''}`}>
                       <TableCell className="text-center text-slate-400 font-medium">{(page - 1) * limit + index + 1}</TableCell>
                       <TableCell>
                         <div className="flex flex-col">
@@ -503,7 +509,7 @@ function DaftarUlangPage() {
 
           {/* Mobile Card View */}
           <div className="md:hidden divide-y divide-slate-100">
-            {isPending ? (
+            {isPending && !data.length ? (
               <div className="p-8 text-center flex flex-col items-center gap-2 text-slate-400">
                 <Loader2 className="h-8 w-8 animate-spin opacity-20" />
                 <p className="text-sm">Memuat data siswa...</p>
@@ -514,7 +520,7 @@ function DaftarUlangPage() {
               </div>
             ) : (
               data.map((item, index) => (
-                <div key={item.id} className="p-4 space-y-4">
+                <div key={item.id} className={`p-4 space-y-4 ${isPending ? 'opacity-50 pointer-events-none' : ''}`}>
                   <div className="flex justify-between items-start">
                     <div className="flex gap-3">
                       <div className="text-xs text-slate-400 font-medium mt-1">{(page - 1) * limit + index + 1}</div>
