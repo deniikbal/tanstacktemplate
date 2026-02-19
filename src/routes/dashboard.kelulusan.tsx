@@ -273,58 +273,67 @@ function KelulusanPage() {
       </AlertDialog>
 
 
-      <Card className="shadow-sm border-slate-200">
-        <CardHeader className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-center sm:text-left">
-            <CardTitle className="text-lg font-bold text-slate-800 flex items-center justify-center sm:justify-start gap-2">
-              <CheckCircle2 className="h-5 w-5 text-blue-600" />
-              Daftar Status Kelulusan
-            </CardTitle>
-            <CardDescription>
-              Kelola status kelulusan siswa, edit status, atau tambah data baru.
-            </CardDescription>
-          </div>
-          <div className="flex gap-2 w-full sm:w-auto">
-            <Button
-              onClick={() => setIsSyncModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 flex-1 sm:flex-none font-bold"
-            >
-              <RefreshCw className="mr-2 h-4 w-4 text-white" />
-              Sinkronkan Data Siswa
-            </Button>
-            {selectedIds.size > 0 && (
+      <Card className="shadow-2xl shadow-blue-500/10 border-slate-100/50 rounded-[2.5rem] overflow-hidden bg-white/80 backdrop-blur-sm">
+        <CardHeader className="p-8 pb-6 bg-gradient-to-b from-blue-50/50 to-transparent">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-start sm:items-center gap-5">
+              <div className="hidden sm:flex h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 items-center justify-center shadow-lg shadow-blue-200 shrink-0">
+                <CheckCircle2 className="h-8 w-8 text-white" />
+              </div>
+              <div className="space-y-1">
+                <CardTitle className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                  <CheckCircle2 className="h-6 w-6 text-blue-600 sm:hidden" />
+                  Daftar Kelulusan
+                </CardTitle>
+                <CardDescription className="text-slate-500 font-medium">
+                  Manajemen status kelulusan siswa • <span className="text-blue-600 font-bold uppercase tracking-wider text-[10px]">Portal Admin v2026</span>
+                </CardDescription>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              {selectedIds.size > 0 && (
+                <Button
+                  variant="destructive"
+                  onClick={handleBulkDelete}
+                  disabled={isBulkDeleting}
+                  className="rounded-xl px-6 font-bold shadow-lg shadow-rose-100 transition-all hover:scale-105"
+                >
+                  {isBulkDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                  Hapus ({selectedIds.size})
+                </Button>
+              )}
               <Button
-                variant="destructive"
-                onClick={handleBulkDelete}
-                disabled={isBulkDeleting}
-                className="flex-1 sm:flex-none"
+                onClick={() => setIsSyncModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl px-6 shadow-lg shadow-blue-200 transition-all hover:scale-105 active:scale-95"
               >
-                {isBulkDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                Hapus ({selectedIds.size})
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Sinkronisasi
               </Button>
-            )}
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
           {/* Filter Bar */}
-          <div className="flex flex-col md:flex-row md:items-center gap-3 p-4 border-b border-slate-200 bg-slate-50/50">
-            <div className="relative flex-1">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                {isPending ? (
-                  <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
-                ) : (
-                  <Search className="h-4 w-4 text-slate-400" />
-                )}
+          <div className="flex flex-col lg:flex-row lg:items-center gap-4 p-6 bg-slate-50/30 border-y border-slate-100">
+            <div className="flex flex-wrap items-center gap-3 flex-1">
+              <div className="relative w-full max-w-md">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
+                  {isPending ? (
+                    <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                  ) : (
+                    <Search className="h-4 w-4 text-slate-400" />
+                  )}
+                </div>
+                <Input
+                  placeholder="Cari nama/nisn..."
+                  className="pl-10 bg-white h-10 border-slate-100 shadow-sm rounded-xl focus:ring-blue-500 transition-all focus:border-blue-200"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value)
+                    setPage(1)
+                  }}
+                />
               </div>
-              <Input
-                placeholder="Cari nama/nisn..."
-                className="pl-9 bg-white h-9 border-slate-200 shadow-sm"
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value)
-                  setPage(1)
-                }}
-              />
             </div>
 
             <div className="grid grid-cols-2 lg:flex lg:items-center gap-2">
@@ -333,7 +342,7 @@ function KelulusanPage() {
                 setJalurFilter('all')
                 setPage(1)
               }}>
-                <SelectTrigger className="bg-white h-9 border-slate-200 shadow-sm focus:ring-blue-500 lg:w-[130px]">
+                <SelectTrigger className="bg-white h-10 border-slate-100 shadow-sm focus:ring-blue-500 lg:w-[150px] rounded-xl font-medium">
                   <SelectValue placeholder="Tahap" />
                 </SelectTrigger>
                 <SelectContent>
@@ -347,7 +356,7 @@ function KelulusanPage() {
                 setStatusFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="bg-white h-9 border-slate-200 shadow-sm focus:ring-blue-500 lg:w-[130px]">
+                <SelectTrigger className="bg-white h-10 border-slate-100 shadow-sm focus:ring-blue-500 lg:w-[150px] rounded-xl font-medium">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -361,8 +370,8 @@ function KelulusanPage() {
                 setJalurFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="col-span-2 lg:w-[180px] bg-white h-9 border-slate-200 shadow-sm focus:ring-blue-500">
-                  <SelectValue placeholder="Pilih Jalur" />
+                <SelectTrigger className="col-span-2 lg:w-[180px] bg-white h-10 border-slate-100 shadow-sm focus:ring-blue-500 rounded-xl font-medium">
+                  <SelectValue placeholder="Jalur" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Semua Jalur</SelectItem>
@@ -402,12 +411,13 @@ function KelulusanPage() {
           {/* Desktop Table View */}
           <div className="hidden md:block overflow-x-auto">
             <Table>
-              <TableHeader className="bg-slate-50/50">
+              <TableHeader className="bg-slate-50/80 backdrop-blur-sm border-b border-slate-100">
                 <TableRow>
                   <TableHead className="w-12 text-center text-slate-500 font-semibold">
                     <Checkbox
                       checked={data.length > 0 && selectedIds.size === data.length}
                       onCheckedChange={toggleSelectAll}
+                      className="shadow-sm border-slate-300"
                     />
                   </TableHead>
                   <TableHead className="w-12 text-center text-slate-500 font-semibold">No</TableHead>
@@ -460,6 +470,7 @@ function KelulusanPage() {
                             <Checkbox
                               checked={selectedIds.has(item.id)}
                               onCheckedChange={() => toggleSelect(item.id)}
+                              className="shadow-sm border-slate-300"
                             />
                           </TableCell>
                           <TableCell className="text-center text-slate-400">{(page - 1) * Number(limit) + index + 1}</TableCell>

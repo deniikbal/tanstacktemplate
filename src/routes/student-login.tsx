@@ -43,64 +43,78 @@ function StudentLoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
-            <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-[#f8fafc] p-4 relative overflow-hidden">
+            {/* Soft decorative background blobs */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
+                <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-50 blur-3xl opacity-50" />
+                <div className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] rounded-full bg-indigo-50 blur-3xl opacity-50" />
+            </div>
+
+            <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-all font-medium text-sm">
                 <ArrowLeft className="w-4 h-4" />
-                Kembali ke Beranda
+                Kembali
             </Link>
 
-            <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="text-center space-y-2">
-                    <div className="mx-auto w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-200">
-                        <GraduationCap className="w-10 h-10 text-white" />
+            <div className="w-full max-w-[400px] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="flex flex-col items-center space-y-4">
+                    <div className="w-12 h-12 bg-blue-600 rounded-sm flex items-center justify-center shadow-lg shadow-blue-200">
+                        <GraduationCap className="w-7 h-7 text-white" />
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">Portal Siswa</h1>
-                    <p className="text-slate-500">Masuk untuk melihat pengumuman & upload berkas</p>
+                    <div className="text-center space-y-1">
+                        <h1 className="text-2xl font-bold tracking-tight text-slate-900 uppercase">Portal Siswa</h1>
+                        <p className="text-sm text-slate-500">Masuk untuk melihat pengumuman & berkas</p>
+                    </div>
                 </div>
 
-                <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-3xl overflow-hidden">
-                    <CardHeader className="space-y-1 bg-white pt-8 px-8">
-                        <CardTitle className="text-2xl">Masuk</CardTitle>
-                        <CardDescription>
-                            Gunakan 10 digit NISN Anda untuk masuk ke sistem.
+                <Card className="border border-slate-200 shadow-xl shadow-slate-200/40 rounded-sm bg-white overflow-hidden">
+                    <CardHeader className="space-y-1 pt-8 px-8">
+                        <CardTitle className="text-xl font-bold">Login NISN</CardTitle>
+                        <CardDescription className="text-xs">
+                            Gunakan 10 digit NISN Anda untuk mengakses sistem.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="px-8 pb-8 bg-white">
-                        <form onSubmit={handleLogin} className="space-y-4">
+                    <CardContent className="px-8 pb-8">
+                        <form onSubmit={handleLogin} className="space-y-5">
                             <div className="space-y-2">
-                                <Label htmlFor="nisn">NISN</Label>
+                                <Label htmlFor="nisn" className="text-xs font-semibold uppercase tracking-wider text-slate-700">
+                                    Nomor Induk Siswa Nasional <span className="text-destructive">*</span>
+                                </Label>
                                 <Input
                                     id="nisn"
                                     placeholder="Masukkan 10 digit NISN"
                                     value={nisn}
                                     onChange={(e) => setNisn(e.target.value)}
-                                    className="h-12 border-slate-200 focus:ring-blue-600 rounded-xl"
+                                    className="h-11 border-slate-200 focus-visible:ring-blue-600 rounded-sm bg-slate-50/50"
                                     maxLength={10}
                                     disabled={isLoading}
                                 />
                             </div>
                             <Button
                                 type="submit"
-                                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all hover:shadow-lg active:scale-[0.98]"
+                                className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-sm transition-all active:scale-[0.98] shadow-md shadow-blue-200/50"
                                 disabled={isLoading}
                             >
                                 {isLoading ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Memproses...
+                                        Mencermati...
                                     </>
                                 ) : (
-                                    'Masuk Ke Dashboard'
+                                    'MASUK SEKARANG'
                                 )}
                             </Button>
                         </form>
                     </CardContent>
-                    <CardFooter className="bg-slate-50/50 px-8 py-6 border-t border-slate-100 italic text-center">
-                        <p className="text-xs text-slate-500 w-full">
-                            Butuh bantuan? Hubungi panitia SPMB SMANSABA di sekolah.
+                    <CardFooter className="bg-slate-50 px-8 py-5 border-t border-slate-100">
+                        <p className="text-[10px] text-slate-400 text-center leading-relaxed">
+                            Butuh bantuan? Silahkan hubungi panitia pendaftaran di area sekolah atau melalui kontak resmi.
                         </p>
                     </CardFooter>
                 </Card>
+
+                <p className="text-center text-[10px] text-slate-400">
+                    &copy; 2026 SMANSABA - Sistem Penerimaan Murid Baru
+                </p>
             </div>
         </div>
     )

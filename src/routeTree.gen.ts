@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StudentLoginRouteImport } from './routes/student-login'
 import { Route as StudentDashboardRouteImport } from './routes/student-dashboard'
+import { Route as StudentBiodataRouteImport } from './routes/student-biodata'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as PengumumanRouteImport } from './routes/pengumuman'
@@ -45,6 +46,11 @@ const StudentLoginRoute = StudentLoginRouteImport.update({
 const StudentDashboardRoute = StudentDashboardRouteImport.update({
   id: '/student-dashboard',
   path: '/student-dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentBiodataRoute = StudentBiodataRouteImport.update({
+  id: '/student-biodata',
+  path: '/student-biodata',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/pengumuman': typeof PengumumanRoute
   '/scanner': typeof ScannerRoute
   '/signup': typeof SignupRoute
+  '/student-biodata': typeof StudentBiodataRoute
   '/student-dashboard': typeof StudentDashboardRoute
   '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/pengumuman': typeof PengumumanRoute
   '/scanner': typeof ScannerRoute
   '/signup': typeof SignupRoute
+  '/student-biodata': typeof StudentBiodataRoute
   '/student-dashboard': typeof StudentDashboardRoute
   '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
@@ -240,6 +248,7 @@ export interface FileRoutesById {
   '/pengumuman': typeof PengumumanRoute
   '/scanner': typeof ScannerRoute
   '/signup': typeof SignupRoute
+  '/student-biodata': typeof StudentBiodataRoute
   '/student-dashboard': typeof StudentDashboardRoute
   '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
@@ -271,6 +280,7 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/scanner'
     | '/signup'
+    | '/student-biodata'
     | '/student-dashboard'
     | '/student-login'
     | '/api/admin-setup'
@@ -299,6 +309,7 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/scanner'
     | '/signup'
+    | '/student-biodata'
     | '/student-dashboard'
     | '/student-login'
     | '/api/admin-setup'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/pengumuman'
     | '/scanner'
     | '/signup'
+    | '/student-biodata'
     | '/student-dashboard'
     | '/student-login'
     | '/api/admin-setup'
@@ -358,6 +370,7 @@ export interface RootRouteChildren {
   PengumumanRoute: typeof PengumumanRoute
   ScannerRoute: typeof ScannerRoute
   SignupRoute: typeof SignupRoute
+  StudentBiodataRoute: typeof StudentBiodataRoute
   StudentDashboardRoute: typeof StudentDashboardRoute
   StudentLoginRoute: typeof StudentLoginRoute
   ApiAdminSetupRoute: typeof ApiAdminSetupRoute
@@ -385,6 +398,13 @@ declare module '@tanstack/react-router' {
       path: '/student-dashboard'
       fullPath: '/student-dashboard'
       preLoaderRoute: typeof StudentDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student-biodata': {
+      id: '/student-biodata'
+      path: '/student-biodata'
+      fullPath: '/student-biodata'
+      preLoaderRoute: typeof StudentBiodataRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -600,6 +620,7 @@ const rootRouteChildren: RootRouteChildren = {
   PengumumanRoute: PengumumanRoute,
   ScannerRoute: ScannerRoute,
   SignupRoute: SignupRoute,
+  StudentBiodataRoute: StudentBiodataRoute,
   StudentDashboardRoute: StudentDashboardRoute,
   StudentLoginRoute: StudentLoginRoute,
   ApiAdminSetupRoute: ApiAdminSetupRoute,

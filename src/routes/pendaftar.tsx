@@ -952,22 +952,22 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Row 1: Identity */}
                 <div className="space-y-1.5 col-span-1 md:col-span-2">
-                    <Label htmlFor="nmLengkap">Nama Lengkap *</Label>
+                    <Label htmlFor="nmLengkap">Nama Lengkap <span className="text-destructive">*</span></Label>
                     <Input id="nmLengkap" name="nmLengkap" defaultValue={initialData.nmLengkap} required placeholder="Masukkan nama sesuai ijazah" />
                 </div>
                 <div className="space-y-1.5">
-                    <Label htmlFor="noHandphone">No. Handphone (WA)</Label>
-                    <Input id="noHandphone" name="noHandphone" defaultValue={initialData.noHandphone || ''} placeholder="0812..." />
+                    <Label htmlFor="noHandphone">No. Handphone (WA) <span className="text-destructive">*</span></Label>
+                    <Input id="noHandphone" name="noHandphone" defaultValue={initialData.noHandphone || ''} placeholder="0812..." required />
                 </div>
 
                 {/* Row 2: Birth & Year */}
                 <div className="space-y-1.5">
-                    <Label htmlFor="tempatLahir">Tempat Lahir</Label>
-                    <Input id="tempatLahir" name="tempatLahir" defaultValue={initialData.tempatLahir || ''} placeholder="Contoh: Bantarujeg" />
+                    <Label htmlFor="tempatLahir">Tempat Lahir <span className="text-destructive">*</span></Label>
+                    <Input id="tempatLahir" name="tempatLahir" defaultValue={initialData.tempatLahir || ''} placeholder="Contoh: Bantarujeg" required />
                 </div>
                 <div className="space-y-1.5">
-                    <Label htmlFor="tanggalLahir">Tanggal Lahir</Label>
-                    <Input id="tanggalLahir" name="tanggalLahir" type="date" defaultValue={initialData.tanggalLahir || ''} />
+                    <Label htmlFor="tanggalLahir">Tanggal Lahir <span className="text-destructive">*</span></Label>
+                    <Input id="tanggalLahir" name="tanggalLahir" type="date" defaultValue={initialData.tanggalLahir || ''} required />
                 </div>
                 <div className="space-y-1.5">
                     <Label htmlFor="tahunLulus">Tahun Lulus</Label>
@@ -984,7 +984,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
 
                 {/* Row 3: School & Address */}
                 <div className="space-y-1.5 col-span-1 md:col-span-1 relative">
-                    <Label htmlFor="asalSekolah">Asal Sekolah *</Label>
+                    <Label htmlFor="asalSekolah">Asal Sekolah <span className="text-destructive">*</span></Label>
                     <div className="relative">
                         <Input
                             id="asalSekolah"
@@ -1031,7 +1031,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
                     )}
                 </div>
                 <div className="space-y-1.5 col-span-1 md:col-span-2">
-                    <Label htmlFor="alamat">Alamat Lengkap</Label>
+                    <Label htmlFor="alamat">Alamat Lengkap <span className="text-destructive">*</span></Label>
                     <Textarea
                         id="alamat"
                         name="alamat"
@@ -1039,6 +1039,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
                         placeholder="Jl. Contoh No. 123"
                         rows={2}
                         className="min-h-0"
+                        required
                     />
                 </div>
 
