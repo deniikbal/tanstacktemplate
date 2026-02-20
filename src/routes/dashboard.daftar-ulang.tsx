@@ -804,11 +804,66 @@ function DaftarUlangPage() {
                     STATUS BERKAS DAFTAR ULANG
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                    <FileStatusItem label="SKL" checked={detailStudent.daftarUlang.skl} fileId={detailStudent.daftarUlang.fileSklId} />
-                    <FileStatusItem label="Tatib" checked={detailStudent.daftarUlang.tatib} fileId={detailStudent.daftarUlang.fileTatibId} />
-                    <FileStatusItem label="KK" checked={detailStudent.daftarUlang.kk} fileId={detailStudent.daftarUlang.fileKkId} />
-                    <FileStatusItem label="Bukti" checked={detailStudent.daftarUlang.bukti} fileId={detailStudent.daftarUlang.fileBuktiId} />
-                    <FileStatusItem label="SP" checked={detailStudent.daftarUlang.pernyataan} fileId={detailStudent.daftarUlang.filePernyataanId} />
+                    <FileStatusItem
+                      label="SKL"
+                      checked={detailStudent.daftarUlang.skl}
+                      fileId={detailStudent.daftarUlang.fileSklId}
+                      onPreview={() => setPreviewConfig({
+                        isOpen: true,
+                        driveId: detailStudent.daftarUlang.fileSklId!,
+                        label: `SKL: ${detailStudent.nmSiswa}`,
+                        studentId: detailStudent.id,
+                        field: 'skl'
+                      })}
+                    />
+                    <FileStatusItem
+                      label="Tatib"
+                      checked={detailStudent.daftarUlang.tatib}
+                      fileId={detailStudent.daftarUlang.fileTatibId}
+                      onPreview={() => setPreviewConfig({
+                        isOpen: true,
+                        driveId: detailStudent.daftarUlang.fileTatibId!,
+                        label: `Tatib: ${detailStudent.nmSiswa}`,
+                        studentId: detailStudent.id,
+                        field: 'tatib'
+                      })}
+                    />
+                    <FileStatusItem
+                      label="KK"
+                      checked={detailStudent.daftarUlang.kk}
+                      fileId={detailStudent.daftarUlang.fileKkId}
+                      onPreview={() => setPreviewConfig({
+                        isOpen: true,
+                        driveId: detailStudent.daftarUlang.fileKkId!,
+                        label: `KK: ${detailStudent.nmSiswa}`,
+                        studentId: detailStudent.id,
+                        field: 'kk'
+                      })}
+                    />
+                    <FileStatusItem
+                      label="Bukti"
+                      checked={detailStudent.daftarUlang.bukti}
+                      fileId={detailStudent.daftarUlang.fileBuktiId}
+                      onPreview={() => setPreviewConfig({
+                        isOpen: true,
+                        driveId: detailStudent.daftarUlang.fileBuktiId!,
+                        label: `Bukti: ${detailStudent.nmSiswa}`,
+                        studentId: detailStudent.id,
+                        field: 'bukti'
+                      })}
+                    />
+                    <FileStatusItem
+                      label="SP"
+                      checked={detailStudent.daftarUlang.pernyataan}
+                      fileId={detailStudent.daftarUlang.filePernyataanId}
+                      onPreview={() => setPreviewConfig({
+                        isOpen: true,
+                        driveId: detailStudent.daftarUlang.filePernyataanId!,
+                        label: `SP: ${detailStudent.nmSiswa}`,
+                        studentId: detailStudent.id,
+                        field: 'pernyataan'
+                      })}
+                    />
                   </div>
                 </div>
 
@@ -870,7 +925,17 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   )
 }
 
-function FileStatusItem({ label, checked, fileId }: { label: string; checked: boolean; fileId?: string }) {
+function FileStatusItem({
+  label,
+  checked,
+  fileId,
+  onPreview
+}: {
+  label: string;
+  checked: boolean;
+  fileId?: string;
+  onPreview?: () => void
+}) {
   return (
     <div className={`p-2 rounded-md border flex flex-col items-center gap-1 ${checked
       ? 'bg-emerald-50 border-emerald-200'
@@ -885,9 +950,20 @@ function FileStatusItem({ label, checked, fileId }: { label: string; checked: bo
         {label}
       </span>
       {fileId && (
-        <span className={`text-[8px] font-medium ${checked ? 'text-emerald-600' : 'text-rose-600'}`}>
-          ✓ Terupload
-        </span>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onPreview?.();
+          }}
+          className={`flex items-center gap-1 px-1.5 py-0.5 rounded border transition-all ${checked
+            ? 'bg-emerald-100 border-emerald-200 text-emerald-700 hover:bg-emerald-200'
+            : 'bg-rose-100 border-rose-200 text-rose-700 hover:bg-rose-200'
+            }`}
+          title="Lihat Berkas"
+        >
+          <FileText className="w-3 h-3" />
+          <span className="text-[8px] font-bold">LIHAT</span>
+        </button>
       )}
     </div>
   )
