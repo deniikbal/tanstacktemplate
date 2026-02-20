@@ -64,13 +64,9 @@ export const getDaftarUlangList = createServerFn({ method: "GET" })
             .orderBy(asc(student.nmSiswa));
 
         const students = results.map((item: any) => ({
+            ...item.student,
             id: item.kelulusan.id,
             studentId: item.kelulusan.studentId,
-            nmSiswa: item.student.nmSiswa,
-            sekolahAsal: item.student.sekolahAsal,
-            jenisKelamin: item.student.jenisKelamin,
-            teleponSiswa: item.student.teleponSiswa,
-            teleponOrtu: item.student.teleponOrtu,
             jalur: item.kelulusan.jalur,
             tahap: item.kelulusan.tahap,
             daftarUlang: item.daftarUlang || {

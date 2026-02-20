@@ -481,6 +481,9 @@ function KelulusanPage() {
                                 <Badge variant="outline" className="text-[10px] h-4 px-1.5 bg-slate-50 text-slate-500 border-slate-200">
                                   {item.tahap}
                                 </Badge>
+                                <Badge variant="secondary" className="text-[10px] h-4 px-1.5 font-bold">
+                                  {item.jalur}
+                                </Badge>
                               </div>
                             </div>
                           </TableCell>
@@ -577,6 +580,9 @@ function KelulusanPage() {
                             <div className="flex flex-wrap gap-1 mt-1.5">
                               <Badge variant="outline" className="text-[9px] h-3.5 px-1 bg-slate-50 text-slate-500 border-slate-200 uppercase">
                                 {item.tahap}
+                              </Badge>
+                              <Badge variant="secondary" className="text-[9px] h-3.5 px-1 font-bold uppercase">
+                                {item.jalur}
                               </Badge>
                             </div>
                           </div>
@@ -776,8 +782,10 @@ function SyncModal({
   const handleSync = async () => {
     setLoading(true)
     try {
-      const res = await syncKelulusan({ data: { tahap, status } })
-      toast.success(`${res.synced} data siswa baru berhasil disinkronkan ke tabel kelulusan dengan status ${status}.`)
+      const res: any = await syncKelulusan({ data: { tahap, status } })
+      toast.success(`Sinkronisasi Berhasil`, {
+        description: `${res.synced} data baru & ${res.updated} data diperbarui (Total: ${res.total})`,
+      })
       onSuccess()
     } catch (err: any) {
       toast.error(err.message || 'Gagal sinkronisasi data')

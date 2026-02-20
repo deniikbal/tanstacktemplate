@@ -4,12 +4,10 @@ import { getPendaftarStats, getRegistrationChartData } from '@/lib/server/pendaf
 import { getJalurStats } from '@/lib/server/kelulusan'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Users, CheckCircle2, Clock, ArrowUpCircle, GraduationCap, School, TrendingUp, PieChart as PieChartIcon, Activity } from "lucide-react"
-import { Badge } from '@/components/ui/badge'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, BarChart, Bar
 } from 'recharts'
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
 
 export const Route = createFileRoute('/dashboard/')({
   component: DashboardIndexPage,
@@ -246,7 +244,7 @@ function DashboardIndexPage() {
                           paddingAngle={5}
                           dataKey="value"
                         >
-                          {chartData.jalurData.map((entry, index) => (
+                          {chartData.jalurData.map((_entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>

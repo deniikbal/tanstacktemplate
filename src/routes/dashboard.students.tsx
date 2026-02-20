@@ -115,23 +115,32 @@ interface Student {
 }
 
 interface ImportStudent {
-    nis?: string
-    nisn?: string
     nm_siswa: string
+    nisn?: string
+    nis?: string
+    no_daftar?: string
     tempat_lahir?: string
     tanggal_lahir?: string
     jenis_kelamin?: string
     agama?: string
-    alamat_siswa?: string
     telepon_siswa?: string
-    diterima_tanggal?: string
+    alamat_siswa?: string
+    sekolah_asal?: string
+    jalur?: string
     nm_ayah?: string
-    nm_ibu?: string
     pekerjaan_ayah?: string
+    nm_ibu?: string
     pekerjaan_ibu?: string
+    telepon_ortu?: string
+    alamat_ortu?: string
     nm_wali?: string
     pekerjaan_wali?: string
-    jalur?: string
+    telepon_wali?: string
+    alamat_wali?: string
+    status_dalam_kel?: string
+    anak_ke?: string
+    diterima_tanggal?: string
+    diterima_kelas?: string
 }
 
 function StudentsPage() {
@@ -283,6 +292,23 @@ function StudentsPage() {
         }
     }
 
+    const downloadTemplate = () => {
+        const headers = [
+            'nm_siswa', 'nisn', 'nis', 'no_daftar', 'tempat_lahir', 'tanggal_lahir',
+            'jenis_kelamin', 'agama', 'telepon_siswa', 'alamat_siswa', 'sekolah_asal',
+            'jalur', 'nm_ayah', 'pekerjaan_ayah', 'nm_ibu', 'pekerjaan_ibu',
+            'telepon_ortu', 'alamat_ortu', 'nm_wali', 'pekerjaan_wali',
+            'telepon_wali', 'alamat_wali', 'status_dalam_kel', 'anak_ke',
+            'diterima_tanggal', 'diterima_kelas'
+        ]
+
+        const worksheet = XLSX.utils.aoa_to_sheet([headers])
+        const workbook = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Template Import')
+        XLSX.writeFile(workbook, 'template_import_siswa.xlsx')
+        toast.info('Template Excel telah didownload')
+    }
+
     const handleImport = async () => {
         if (importData.length === 0) return
 
@@ -356,6 +382,14 @@ function StudentsPage() {
                             accept=".xlsx,.xls"
                             className="hidden"
                         />
+                        <Button
+                            variant="outline"
+                            onClick={downloadTemplate}
+                            className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                        >
+                            <FileSpreadsheet className="w-4 h-4 mr-2" />
+                            Template
+                        </Button>
                         <Button
                             onClick={() => fileInputRef.current?.click()}
                             className="bg-blue-600 hover:bg-blue-700"

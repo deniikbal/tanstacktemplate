@@ -25,12 +25,13 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogFooter,
   DialogTitle,
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog"
 import { toast } from 'sonner'
-import { Loader2, ClipboardList, Search, CheckCircle2, AlertCircle, XCircle, Phone, MessageCircle, ChevronLeft, ChevronRight, FileText, X } from 'lucide-react'
+import { Loader2, ClipboardList, Search, CheckCircle2, AlertCircle, XCircle, Phone, MessageCircle, ChevronLeft, ChevronRight, FileText, X, User, Users, GraduationCap } from 'lucide-react'
 import { getDaftarUlangList, upsertDaftarUlang } from '@/lib/server/daftar-ulang'
 
 export const Route = createFileRoute('/dashboard/daftar-ulang')({
@@ -60,6 +61,8 @@ function DaftarUlangPage() {
     studentId: null,
     field: null
   })
+  const [detailStudent, setDetailStudent] = useState<any | null>(null)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
   const limit = 10
 
   const fetchDaftarUlang = async () => {
@@ -488,7 +491,19 @@ function DaftarUlangPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-right pr-6">
-                        <div className="flex justify-end">
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setDetailStudent(item)
+                              setIsDetailOpen(true)
+                            }}
+                            className="h-7 w-7 p-0 hover:bg-blue-50 hover:text-blue-600"
+                            title="Lihat Detail Siswa"
+                          >
+                            <FileText className="h-4 w-4" />
+                          </Button>
                           {savingId === item.id ? (
                             <div className="h-7 w-7 flex items-center justify-center rounded-full bg-slate-50 border border-slate-100">
                               <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
@@ -710,6 +725,170 @@ function DaftarUlangPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Detail Siswa Dialog */}
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden" showCloseButton={false}>
+          <DialogHeader className="p-6 pb-4 border-b shrink-0">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <DialogTitle className="text-lg font-black text-slate-900">Detail Siswa</DialogTitle>
+                  <DialogDescription className="text-xs">Informasi lengkap biodata siswa</DialogDescription>
+                </div>
+              </div>
+              <DialogClose className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                <X className="h-5 w-5 text-slate-500" />
+              </DialogClose>
+            </div>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto p-6">
+            {detailStudent && (
+              <div className="space-y-6">
+                {/* Data Jalur */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-bold text-indigo-600 border-b pb-1 flex items-center gap-2">
+                    <GraduationCap className="w-4 h-4" />
+                    INFORMASI PENDAFTARAN
+                  </h4>
+                  <div className="space-y-1">
+                    <DetailRow label="Jalur Pendaftaran" value={detailStudent.jalur} />
+                    <DetailRow label="Tahap" value={detailStudent.tahap} />
+                  </div>
+                </div>
+
+                {/* Data Pribadi */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-bold text-blue-600 border-b pb-1 flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    DATA PRIBADI SISWA
+                  </h4>
+                  <div className="space-y-1">
+                    <DetailRow label="Nama Lengkap" value={detailStudent.nmSiswa} />
+                    <DetailRow label="NISN" value={detailStudent.nisn || '-'} />
+                    <DetailRow label="Tempat, Tanggal Lahir" value={`${detailStudent.tempatLahir || '-'}, ${detailStudent.tanggalLahir || '-'}`} />
+                    <DetailRow label="Jenis Kelamin" value={detailStudent.jenisKelamin === 'L' || detailStudent.jenisKelamin === 'Laki-laki' ? 'Laki-laki' : detailStudent.jenisKelamin === 'P' || detailStudent.jenisKelamin === 'Perempuan' ? 'Perempuan' : '-'} />
+                    <DetailRow label="Agama" value={detailStudent.agama || '-'} />
+                    <DetailRow label="No. HP Siswa" value={detailStudent.teleponSiswa || '-'} />
+                    <DetailRow label="Alamat Siswa" value={detailStudent.alamatSiswa || '-'} />
+                    <DetailRow label="Asal Sekolah" value={detailStudent.sekolahAsal || '-'} />
+                    <DetailRow label="Status Keluarga" value={detailStudent.statusDalamKel || '-'} />
+                    <DetailRow label="Anak Ke" value={detailStudent.anakKe || '-'} />
+                  </div>
+                </div>
+
+                {/* Data Orang Tua */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-bold text-slate-800 border-b pb-1 flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    DATA ORANG TUA / WALI
+                  </h4>
+                  <div className="space-y-1">
+                    <DetailRow label="Nama Ayah" value={detailStudent.nmAyah || '-'} />
+                    <DetailRow label="Pekerjaan Ayah" value={detailStudent.pekerjaanAyah || '-'} />
+                    <DetailRow label="Nama Ibu" value={detailStudent.nmIbu || '-'} />
+                    <DetailRow label="Pekerjaan Ibu" value={detailStudent.pekerjaanIbu || '-'} />
+                    <DetailRow label="No. Telp Orang Tua" value={detailStudent.teleponOrtu || '-'} />
+                    <DetailRow label="Alamat Orang Tua" value={detailStudent.alamatOrtu || '-'} />
+                  </div>
+                </div>
+
+                {/* Status Berkas */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-bold text-emerald-600 border-b pb-2 flex items-center gap-2">
+                    <ClipboardList className="w-4 h-4" />
+                    STATUS BERKAS DAFTAR ULANG
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <FileStatusItem label="SKL" checked={detailStudent.daftarUlang.skl} fileId={detailStudent.daftarUlang.fileSklId} />
+                    <FileStatusItem label="Tatib" checked={detailStudent.daftarUlang.tatib} fileId={detailStudent.daftarUlang.fileTatibId} />
+                    <FileStatusItem label="KK" checked={detailStudent.daftarUlang.kk} fileId={detailStudent.daftarUlang.fileKkId} />
+                    <FileStatusItem label="Bukti" checked={detailStudent.daftarUlang.bukti} fileId={detailStudent.daftarUlang.fileBuktiId} />
+                    <FileStatusItem label="SP" checked={detailStudent.daftarUlang.pernyataan} fileId={detailStudent.daftarUlang.filePernyataanId} />
+                  </div>
+                </div>
+
+                {/* Kontak */}
+                {(detailStudent.teleponSiswa || detailStudent.teleponOrtu) && (
+                  <div className="flex gap-3 pt-4 border-t">
+                    {detailStudent.teleponSiswa && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(`https://wa.me/${detailStudent.teleponSiswa.replace(/\D/g, '').replace(/^0/, '62')}`, '_blank')}
+                        className="flex-1 border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800"
+                      >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        WA Siswa
+                      </Button>
+                    )}
+                    {detailStudent.teleponOrtu && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(`https://wa.me/${detailStudent.teleponOrtu.replace(/\D/g, '').replace(/^0/, '62')}`, '_blank')}
+                        className="flex-1 border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800"
+                      >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        WA Ortu
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <DialogFooter className="p-4 border-t bg-slate-50/50 shrink-0">
+            <DialogClose asChild>
+              <Button type="button" variant="secondary" className="w-full sm:w-auto font-bold px-8">
+                TUTUP
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
+
+// Helper Components
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 border-b border-slate-50/50 pb-1">
+      <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-full sm:w-40 shrink-0">
+        {label}
+      </div>
+      <div className="hidden sm:block text-slate-300">:</div>
+      <div className="text-sm font-semibold text-slate-700 flex-1">
+        {value}
+      </div>
+    </div>
+  )
+}
+
+function FileStatusItem({ label, checked, fileId }: { label: string; checked: boolean; fileId?: string }) {
+  return (
+    <div className={`p-2 rounded-md border flex flex-col items-center gap-1 ${checked
+      ? 'bg-emerald-50 border-emerald-200'
+      : 'bg-rose-50 border-rose-200'
+      }`}>
+      {checked ? (
+        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+      ) : (
+        <XCircle className="w-4 h-4 text-rose-600" />
+      )}
+      <span className={`text-[10px] font-bold ${checked ? 'text-emerald-700' : 'text-rose-700'}`}>
+        {label}
+      </span>
+      {fileId && (
+        <span className={`text-[8px] font-medium ${checked ? 'text-emerald-600' : 'text-rose-600'}`}>
+          ✓ Terupload
+        </span>
+      )}
     </div>
   )
 }

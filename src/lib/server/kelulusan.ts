@@ -95,19 +95,16 @@ export const syncKelulusan = createServerFn({ method: "POST" })
         // 1. Get all students
         const allStudents = await db.select().from(student);
 
-        // 2. Get existing student IDs in kelulusan
+        if (allStudents.length === 0) {
+            return { synced: 0, updated: 0 };
+        }
+
+        // 2. Get existing student IDs in kelulusan for reporting
         const existingRecords = await db.select({ studentId: kelulusan.studentId }).from(kelulusan);
         const existingIds = new Set(existingRecords.map((r: { studentId: string }) => r.studentId));
 
-        // 3. Filter students not in kelulusan
-        const newStudents = allStudents.filter((s: any) => !existingIds.has(s.id));
-
-        if (newStudents.length === 0) {
-            return { synced: 0 };
-        }
-
-        // 4. Batch insert new records
-        const values = newStudents.map((s: any) => ({
+        // 3. Prepare values for upsert
+        const values = allStudents.map((s: any) => ({
             studentId: s.id,
             jalur: s.jalur || '-',
             status: status || 'LULUS',
@@ -116,9 +113,27 @@ export const syncKelulusan = createServerFn({ method: "POST" })
             updatedAt: new Date(),
         }));
 
-        await db.insert(kelulusan).values(values);
+        // 4. Perform Upsert
+        // We update 'jalur' to match student table, and refreshing 'updatedAt'
+        // We keep 'status' and 'tahap' as they are for existing entries to preserve manual edits
+        await db.insert(kelulusan)
+            .values(values)
+            .onConflictDoUpdate({
+                target: kelulusan.studentId,
+                set: {
+                    jalur: sql`excluded.jalur`,
+                    updatedAt: new Date(),
+                }
+            });
 
-        return { synced: newStudents.length };
+        const newCount = allStudents.filter((s: any) => !existingIds.has(s.id)).length;
+        const updatedCount = allStudents.length - newCount;
+
+        return {
+            synced: newCount,
+            updated: updatedCount,
+            total: allStudents.length
+        };
     });
 
 export const updateKelulusan = createServerFn({ method: "POST" })

@@ -293,8 +293,10 @@ export const bulkImportStudents = createServerFn({ method: 'POST' })
     })
 
 interface SingleStudentImportData {
+    id?: string
     nis?: string
     nisn?: string
+    no_daftar?: string
     nm_siswa: string
     tempat_lahir?: string
     tanggal_lahir?: string
@@ -303,6 +305,7 @@ interface SingleStudentImportData {
     alamat_siswa?: string
     telepon_siswa?: string
     diterima_tanggal?: string
+    diterima_kelas?: string
     nm_ayah?: string
     nm_ibu?: string
     pekerjaan_ayah?: string
@@ -310,6 +313,13 @@ interface SingleStudentImportData {
     nm_wali?: string
     pekerjaan_wali?: string
     jalur?: string
+    sekolah_asal?: string
+    status_dalam_kel?: string
+    anak_ke?: string
+    alamat_ortu?: string
+    telepon_ortu?: string
+    alamat_wali?: string
+    telepon_wali?: string
 }
 
 export const importBatchStudents = createServerFn({ method: 'POST' })
@@ -332,6 +342,7 @@ export const importBatchStudents = createServerFn({ method: 'POST' })
 
         const values = batch.map(row => ({
             id: crypto.randomUUID(),
+            noDaftar: row.no_daftar || null,
             nis: row.nis || null,
             nisn: row.nisn || null,
             nmSiswa: row.nm_siswa,
@@ -341,13 +352,21 @@ export const importBatchStudents = createServerFn({ method: 'POST' })
             agama: row.agama || null,
             alamatSiswa: row.alamat_siswa || null,
             teleponSiswa: row.telepon_siswa || null,
+            sekolahAsal: row.sekolah_asal || null,
             diterimaTanggal: row.diterima_tanggal || null,
+            diterimaKelas: row.diterima_kelas || null,
             nmAyah: row.nm_ayah || null,
             nmIbu: row.nm_ibu || null,
             pekerjaanAyah: row.pekerjaan_ayah || null,
             pekerjaanIbu: row.pekerjaan_ibu || null,
             nmWali: row.nm_wali || null,
             pekerjaanWali: row.pekerjaan_wali || null,
+            alamatOrtu: row.alamat_ortu || null,
+            teleponOrtu: row.telepon_ortu || null,
+            alamatWali: row.alamat_wali || null,
+            teleponWali: row.telepon_wali || null,
+            statusDalamKel: row.status_dalam_kel || null,
+            anakKe: row.anak_ke || null,
             jalur: row.jalur || null,
             tahunAjaran: aktiveTahunAjaran,
             createdAt: new Date(),
