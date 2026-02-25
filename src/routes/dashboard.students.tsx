@@ -71,7 +71,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import * as XLSX from 'xlsx'
+// import * as XLSX from 'xlsx' // Optimized to dynamic import below
 
 export const Route = createFileRoute('/dashboard/students')({
     component: StudentsPage,
@@ -257,9 +257,10 @@ function StudentsPage() {
         if (!file) return
 
         const reader = new FileReader()
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
             try {
                 const data = event.target?.result
+                const XLSX = await import('xlsx')
                 const workbook = XLSX.read(data, { type: 'binary' })
                 const sheetName = workbook.SheetNames[0]
                 const worksheet = workbook.Sheets[sheetName]
@@ -292,7 +293,7 @@ function StudentsPage() {
         }
     }
 
-    const downloadTemplate = () => {
+    const downloadTemplate = async () => {
         const headers = [
             'nm_siswa', 'nisn', 'nis', 'no_daftar', 'tempat_lahir', 'tanggal_lahir',
             'jenis_kelamin', 'agama', 'telepon_siswa', 'alamat_siswa', 'sekolah_asal',
@@ -302,6 +303,7 @@ function StudentsPage() {
             'diterima_tanggal', 'diterima_kelas'
         ]
 
+        const XLSX = await import('xlsx')
         const worksheet = XLSX.utils.aoa_to_sheet([headers])
         const workbook = XLSX.utils.book_new()
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Template Import')
