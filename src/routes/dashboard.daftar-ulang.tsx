@@ -676,7 +676,7 @@ function DaftarUlangPage() {
         onOpenChange={(open) => setPreviewConfig({ ...previewConfig, isOpen: open })}
       >
         <DialogContent
-          className="max-w-[100vw] w-screen h-screen sm:max-w-5xl sm:h-[90vh] p-0 overflow-hidden sm:rounded-3xl border-none shadow-2xl flex flex-col bg-slate-900"
+          className="w-[90vw] sm:max-w-5xl h-[90vh] p-0 overflow-hidden rounded-2xl sm:rounded-3xl border-none shadow-2xl flex flex-col bg-slate-900"
           showCloseButton={false}
         >
           <DialogHeader className="p-4 sm:p-6 bg-white border-b flex flex-row items-center justify-between shrink-0 h-16 sm:h-20">

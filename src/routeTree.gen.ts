@@ -27,7 +27,9 @@ import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settin
 import { Route as DashboardSekolahRouteImport } from './routes/dashboard/sekolah'
 import { Route as DashboardPendaftarRouteImport } from './routes/dashboard.pendaftar'
 import { Route as DashboardKelulusanRouteImport } from './routes/dashboard.kelulusan'
+import { Route as DashboardJadwalSpmbRouteImport } from './routes/dashboard.jadwal-spmb'
 import { Route as DashboardDaftarUlangRouteImport } from './routes/dashboard.daftar-ulang'
+import { Route as DashboardActivityReportsRouteImport } from './routes/dashboard.activity-reports'
 import { Route as ApiAdminSetupRouteImport } from './routes/api/admin-setup'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
@@ -128,11 +130,22 @@ const DashboardKelulusanRoute = DashboardKelulusanRouteImport.update({
   path: '/kelulusan',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardJadwalSpmbRoute = DashboardJadwalSpmbRouteImport.update({
+  id: '/jadwal-spmb',
+  path: '/jadwal-spmb',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardDaftarUlangRoute = DashboardDaftarUlangRouteImport.update({
   id: '/daftar-ulang',
   path: '/daftar-ulang',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardActivityReportsRoute =
+  DashboardActivityReportsRouteImport.update({
+    id: '/activity-reports',
+    path: '/activity-reports',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 const ApiAdminSetupRoute = ApiAdminSetupRouteImport.update({
   id: '/api/admin-setup',
   path: '/api/admin-setup',
@@ -192,7 +205,9 @@ export interface FileRoutesByFullPath {
   '/student-dashboard': typeof StudentDashboardRoute
   '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
+  '/dashboard/activity-reports': typeof DashboardActivityReportsRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
+  '/dashboard/jadwal-spmb': typeof DashboardJadwalSpmbRoute
   '/dashboard/kelulusan': typeof DashboardKelulusanRoute
   '/dashboard/pendaftar': typeof DashboardPendaftarRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
@@ -221,7 +236,9 @@ export interface FileRoutesByTo {
   '/student-dashboard': typeof StudentDashboardRoute
   '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
+  '/dashboard/activity-reports': typeof DashboardActivityReportsRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
+  '/dashboard/jadwal-spmb': typeof DashboardJadwalSpmbRoute
   '/dashboard/kelulusan': typeof DashboardKelulusanRoute
   '/dashboard/pendaftar': typeof DashboardPendaftarRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
@@ -252,7 +269,9 @@ export interface FileRoutesById {
   '/student-dashboard': typeof StudentDashboardRoute
   '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
+  '/dashboard/activity-reports': typeof DashboardActivityReportsRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
+  '/dashboard/jadwal-spmb': typeof DashboardJadwalSpmbRoute
   '/dashboard/kelulusan': typeof DashboardKelulusanRoute
   '/dashboard/pendaftar': typeof DashboardPendaftarRoute
   '/dashboard/sekolah': typeof DashboardSekolahRoute
@@ -284,7 +303,9 @@ export interface FileRouteTypes {
     | '/student-dashboard'
     | '/student-login'
     | '/api/admin-setup'
+    | '/dashboard/activity-reports'
     | '/dashboard/daftar-ulang'
+    | '/dashboard/jadwal-spmb'
     | '/dashboard/kelulusan'
     | '/dashboard/pendaftar'
     | '/dashboard/sekolah'
@@ -313,7 +334,9 @@ export interface FileRouteTypes {
     | '/student-dashboard'
     | '/student-login'
     | '/api/admin-setup'
+    | '/dashboard/activity-reports'
     | '/dashboard/daftar-ulang'
+    | '/dashboard/jadwal-spmb'
     | '/dashboard/kelulusan'
     | '/dashboard/pendaftar'
     | '/dashboard/sekolah'
@@ -343,7 +366,9 @@ export interface FileRouteTypes {
     | '/student-dashboard'
     | '/student-login'
     | '/api/admin-setup'
+    | '/dashboard/activity-reports'
     | '/dashboard/daftar-ulang'
+    | '/dashboard/jadwal-spmb'
     | '/dashboard/kelulusan'
     | '/dashboard/pendaftar'
     | '/dashboard/sekolah'
@@ -512,11 +537,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardKelulusanRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/jadwal-spmb': {
+      id: '/dashboard/jadwal-spmb'
+      path: '/jadwal-spmb'
+      fullPath: '/dashboard/jadwal-spmb'
+      preLoaderRoute: typeof DashboardJadwalSpmbRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/daftar-ulang': {
       id: '/dashboard/daftar-ulang'
       path: '/daftar-ulang'
       fullPath: '/dashboard/daftar-ulang'
       preLoaderRoute: typeof DashboardDaftarUlangRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/activity-reports': {
+      id: '/dashboard/activity-reports'
+      path: '/activity-reports'
+      fullPath: '/dashboard/activity-reports'
+      preLoaderRoute: typeof DashboardActivityReportsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/api/admin-setup': {
@@ -586,7 +625,9 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
+  DashboardActivityReportsRoute: typeof DashboardActivityReportsRoute
   DashboardDaftarUlangRoute: typeof DashboardDaftarUlangRoute
+  DashboardJadwalSpmbRoute: typeof DashboardJadwalSpmbRoute
   DashboardKelulusanRoute: typeof DashboardKelulusanRoute
   DashboardPendaftarRoute: typeof DashboardPendaftarRoute
   DashboardSekolahRoute: typeof DashboardSekolahRoute
@@ -597,7 +638,9 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardActivityReportsRoute: DashboardActivityReportsRoute,
   DashboardDaftarUlangRoute: DashboardDaftarUlangRoute,
+  DashboardJadwalSpmbRoute: DashboardJadwalSpmbRoute,
   DashboardKelulusanRoute: DashboardKelulusanRoute,
   DashboardPendaftarRoute: DashboardPendaftarRoute,
   DashboardSekolahRoute: DashboardSekolahRoute,

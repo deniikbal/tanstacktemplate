@@ -232,6 +232,62 @@ function ScannerPage() {
               </CardContent>
             </Card>
 
+            {/* Extended Student Info Card */}
+            <Card className="border-none shadow-lg bg-white overflow-hidden">
+              <CardHeader className="pb-3 pt-4 border-b border-slate-100 bg-slate-50/50">
+                <CardTitle className="text-sm font-black flex items-center gap-2 text-slate-800">
+                  <User className="w-4 h-4 text-blue-600" /> Detail Profil & Orang Tua
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 space-y-4 text-xs font-semibold">
+                <div className="grid grid-cols-2 gap-y-3 gap-x-4 border-b border-slate-100 pb-4">
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase tracking-widest font-bold mb-0.5">Tempat & Tgl Lahir</span>
+                    <span className="text-slate-800">{data.student.tempatLahir || '-'}, {data.student.tanggalLahir ? new Date(data.student.tanggalLahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase tracking-widest font-bold mb-0.5">Agama</span>
+                    <span className="text-slate-800">{data.student.agama || '-'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase tracking-widest font-bold mb-0.5">No HP / WA Siswa</span>
+                    <span className="text-slate-800">{data.student.teleponSiswa || '-'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase tracking-widest font-bold mb-0.5">Status Keluarga</span>
+                    <span className="text-slate-800">{data.student.statusDalamKel || '-'} (Anak ke-{data.student.anakKe || '-'})</span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-slate-400 block text-[10px] uppercase tracking-widest font-bold mb-0.5">Alamat Siswa</span>
+                    <span className="text-slate-800 leading-snug block">{data.student.alamatSiswa || '-'}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-y-3 gap-x-4">
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase tracking-widest font-bold mb-0.5">Nama Ayah</span>
+                    <span className="text-slate-800">{data.student.nmAyah || '-'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase tracking-widest font-bold mb-0.5">Pekerjaan Ayah</span>
+                    <span className="text-slate-800">{data.student.pekerjaanAyah || '-'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase tracking-widest font-bold mb-0.5">Nama Ibu</span>
+                    <span className="text-slate-800">{data.student.nmIbu || '-'}</span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[10px] uppercase tracking-widest font-bold mb-0.5">Pekerjaan Ibu</span>
+                    <span className="text-slate-800">{data.student.pekerjaanIbu || '-'}</span>
+                  </div>
+                  <div className="col-span-2">
+                    <span className="text-slate-400 block text-[10px] uppercase tracking-widest font-bold mb-0.5">Alamat Orang Tua</span>
+                    <span className="text-slate-800 leading-snug block">{data.student.alamatOrtu || '-'}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Checklist Card */}
             <Card className="border-none shadow-lg bg-white">
               <CardHeader className="pb-2">
@@ -326,7 +382,7 @@ function ScannerPage() {
         onOpenChange={(open) => setPreviewConfig({ ...previewConfig, isOpen: open })}
       >
         <DialogContent
-          className="max-w-[100vw] w-screen h-screen sm:max-w-5xl sm:h-[90vh] p-0 overflow-hidden rounded-none sm:rounded-3xl border-none shadow-2xl flex flex-col bg-slate-900"
+          className="w-[90vw] sm:max-w-5xl h-[90vh] p-0 overflow-hidden rounded-2xl sm:rounded-3xl border-none shadow-2xl flex flex-col bg-slate-900"
           showCloseButton={false}
         >
           <DialogHeader className="p-3 sm:p-6 bg-white border-b flex flex-row items-center justify-between shrink-0 h-14 sm:h-20">

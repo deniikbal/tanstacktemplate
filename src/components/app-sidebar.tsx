@@ -52,6 +52,11 @@ const data = {
           adminOnly: true,
         },
         {
+          title: "Jadwal SPMB",
+          url: "/dashboard/jadwal-spmb",
+          adminOnly: true,
+        },
+        {
           title: "Data Pengguna",
           url: "/dashboard/users",
           adminOnly: true,
@@ -61,8 +66,14 @@ const data = {
           url: "/dashboard/students",
           adminOnly: true,
         },
+        {
+          title: "Laporan Kegiatan",
+          url: "/dashboard/activity-reports",
+          adminOnly: true,
+        },
       ],
     },
+
     {
       title: "Kelulusan",
       url: "/dashboard/kelulusan",

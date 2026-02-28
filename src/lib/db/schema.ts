@@ -61,3 +61,6 @@ export * from "./setting-schema";
 export * from "./tahun-ajaran-schema";
 export * from "./kelulusan-schema";
 export * from "./daftar-ulang-schema";
+export * from "./activity-report-schema";
+
+export * from "./jadwal-spmb-schema";
