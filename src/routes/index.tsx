@@ -275,9 +275,10 @@ function LandingPage() {
           <div className="relative">
             <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border-4 border-white transform lg:rotate-2 hover:rotate-0 transition-transform duration-500">
               <img
-                src="/hero.JPG"
+                src="/hero.webp"
                 alt="Siswa SMAN 1 BANTARUJEG"
                 className="w-full h-auto object-cover aspect-[4/5]"
+                fetchPriority="high"
               />
             </div>
             {/* Decorative elements around image */}
