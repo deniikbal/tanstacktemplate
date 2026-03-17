@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { db } from '@/lib/db'
@@ -38,6 +38,12 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+} from "@/components/ui/dialog"
 import { Badge } from '@/components/ui/badge'
 
 const getJadwalSpmb = createServerFn({ method: "GET" }).handler(async () => {
@@ -61,8 +67,25 @@ export const Route = createFileRoute('/')({
     return { jadwal }
   },
 })
+// Gallery items pool (static data)
+const galleryItemsPool = [
+  { src: '/gallery/1.jpeg' },
+  { src: '/gallery/2.jpeg' },
+  { src: '/gallery/3.jpeg' },
+  { src: '/gallery/4.jpeg' },
+  { src: '/gallery/5.jpeg' },
+  { src: '/gallery/6.jpeg' },
+  { src: '/gallery/7.jpeg' },
+  { src: '/gallery/8.jpeg' },
+  { src: '/gallery/9.jpeg' },
+  { src: '/gallery/10.jpeg' },
+]
+
 function LandingPage() {
   const [isOpen, setIsOpen] = useState(false)
+  const [selectedImage, setSelectedImage] = useState<{ src: string } | null>(null)
+  // Initialize with the first 10 items (all) so it's not empty on first (SSR) render
+  const [randomGallery, setRandomGallery] = useState(galleryItemsPool)
   const steps = [
     {
       id: '1',
@@ -127,6 +150,17 @@ function LandingPage() {
     return `${startDayStr} - ${endDayStr}`;
   }
 
+  // Shuffle and pick all 10 items on mount (client-side only)
+  useEffect(() => {
+    // Fisher-Yates shuffle algorithm
+    const shuffled = [...galleryItemsPool]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    setRandomGallery(shuffled)
+  }, [])
+
 
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans">
@@ -144,6 +178,7 @@ function LandingPage() {
             <a href="#alur" className="hover:text-blue-700 transition-colors">Alur</a>
             <a href="#persyaratan" className="hover:text-blue-700 transition-colors">Persyaratan</a>
             <a href="#jadwal" className="hover:text-blue-700 transition-colors">Jadwal</a>
+            <a href="#galeri" className="hover:text-blue-700 transition-colors">Galeri</a>
             <a href="#kontak" className="hover:text-blue-700 transition-colors">Kontak</a>
           </div>
           <div className="hidden lg:flex items-center gap-3">
@@ -176,6 +211,7 @@ function LandingPage() {
                   <a href="#alur" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">Alur</a>
                   <a href="#persyaratan" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">Persyaratan</a>
                   <a href="#jadwal" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">Jadwal</a>
+                  <a href="#galeri" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">Galeri</a>
                   <a href="#kontak" onClick={() => setIsOpen(false)} className="px-4 py-3 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">Kontak</a>
                 </div>
                 <div className="mt-auto p-6 border-t bg-slate-50/50 space-y-3">
@@ -239,7 +275,7 @@ function LandingPage() {
           <div className="relative">
             <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl border-4 border-white transform lg:rotate-2 hover:rotate-0 transition-transform duration-500">
               <img
-                src="/student_hero.png"
+                src="/hero.JPG"
                 alt="Siswa SMAN 1 BANTARUJEG"
                 className="w-full h-auto object-cover aspect-[4/5]"
               />
@@ -552,6 +588,54 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Galeri Section */}
+      <section id="galeri" className="py-12 md:py-20 px-4 md:px-6 bg-slate-50/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16 space-y-4">
+            <h2 className="text-sm font-bold text-blue-700 uppercase tracking-[0.2em]">Dokumentasi</h2>
+            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Galeri Kegiatan</h3>
+            <p className="text-slate-500 text-lg">Momen-momen inspiratif dan kegiatan seru siswa/siswi SMAN 1 Bantarujeg.</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+            {randomGallery.map((item, index) => (
+              <div 
+                key={index} 
+                className="group relative overflow-hidden rounded-xl aspect-square bg-slate-200 cursor-zoom-in"
+                onClick={() => setSelectedImage(item)}
+              >
+                <img src={item.src} alt={`Galeri ${index + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center scale-75 group-hover:scale-100 transition-transform duration-300">
+                     <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Lightbox Dialog */}
+          <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
+            <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-transparent border-none shadow-none flex items-center justify-center">
+              <DialogHeader>
+                <DialogTitle className="sr-only">Preview Foto</DialogTitle>
+              </DialogHeader>
+              {selectedImage && (
+                <div className="relative w-full h-full flex items-center justify-center animate-in fade-in zoom-in duration-300">
+                  <img 
+                    src={selectedImage.src} 
+                    alt="Galeri Full" 
+                    className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border-4 border-white/10"
+                  />
+                </div>
+              )}
+            </DialogContent>
+          </Dialog>
+
+
+        </div>
+      </section>
+
       {/* Footer */}
       <footer id="kontak" className="pt-24 pb-12 px-6 bg-slate-900 text-slate-300">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
@@ -579,6 +663,7 @@ function LandingPage() {
               <li><a href="#alur" className="hover:text-blue-600 transition-colors">Alur</a></li>
               <li><a href="#persyaratan" className="hover:text-blue-600 transition-colors">Persyaratan</a></li>
               <li><a href="#jadwal" className="hover:text-blue-600 transition-colors">Jadwal</a></li>
+              <li><a href="#galeri" className="hover:text-blue-600 transition-colors">Galeri</a></li>
               <li><a href="/login" className="hover:text-blue-600 transition-colors">Masuk Akun</a></li>
             </ul>
           </div>
