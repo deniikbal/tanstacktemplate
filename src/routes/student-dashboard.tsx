@@ -31,8 +31,7 @@ import {
   User,
   Users,
   ChevronRight,
-  ChevronLeft,
-  ClipboardList
+  ChevronLeft
 } from 'lucide-react'
 
 import {
@@ -47,9 +46,6 @@ import { uploadStudentFile } from '@/lib/server/daftar-ulang'
 import { getSchoolSearch } from '@/lib/server/pendaftar'
 import { DocumentScanner } from '@/components/DocumentScanner'
 import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { SCHEDULE, submitActivityReport, getStudentReportsForToday } from '@/lib/server/activity-report'
 
 
 export const Route = createFileRoute('/student-dashboard')({
@@ -335,8 +331,6 @@ function StudentDashboard() {
       </header>
 
       <main className="max-w-4xl mx-auto px-3 sm:px-4 py-3 sm:py-4 space-y-2 sm:space-y-3">
-        {/* Activity Report for designated students */}
-        {profile?.student?.isReporter && <ActivityReportCard studentId={profile.student.id} />}
 
         {/* Step Indicator */}
         <div className="flex items-center justify-between bg-white p-1.5 sm:p-2 border border-slate-200 rounded-md shadow-sm overflow-x-auto no-scrollbar scroll-smooth">
@@ -703,154 +697,4 @@ function StudentDashboard() {
   )
 }
 
-function ActivityReportCard({ studentId }: { studentId: string }) {
-  const [reports, setReports] = useState<any[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-
-  const today = new Date()
-  const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
-  const dayName = days[today.getDay()]
-  const dateStr = today.toISOString().split('T')[0]
-
-  const currentDaySchedule = SCHEDULE.find((s: any) => s.hari === dayName)
-
-  useEffect(() => {
-    const fetchTodayReports = async () => {
-      try {
-        const existing = await getStudentReportsForToday({ data: { studentId, tanggal: dateStr } })
-        if (currentDaySchedule) {
-          const initialReports = currentDaySchedule.jadwal.map((j: any) => {
-            const found = existing.find((e: any) => e.jamKe === j.jamKe[0]) // check by first jamKe
-            return {
-              jamKe: j.jamKe[0],
-              waktu: j.waktu,
-              kegiatan: j.kegiatan,
-              guruMasuk: found?.guruMasuk || '',
-              isAbsent: found?.isAbsent || false,
-              notes: found?.notes || ''
-            }
-          })
-          setReports(initialReports)
-        }
-      } catch (error) {
-        console.error('Failed to fetch reports:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchTodayReports()
-  }, [studentId, dateStr, currentDaySchedule])
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true)
-    try {
-      await submitActivityReport({
-        data: {
-          studentId,
-          tanggal: dateStr,
-          hari: dayName,
-          reports: reports.map((r: any) => ({
-            ...r,
-            guruMasuk: r.isAbsent ? 'Tidak ada guru masuk' : r.guruMasuk
-          }))
-        }
-      })
-      toast.success('Laporan kegiatan berhasil dikirim')
-    } catch (error: any) {
-      toast.error(error.message || 'Gagal mengirim laporan')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  if (!currentDaySchedule) return null
-
-  return (
-    <Card className="border-blue-200 shadow-md rounded-md overflow-hidden bg-white mb-4">
-      <CardHeader className="bg-blue-50 border-b border-blue-100 p-3 sm:p-4">
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <CardTitle className="text-base sm:text-lg font-black text-blue-900 leading-tight flex items-center gap-2">
-              <ClipboardList className="w-5 h-5 text-blue-600" />
-              Laporan Kegiatan Hari Ini
-            </CardTitle>
-            <CardDescription className="text-[10px] font-medium text-blue-600 uppercase tracking-wider">
-              {dayName}, {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-            </CardDescription>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="p-0">
-        {isLoading ? (
-          <div className="p-8 text-center"><Loader2 className="w-6 h-6 animate-spin mx-auto text-blue-600" /></div>
-        ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader className="bg-slate-50">
-                <TableRow>
-                  <TableHead className="text-[10px] font-bold uppercase text-slate-500 h-8 px-3">Waktu</TableHead>
-                  <TableHead className="text-[10px] font-bold uppercase text-slate-500 h-8 px-3">Kegiatan</TableHead>
-                  <TableHead className="text-[10px] font-bold uppercase text-slate-500 h-8 px-3">Guru Masuk</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {reports.map((report, idx) => (
-                  <TableRow key={idx} className="hover:bg-blue-50/30 transition-colors">
-                    <TableCell className="py-2 px-3">
-                      <div className="text-[10px] font-bold text-slate-900">{report.waktu}</div>
-                      <div className="text-[9px] text-slate-400">Jam Ke-{report.jamKe}</div>
-                    </TableCell>
-                    <TableCell className="py-2 px-3">
-                      <div className="text-[10px] font-medium text-slate-700 leading-relaxed max-w-[150px]">{report.kegiatan}</div>
-                    </TableCell>
-                    <TableCell className="py-2 px-3">
-                      <div className="space-y-2">
-                        <Input
-                          placeholder="Nama Guru"
-                          value={report.isAbsent ? 'Tidak ada guru masuk' : report.guruMasuk}
-                          disabled={report.isAbsent}
-                          onChange={(e) => {
-                            const newReports = [...reports]
-                            newReports[idx].guruMasuk = e.target.value
-                            setReports(newReports)
-                          }}
-                          className="h-7 text-[10px] rounded-md border-slate-200"
-                        />
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id={`absent-${idx}`}
-                            checked={report.isAbsent}
-                            onCheckedChange={(checked) => {
-                              const newReports = [...reports]
-                              newReports[idx].isAbsent = !!checked
-                              if (checked) newReports[idx].guruMasuk = ''
-                              setReports(newReports)
-                            }}
-                          />
-                          <Label htmlFor={`absent-${idx}`} className="text-[9px] font-bold text-slate-500 uppercase cursor-pointer">Tidak Ada Guru</Label>
-                        </div>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="bg-slate-50/50 p-3 border-t border-slate-100 justify-end">
-        <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting || isLoading}
-          size="sm"
-          className="bg-blue-600 hover:bg-blue-700 h-8 text-[10px] font-bold px-4"
-        >
-          {isSubmitting ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <ClipboardList className="w-3 h-3 mr-2" />}
-          Kirim Laporan
-        </Button>
-      </CardFooter>
-    </Card>
-  )
-}
 
