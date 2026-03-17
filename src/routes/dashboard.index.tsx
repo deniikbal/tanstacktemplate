@@ -39,7 +39,7 @@ function DashboardIndexPage() {
             Ringkasan data pendaftaran terkini SPMB SMAN 1 BANTARUJEG.
           </p>
         </div>
-        <div className="hidden sm:flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+        <div className="hidden sm:flex items-center gap-2 bg-white px-4 py-2 rounded-md border border-slate-300 shadow-sm">
           <School className="h-4 w-4 text-blue-600" />
           <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">TA 2026/2027</span>
         </div>
@@ -47,7 +47,7 @@ function DashboardIndexPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* ... (existing cards) ... */}
-        <Card className="border-slate-200 shadow-sm overflow-hidden group hover:border-indigo-400 transition-all bg-white">
+        <Card className="border-slate-300 shadow-sm rounded-md overflow-hidden group hover:border-indigo-400 transition-all bg-white">
           <CardContent className="p-0">
             <div className="flex items-stretch h-20">
               <div className="w-1.5 bg-indigo-500 group-hover:bg-indigo-600 transition-colors" />
@@ -66,7 +66,7 @@ function DashboardIndexPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 shadow-sm overflow-hidden group hover:border-blue-400 transition-all bg-white">
+        <Card className="border-slate-300 shadow-sm rounded-md overflow-hidden group hover:border-blue-400 transition-all bg-white">
           <CardContent className="p-0">
             <div className="flex items-stretch h-20">
               <div className="w-1.5 bg-blue-500 group-hover:bg-blue-600 transition-colors" />
@@ -85,7 +85,7 @@ function DashboardIndexPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 shadow-sm overflow-hidden group hover:border-amber-400 transition-all bg-white">
+        <Card className="border-slate-300 shadow-sm rounded-md overflow-hidden group hover:border-amber-400 transition-all bg-white">
           <CardContent className="p-0">
             <div className="flex items-stretch h-20">
               <div className="w-1.5 bg-amber-500 group-hover:bg-amber-600 transition-colors" />
@@ -104,7 +104,7 @@ function DashboardIndexPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 shadow-sm overflow-hidden group hover:border-purple-400 transition-all bg-white">
+        <Card className="border-slate-300 shadow-sm rounded-md overflow-hidden group hover:border-purple-400 transition-all bg-white">
           <CardContent className="p-0">
             <div className="flex items-stretch h-20">
               <div className="w-1.5 bg-purple-500 group-hover:bg-purple-600 transition-colors" />
@@ -125,7 +125,7 @@ function DashboardIndexPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6">
-        <Card className="border-blue-100 shadow-sm bg-white overflow-hidden">
+        <Card className="border-slate-300 shadow-sm bg-white rounded-md overflow-hidden">
           <CardHeader className="bg-blue-50/50 border-b border-blue-100 pb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-600 rounded-lg">
@@ -145,7 +145,7 @@ function DashboardIndexPage() {
                 </div>
               ) : (
                 jalurStats.map((item, idx) => (
-                  <div key={idx} className="flex flex-col p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all group">
+                  <div key={idx} className="flex flex-col p-4 rounded-md bg-slate-50 border border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all group">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 group-hover:text-blue-500 transition-colors">
                       {item.jalur || 'TIDAK ADA JALUR'}
                     </span>
@@ -165,7 +165,7 @@ function DashboardIndexPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <div className="col-span-4 min-h-[400px] flex flex-col gap-6">
-          <Card className="border-slate-200 shadow-sm bg-white overflow-hidden flex-1">
+          <Card className="border-slate-300 shadow-sm bg-white rounded-md overflow-hidden flex-1">
             <CardHeader className="pb-2 border-b border-slate-50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -203,7 +203,7 @@ function DashboardIndexPage() {
                       />
                       <YAxis fontSize={10} tickLine={false} axisLine={false} />
                       <Tooltip
-                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                        contentStyle={{ borderRadius: '4px', border: '1px solid #cbd5e1', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                         labelFormatter={(label) => new Date(label).toLocaleDateString('id-ID', { dateStyle: 'long' })}
                       />
                       <Area
@@ -290,18 +290,18 @@ function DashboardIndexPage() {
             </Card>
           </div>
         </div>
-        <div className="col-span-3 min-h-[400px] rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
+        <div className="col-span-3 min-h-[400px] rounded-md bg-white border border-slate-300 p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-slate-900 mb-4">Informasi Sistem</h3>
           <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-blue-50 border border-blue-100">
+            <div className="p-4 rounded-md bg-blue-50 border border-blue-200">
               <p className="text-sm font-medium text-blue-800">Status Server</p>
               <p className="text-xs text-blue-600 mt-1">Berjalan normal melalui database Neon.tech</p>
             </div>
-            <div className="p-4 rounded-lg bg-blue-50 border border-blue-100">
+            <div className="p-4 rounded-md bg-blue-50 border border-blue-200">
               <p className="text-sm font-medium text-blue-800">Periode Pendaftaran</p>
               <p className="text-xs text-blue-600 mt-1">Januari 2026 - Juli 2026</p>
             </div>
-            <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
+            <div className="p-4 rounded-md bg-slate-50 border border-slate-300">
               <p className="text-sm font-medium text-slate-800">Versi Aplikasi</p>
               <p className="text-xs text-slate-500 mt-1">v1.2.0 (TanStack Start Build)</p>
             </div>

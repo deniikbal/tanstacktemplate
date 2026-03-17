@@ -128,11 +128,11 @@ function ScannerPage() {
           </div>
           {(!scanning || data) && (
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={resetScanner} className="gap-2">
+              <Button variant="outline" size="sm" onClick={resetScanner} className="gap-2 border-slate-300 rounded-md shadow-sm">
                 <RefreshCw className="w-4 h-4" />
                 Scan Ulang
               </Button>
-              <Button variant="outline" size="sm" onClick={() => authClient.signOut({ fetchOptions: { onSuccess: () => navigate({ to: '/login' }) } })} className="gap-2 text-rose-600 hover:text-rose-700">
+              <Button variant="outline" size="sm" onClick={() => authClient.signOut({ fetchOptions: { onSuccess: () => navigate({ to: '/login' }) } })} className="gap-2 text-rose-600 hover:text-rose-700 border-slate-300 rounded-md shadow-sm">
                 <LogOut className="w-4 h-4" />
               </Button>
             </div>
@@ -153,7 +153,7 @@ function ScannerPage() {
         </div>
 
         {scanning ? (
-          <Card className="overflow-hidden border-2 border-blue-100 shadow-xl">
+          <Card className="overflow-hidden border-slate-300 shadow-xl rounded-md">
             <div className="aspect-square relative flex items-center justify-center bg-black">
               <Scanner
                 onScan={handleScan}
@@ -289,7 +289,7 @@ function ScannerPage() {
             </Card>
 
             {/* Checklist Card */}
-            <Card className="border-none shadow-lg bg-white">
+            <Card className="border-slate-300 shadow-lg bg-white rounded-md">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm">Checklist Berkas Daftar Ulang</CardTitle>
                 <CardDescription className="text-xs">Centang dokumen yang sudah dibawa siswa</CardDescription>
@@ -302,7 +302,7 @@ function ScannerPage() {
                   { id: 'tatib', label: 'Tata Tertib (Bermeterai)' },
                   { id: 'pernyataan', label: 'Surat Pernyataan' },
                 ].map((item) => (
-                  <div key={item.id} className="flex items-center space-x-3 p-3 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
+                  <div key={item.id} className="flex items-center space-x-3 p-3 rounded-md border border-slate-200 hover:bg-slate-50 transition-colors">
                     <Checkbox
                       id={item.id}
                       checked={!!data.daftarUlang[item.id]}
@@ -323,7 +323,7 @@ function ScannerPage() {
                             label: `${item.label}: ${data.student.nmSiswa}`,
                             field: item.id
                           })}
-                          className="flex items-center justify-center px-2 py-1 bg-blue-50 rounded-lg text-blue-600 active:scale-95 transition-transform"
+                          className="flex items-center justify-center px-2 py-1 bg-blue-50 rounded-md text-blue-600 border border-blue-100 active:scale-95 transition-transform"
                         >
                           <FileText className="h-3 w-3" />
                           <span className="text-[10px] font-black ml-1">LIHAT</span>
@@ -333,7 +333,7 @@ function ScannerPage() {
                       {data.daftarUlang[item.id] ? (
                         <CheckCircle2 className="w-5 h-5 text-blue-500" />
                       ) : (
-                        <div className="w-5 h-5 rounded-full border-2 border-slate-200" />
+                         <div className="w-5 h-5 rounded-md border-2 border-slate-200" />
                       )}
                     </div>
                   </div>
@@ -350,7 +350,7 @@ function ScannerPage() {
               </CardContent>
             </Card>
 
-            <Button onClick={resetScanner} className="w-full bg-blue-600 hover:bg-blue-700 h-12 rounded-xl text-md font-bold shadow-blue-200 shadow-lg mb-8">
+            <Button onClick={resetScanner} className="w-full bg-blue-600 hover:bg-blue-700 h-12 rounded-md text-md font-bold shadow-blue-200 shadow-lg mb-8">
               Selesai & Scan Siswa Lain
             </Button>
           </div>
@@ -361,7 +361,7 @@ function ScannerPage() {
               <h2 className="text-xl font-bold">Terjadi Kesalahan</h2>
               <p className="text-slate-500">QR Code tidak dapat diproses.</p>
             </div>
-            <Button onClick={() => setScanning(true)} variant="outline">Coba Lagi</Button>
+            <Button onClick={() => setScanning(true)} variant="outline" className="border-slate-300 rounded-md">Coba Lagi</Button>
           </div>
         )}
       </div>
@@ -382,12 +382,12 @@ function ScannerPage() {
         onOpenChange={(open) => setPreviewConfig({ ...previewConfig, isOpen: open })}
       >
         <DialogContent
-          className="w-[90vw] sm:max-w-5xl h-[90vh] p-0 overflow-hidden rounded-2xl sm:rounded-3xl border-none shadow-2xl flex flex-col bg-slate-900"
+          className="w-[90vw] sm:max-w-5xl h-[90vh] p-0 overflow-hidden rounded-md border-none shadow-2xl flex flex-col bg-slate-900"
           showCloseButton={false}
         >
           <DialogHeader className="p-3 sm:p-6 bg-white border-b flex flex-row items-center justify-between shrink-0 h-14 sm:h-20">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-50 rounded-lg sm:rounded-xl flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-50 rounded-md flex items-center justify-center border border-blue-100">
                 <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
               </div>
               <div className="min-w-0 flex-1">
@@ -398,7 +398,7 @@ function ScannerPage() {
 
             <div className="flex items-center gap-2 sm:gap-3">
               {previewConfig.field && (
-                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-50/50 rounded-lg sm:rounded-xl border border-blue-100/50">
+                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-50/50 rounded-md border border-blue-100/50">
                   <Checkbox
                     id="modal-verify-scanner"
                     checked={data?.daftarUlang?.[previewConfig.field] || false}

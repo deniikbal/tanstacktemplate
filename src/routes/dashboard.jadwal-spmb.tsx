@@ -268,7 +268,7 @@ function JadwalSpmbPage() {
         <div className="p-6 space-y-6">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
+                <div className="p-2 bg-blue-100 rounded-md">
                     <CalendarDays className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
@@ -279,9 +279,9 @@ function JadwalSpmbPage() {
 
             {/* Statistik singkat */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Card>
+                <Card className="rounded-md border-slate-300 shadow-sm overflow-hidden">
                     <CardContent className="py-4 flex items-center gap-3">
-                        <div className="p-2 bg-green-100 rounded-lg">
+                        <div className="p-2 bg-green-100 rounded-md">
                             <CalendarDays className="w-5 h-5 text-green-600" />
                         </div>
                         <div>
@@ -290,9 +290,9 @@ function JadwalSpmbPage() {
                         </div>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-md border-slate-300 shadow-sm overflow-hidden">
                     <CardContent className="py-4 flex items-center gap-3">
-                        <div className="p-2 bg-yellow-100 rounded-lg">
+                        <div className="p-2 bg-yellow-100 rounded-md">
                             <CalendarDays className="w-5 h-5 text-yellow-600" />
                         </div>
                         <div>
@@ -301,9 +301,9 @@ function JadwalSpmbPage() {
                         </div>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-md border-slate-300 shadow-sm overflow-hidden">
                     <CardContent className="py-4 flex items-center gap-3">
-                        <div className="p-2 bg-slate-100 rounded-lg">
+                        <div className="p-2 bg-slate-100 rounded-md">
                             <CalendarDays className="w-5 h-5 text-slate-500" />
                         </div>
                         <div>
@@ -315,14 +315,14 @@ function JadwalSpmbPage() {
             </div>
 
             {/* Card Tabel */}
-            <Card>
-                <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <Card className="rounded-md border-slate-300 shadow-sm overflow-hidden">
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 bg-slate-50/50">
                     <div>
-                        <CardTitle className="flex items-center gap-2">
+                        <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-800">
                             <CalendarDays className="w-5 h-5 text-blue-600" />
                             Daftar Jadwal
                         </CardTitle>
-                        <CardDescription>
+                        <CardDescription className="text-slate-500 font-medium">
                             Total {jadwalList.length} jadwal terdaftar
                         </CardDescription>
                     </div>
@@ -334,26 +334,26 @@ function JadwalSpmbPage() {
                                 placeholder="Cari jadwal..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9 w-56"
+                                className="pl-9 w-56 rounded-md border-slate-300 focus:ring-blue-500 transition-all font-medium"
                             />
                         </div>
                         {/* Tombol Tambah */}
                         <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if (!open) resetAddForm() }}>
                             <DialogTrigger asChild>
-                                <Button className="bg-blue-600 hover:bg-blue-700">
+                                <Button className="bg-blue-600 hover:bg-blue-700 rounded-md font-bold shadow-sm transition-all active:scale-95">
                                     <Plus className="w-4 h-4 mr-2" />
                                     Tambah Jadwal
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="max-w-2xl">
+                            <DialogContent className="max-w-2xl rounded-md border-slate-300">
                                 <DialogHeader>
-                                    <DialogTitle>Tambah Jadwal Baru</DialogTitle>
-                                    <DialogDescription>Isi detail jadwal SPMB yang baru.</DialogDescription>
+                                    <DialogTitle className="text-xl font-bold text-slate-900">Tambah Jadwal Baru</DialogTitle>
+                                    <DialogDescription className="text-slate-500">Isi detail jadwal SPMB yang baru.</DialogDescription>
                                 </DialogHeader>
                                 <JadwalForm form={addForm} setForm={setAddForm} />
-                                <DialogFooter>
-                                    <Button variant="outline" onClick={() => setIsAddOpen(false)}>Batal</Button>
-                                    <Button onClick={handleAdd} disabled={isAdding} className="bg-blue-600 hover:bg-blue-700">
+                                <DialogFooter className="gap-2 sm:gap-0 border-t pt-4 mt-2">
+                                    <Button variant="outline" onClick={() => setIsAddOpen(false)} className="rounded-md border-slate-300">Batal</Button>
+                                    <Button onClick={handleAdd} disabled={isAdding} className="bg-blue-600 hover:bg-blue-700 rounded-md font-bold text-white shadow-sm">
                                         {isAdding ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
                                         Tambah
                                     </Button>
@@ -362,47 +362,70 @@ function JadwalSpmbPage() {
                         </Dialog>
                     </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                     <Table>
-                        <TableHeader>
+                        <TableHeader className="bg-slate-50/80">
                             <TableRow>
-                                <TableHead className="w-[40px]">No</TableHead>
-                                <TableHead>Judul Kegiatan</TableHead>
-                                <TableHead>Tahap</TableHead>
-                                <TableHead>Tanggal Mulai</TableHead>
-                                <TableHead>Tanggal Selesai</TableHead>
-                                <TableHead>Waktu</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Aksi</TableHead>
+                                <TableHead className="w-[60px] text-center font-semibold text-slate-500">No</TableHead>
+                                <TableHead className="font-semibold text-slate-800">Judul Kegiatan</TableHead>
+                                <TableHead className="font-semibold text-slate-800">Tahap</TableHead>
+                                <TableHead className="font-semibold text-slate-800">Tanggal Mulai</TableHead>
+                                <TableHead className="font-semibold text-slate-800">Tanggal Selesai</TableHead>
+                                <TableHead className="font-semibold text-slate-800">Waktu</TableHead>
+                                <TableHead className="font-semibold text-slate-800 text-center">Status</TableHead>
+                                <TableHead className="text-right font-semibold text-slate-800 pr-6">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredList.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={8} className="text-center text-slate-500 py-12">
-                                        {searchQuery ? 'Tidak ada jadwal yang cocok dengan pencarian.' : 'Belum ada jadwal. Klik "Tambah Jadwal" untuk memulai.'}
+                                    <TableCell colSpan={8} className="text-center text-slate-500 py-16">
+                                        <div className="flex flex-col items-center gap-2 opacity-50">
+                                            <CalendarDays className="h-10 w-10 text-slate-300" />
+                                            <p className="font-medium">{searchQuery ? 'Tidak ada jadwal yang cocok dengan pencarian.' : 'Belum ada jadwal. Klik "Tambah Jadwal" untuk memulai.'}</p>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ) : (
                                 filteredList.map((item, idx) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell className="text-slate-500">{idx + 1}</TableCell>
-                                        <TableCell className="font-medium">{item.title}</TableCell>
-                                        <TableCell>{item.tahap || <span className="text-slate-400 italic">-</span>}</TableCell>
-                                        <TableCell className="whitespace-nowrap">{formatDateDisplay(item.startDate)}</TableCell>
-                                        <TableCell className="whitespace-nowrap">{formatDateDisplay(item.endDate)}</TableCell>
-                                        <TableCell>{item.timeDetails || <span className="text-slate-400 italic">-</span>}</TableCell>
-                                        <TableCell>{getStatusBadge(item.status)}</TableCell>
-                                        <TableCell className="text-right">
+                                    <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors group">
+                                        <TableCell className="text-center text-slate-400 font-medium">{(idx + 1).toString().padStart(2, '0')}</TableCell>
+                                        <TableCell className="font-bold text-slate-700 group-hover:text-blue-600 transition-colors uppercase tracking-tight">{item.title}</TableCell>
+                                        <TableCell>
+                                            {item.tahap ? (
+                                                <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 font-medium rounded-sm">
+                                                    {item.tahap}
+                                                </Badge>
+                                            ) : (
+                                                <span className="text-slate-400 italic text-xs">-</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="whitespace-nowrap text-slate-600 font-medium">{formatDateDisplay(item.startDate)}</TableCell>
+                                        <TableCell className="whitespace-nowrap text-slate-600 font-medium">{formatDateDisplay(item.endDate)}</TableCell>
+                                        <TableCell>
+                                            {item.timeDetails ? (
+                                                <span className="text-slate-600 text-sm font-medium">{item.timeDetails}</span>
+                                            ) : (
+                                                <span className="text-slate-400 italic text-xs">-</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="text-center">{getStatusBadge(item.status)}</TableCell>
+                                        <TableCell className="text-right pr-6">
                                             <div className="flex items-center justify-end gap-1">
-                                                <Button variant="ghost" size="sm" onClick={() => openEditDialog(item)} title="Edit">
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="sm" 
+                                                    onClick={() => openEditDialog(item)} 
+                                                    title="Edit"
+                                                    className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50"
+                                                >
                                                     <Pencil className="w-4 h-4" />
                                                 </Button>
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => setDeleteItem(item)}
-                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                    className="h-8 w-8 p-0 text-slate-400 hover:text-red-600 hover:bg-red-50"
                                                     title="Hapus"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -419,17 +442,17 @@ function JadwalSpmbPage() {
 
             {/* Edit Dialog */}
             <Dialog open={!!editItem} onOpenChange={(open) => !open && setEditItem(null)}>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl rounded-md border-slate-300">
                     <DialogHeader>
-                        <DialogTitle>Edit Jadwal</DialogTitle>
-                        <DialogDescription>Perbarui informasi jadwal SPMB.</DialogDescription>
+                        <DialogTitle className="text-xl font-bold text-slate-900">Edit Jadwal</DialogTitle>
+                        <DialogDescription className="text-slate-500">Perbarui informasi jadwal SPMB.</DialogDescription>
                     </DialogHeader>
                     <JadwalForm form={editForm} setForm={setEditForm} />
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setEditItem(null)}>Batal</Button>
-                        <Button onClick={handleEdit} disabled={isEditing} className="bg-blue-600 hover:bg-blue-700">
+                    <DialogFooter className="gap-2 sm:gap-0 border-t pt-4 mt-2">
+                        <Button variant="outline" onClick={() => setEditItem(null)} className="rounded-md border-slate-300">Batal</Button>
+                        <Button onClick={handleEdit} disabled={isEditing} className="bg-blue-600 hover:bg-blue-700 rounded-md font-bold text-white shadow-sm">
                             {isEditing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-                            Simpan
+                            Simpan Perubahan
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -437,23 +460,24 @@ function JadwalSpmbPage() {
 
             {/* Delete Confirm Dialog */}
             <AlertDialog open={!!deleteItem} onOpenChange={(open) => !open && setDeleteItem(null)}>
-                <AlertDialogContent>
+                <AlertDialogContent className="rounded-md border-slate-300">
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Hapus Jadwal?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Apakah Anda yakin ingin menghapus jadwal <strong>{deleteItem?.title}</strong>?
+                        <AlertDialogTitle className="text-xl font-bold text-slate-900">Hapus Jadwal?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-slate-500">
+                            Apakah Anda yakin ingin menghapus jadwal <strong className="text-slate-900">{deleteItem?.title}</strong>?
+                            <br />
                             Tindakan ini tidak dapat dibatalkan.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
+                    <AlertDialogFooter className="pt-4 border-t gap-2 flex-row justify-end">
+                        <AlertDialogCancel className="rounded-md border-slate-300 mt-0">Batal</AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleDelete}
                             disabled={isDeleting}
-                            className="bg-red-600 hover:bg-red-700"
+                            className="bg-red-600 hover:bg-red-700 rounded-md font-bold text-white shadow-sm"
                         >
                             {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
-                            Hapus
+                            Hapus Jadwal
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -482,6 +506,7 @@ function JadwalForm({ form, setForm }: { form: FormState; setForm: React.Dispatc
                     placeholder="Contoh: Pendaftaran Gelombang 1"
                     value={form.title}
                     onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
+                    className="rounded-md border-slate-300"
                 />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -492,6 +517,7 @@ function JadwalForm({ form, setForm }: { form: FormState; setForm: React.Dispatc
                         type="date"
                         value={form.startDate}
                         onChange={(e) => setForm((p) => ({ ...p, startDate: e.target.value }))}
+                        className="rounded-md border-slate-300"
                     />
                 </div>
                 <div className="space-y-2">
@@ -501,6 +527,7 @@ function JadwalForm({ form, setForm }: { form: FormState; setForm: React.Dispatc
                         type="date"
                         value={form.endDate}
                         onChange={(e) => setForm((p) => ({ ...p, endDate: e.target.value }))}
+                        className="rounded-md border-slate-300"
                     />
                 </div>
             </div>
@@ -511,6 +538,7 @@ function JadwalForm({ form, setForm }: { form: FormState; setForm: React.Dispatc
                     placeholder="Contoh: 08:00 - 15:00 WIB"
                     value={form.timeDetails}
                     onChange={(e) => setForm((p) => ({ ...p, timeDetails: e.target.value }))}
+                    className="rounded-md border-slate-300"
                 />
                 <p className="text-xs text-slate-500">Opsional. Berisi jam pelaksanaan.</p>
             </div>
@@ -518,7 +546,7 @@ function JadwalForm({ form, setForm }: { form: FormState; setForm: React.Dispatc
                 <div className="space-y-2">
                     <Label htmlFor="tahap">Tahap <span className="text-red-500">*</span></Label>
                     <Select value={form.tahap} onValueChange={(val) => setForm((p) => ({ ...p, tahap: val }))}>
-                        <SelectTrigger id="tahap" className='w-full'>
+                        <SelectTrigger id="tahap" className='w-full rounded-md border-slate-300'>
                             <SelectValue placeholder="Pilih Tahap" />
                         </SelectTrigger>
                         <SelectContent>
@@ -530,7 +558,7 @@ function JadwalForm({ form, setForm }: { form: FormState; setForm: React.Dispatc
                 <div className="space-y-2">
                     <Label htmlFor="status">Status</Label>
                     <Select value={form.status} onValueChange={(val) => setForm((p) => ({ ...p, status: val }))}>
-                        <SelectTrigger id="status" className='w-full'>
+                        <SelectTrigger id="status" className='w-full rounded-md border-slate-300'>
                             <SelectValue placeholder="Pilih Status" />
                         </SelectTrigger>
                         <SelectContent>
@@ -546,7 +574,7 @@ function JadwalForm({ form, setForm }: { form: FormState; setForm: React.Dispatc
 
             {/* Preview tanggal */}
             {form.startDate && form.endDate && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
                     <p className="text-sm text-blue-800">
                         <strong>Preview:</strong>{' '}
                         {formatDateDisplay(form.startDate)} — {formatDateDisplay(form.endDate)}

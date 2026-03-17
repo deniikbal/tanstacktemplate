@@ -29,7 +29,6 @@ import { Route as DashboardPendaftarRouteImport } from './routes/dashboard.penda
 import { Route as DashboardKelulusanRouteImport } from './routes/dashboard.kelulusan'
 import { Route as DashboardJadwalSpmbRouteImport } from './routes/dashboard.jadwal-spmb'
 import { Route as DashboardDaftarUlangRouteImport } from './routes/dashboard.daftar-ulang'
-import { Route as DashboardActivityReportsRouteImport } from './routes/dashboard.activity-reports'
 import { Route as ApiAdminSetupRouteImport } from './routes/api/admin-setup'
 import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
@@ -140,12 +139,6 @@ const DashboardDaftarUlangRoute = DashboardDaftarUlangRouteImport.update({
   path: '/daftar-ulang',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardActivityReportsRoute =
-  DashboardActivityReportsRouteImport.update({
-    id: '/activity-reports',
-    path: '/activity-reports',
-    getParentRoute: () => DashboardRoute,
-  } as any)
 const ApiAdminSetupRoute = ApiAdminSetupRouteImport.update({
   id: '/api/admin-setup',
   path: '/api/admin-setup',
@@ -205,7 +198,6 @@ export interface FileRoutesByFullPath {
   '/student-dashboard': typeof StudentDashboardRoute
   '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
-  '/dashboard/activity-reports': typeof DashboardActivityReportsRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
   '/dashboard/jadwal-spmb': typeof DashboardJadwalSpmbRoute
   '/dashboard/kelulusan': typeof DashboardKelulusanRoute
@@ -236,7 +228,6 @@ export interface FileRoutesByTo {
   '/student-dashboard': typeof StudentDashboardRoute
   '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
-  '/dashboard/activity-reports': typeof DashboardActivityReportsRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
   '/dashboard/jadwal-spmb': typeof DashboardJadwalSpmbRoute
   '/dashboard/kelulusan': typeof DashboardKelulusanRoute
@@ -269,7 +260,6 @@ export interface FileRoutesById {
   '/student-dashboard': typeof StudentDashboardRoute
   '/student-login': typeof StudentLoginRoute
   '/api/admin-setup': typeof ApiAdminSetupRoute
-  '/dashboard/activity-reports': typeof DashboardActivityReportsRoute
   '/dashboard/daftar-ulang': typeof DashboardDaftarUlangRoute
   '/dashboard/jadwal-spmb': typeof DashboardJadwalSpmbRoute
   '/dashboard/kelulusan': typeof DashboardKelulusanRoute
@@ -303,7 +293,6 @@ export interface FileRouteTypes {
     | '/student-dashboard'
     | '/student-login'
     | '/api/admin-setup'
-    | '/dashboard/activity-reports'
     | '/dashboard/daftar-ulang'
     | '/dashboard/jadwal-spmb'
     | '/dashboard/kelulusan'
@@ -334,7 +323,6 @@ export interface FileRouteTypes {
     | '/student-dashboard'
     | '/student-login'
     | '/api/admin-setup'
-    | '/dashboard/activity-reports'
     | '/dashboard/daftar-ulang'
     | '/dashboard/jadwal-spmb'
     | '/dashboard/kelulusan'
@@ -366,7 +354,6 @@ export interface FileRouteTypes {
     | '/student-dashboard'
     | '/student-login'
     | '/api/admin-setup'
-    | '/dashboard/activity-reports'
     | '/dashboard/daftar-ulang'
     | '/dashboard/jadwal-spmb'
     | '/dashboard/kelulusan'
@@ -551,13 +538,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardDaftarUlangRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/activity-reports': {
-      id: '/dashboard/activity-reports'
-      path: '/activity-reports'
-      fullPath: '/dashboard/activity-reports'
-      preLoaderRoute: typeof DashboardActivityReportsRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/api/admin-setup': {
       id: '/api/admin-setup'
       path: '/api/admin-setup'
@@ -625,7 +605,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
-  DashboardActivityReportsRoute: typeof DashboardActivityReportsRoute
   DashboardDaftarUlangRoute: typeof DashboardDaftarUlangRoute
   DashboardJadwalSpmbRoute: typeof DashboardJadwalSpmbRoute
   DashboardKelulusanRoute: typeof DashboardKelulusanRoute
@@ -638,7 +617,6 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardActivityReportsRoute: DashboardActivityReportsRoute,
   DashboardDaftarUlangRoute: DashboardDaftarUlangRoute,
   DashboardJadwalSpmbRoute: DashboardJadwalSpmbRoute,
   DashboardKelulusanRoute: DashboardKelulusanRoute,

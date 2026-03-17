@@ -66,11 +66,6 @@ const data = {
           url: "/dashboard/students",
           adminOnly: true,
         },
-        {
-          title: "Laporan Kegiatan",
-          url: "/dashboard/activity-reports",
-          adminOnly: true,
-        },
       ],
     },
 

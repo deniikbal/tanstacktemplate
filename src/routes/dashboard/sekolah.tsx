@@ -136,7 +136,7 @@ function SekolahManagement() {
                 </div>
             </div>
 
-            <Card>
+            <Card className="rounded-md border-slate-300 shadow-sm overflow-hidden">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle className="flex items-center gap-2">
@@ -147,7 +147,7 @@ function SekolahManagement() {
                             Database sekolah SMP/MTS untuk referensi pendaftaran.
                         </CardDescription>
                     </div>
-                    <Button onClick={() => { setEditingSekolah(null); setIsDialogOpen(true) }} className="bg-blue-600 hover:bg-blue-700">
+                    <Button onClick={() => { setEditingSekolah(null); setIsDialogOpen(true) }} className="bg-blue-600 hover:bg-blue-700 rounded-md">
                         <Plus className="w-4 h-4 mr-2" />
                         Tambah
                     </Button>
@@ -159,7 +159,7 @@ function SekolahManagement() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input
                                 placeholder="Cari sekolah, NPSN, atau kecamatan..."
-                                className="pl-9 bg-white h-9 border-slate-200"
+                                className="pl-9 bg-white h-9 border-slate-300 rounded-md focus:border-blue-400 transition-all"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -167,7 +167,7 @@ function SekolahManagement() {
                         <div className="flex gap-2 items-center">
                             <Filter className="h-4 w-4 text-slate-400" />
                             <Select value={bentukFilter} onValueChange={setBentukFilter}>
-                                <SelectTrigger className="w-[130px] h-9 bg-white border-slate-200">
+                                <SelectTrigger className="w-[130px] h-9 bg-white border-slate-300 rounded-md">
                                     <SelectValue placeholder="Bentuk" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -177,7 +177,7 @@ function SekolahManagement() {
                                 </SelectContent>
                             </Select>
                             <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                <SelectTrigger className="w-[130px] h-9 bg-white border-slate-200">
+                                <SelectTrigger className="w-[130px] h-9 bg-white border-slate-300 rounded-md">
                                     <SelectValue placeholder="Status" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -415,40 +415,40 @@ function SekolahDialog({ open, onOpenChange, initialData, onSuccess }: {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2 col-span-2">
                             <Label htmlFor="sekolah">Nama Sekolah *</Label>
-                            <Input id="sekolah" name="sekolah" defaultValue={initialData?.sekolah} required placeholder="Contoh: SMP NEGERI 1 BANTARUJEG" />
+                            <Input id="sekolah" name="sekolah" defaultValue={initialData?.sekolah} required placeholder="Contoh: SMP NEGERI 1 BANTARUJEG" className="rounded-md border-slate-300" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="npsn">NPSN</Label>
-                            <Input id="npsn" name="npsn" defaultValue={initialData?.npsn} placeholder="Masukkan NPSN" />
+                            <Input id="npsn" name="npsn" defaultValue={initialData?.npsn} placeholder="Masukkan NPSN" className="rounded-md border-slate-300" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="bentuk">Bentuk Sekolah (SMP/MTS/dll)</Label>
-                            <Input id="bentuk" name="bentuk" defaultValue={initialData?.bentuk} placeholder="Contoh: SMP" />
+                            <Input id="bentuk" name="bentuk" defaultValue={initialData?.bentuk} placeholder="Contoh: SMP" className="rounded-md border-slate-300" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="status">Status (N=Negeri, S=Swasta)</Label>
-                            <Input id="status" name="status" defaultValue={initialData?.status} placeholder="N atau S" />
+                            <Input id="status" name="status" defaultValue={initialData?.status} placeholder="N atau S" className="rounded-md border-slate-300" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="kecamatan">Kecamatan</Label>
-                            <Input id="kecamatan" name="kecamatan" defaultValue={initialData?.kecamatan} placeholder="Masukkan Kecamatan" />
+                            <Input id="kecamatan" name="kecamatan" defaultValue={initialData?.kecamatan} placeholder="Masukkan Kecamatan" className="rounded-md border-slate-300" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="kabupaten_kota">Kabupaten/Kota</Label>
-                            <Input id="kabupaten_kota" name="kabupaten_kota" defaultValue={initialData?.kabupaten_kota || 'KAB. MAJALENGKA'} />
+                            <Input id="kabupaten_kota" name="kabupaten_kota" defaultValue={initialData?.kabupaten_kota || 'KAB. MAJALENGKA'} className="rounded-md border-slate-300" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="propinsi">Provinsi</Label>
-                            <Input id="propinsi" name="propinsi" defaultValue={initialData?.propinsi || 'PROV. JAWA BARAT'} />
+                            <Input id="propinsi" name="propinsi" defaultValue={initialData?.propinsi || 'PROV. JAWA BARAT'} className="rounded-md border-slate-300" />
                         </div>
                         <div className="space-y-2 col-span-2">
                             <Label htmlFor="alamat_jalan">Alamat Jalan</Label>
-                            <Input id="alamat_jalan" name="alamat_jalan" defaultValue={initialData?.alamat_jalan} placeholder="Jl. Raya..." />
+                            <Input id="alamat_jalan" name="alamat_jalan" defaultValue={initialData?.alamat_jalan} placeholder="Jl. Raya..." className="rounded-md border-slate-300" />
                         </div>
                     </div>
                     <DialogFooter className="pt-4 border-t">
-                        <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>Batal</Button>
-                        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">
+                        <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading} className="rounded-md">Batal</Button>
+                        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 rounded-md">
                             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                             Simpan Perubahan
                         </Button>

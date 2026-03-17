@@ -191,7 +191,7 @@ function UsersPage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="rounded-md border-slate-300 shadow-sm overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
@@ -204,7 +204,7 @@ function UsersPage() {
           </div>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-blue-600 hover:bg-blue-700 rounded-md">
                 <Plus className="w-4 h-4 mr-2" />
                 Tambah User
               </Button>
@@ -224,7 +224,7 @@ function UsersPage() {
                 setPageSize(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="w-[70px] bg-white h-9 border-slate-200 shadow-sm focus:ring-blue-500">
+                <SelectTrigger className="w-[70px] bg-white h-9 border-slate-300 rounded-md shadow-sm focus:ring-blue-500">
                   <SelectValue placeholder="10" />
                 </SelectTrigger>
                 <SelectContent>
@@ -241,7 +241,7 @@ function UsersPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   placeholder="Cari user..."
-                  className="pl-9 bg-white h-9 border-slate-200"
+                  className="pl-9 bg-white h-9 border-slate-300 rounded-md"
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value)
@@ -254,7 +254,7 @@ function UsersPage() {
                 setRoleFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="w-[120px] bg-white h-9 border-slate-200 shadow-sm focus:ring-blue-500">
+                <SelectTrigger className="w-[120px] bg-white h-9 border-slate-300 rounded-md shadow-sm focus:ring-blue-500">
                   <SelectValue placeholder="Role" />
                 </SelectTrigger>
                 <SelectContent>
@@ -327,7 +327,7 @@ function UsersPage() {
                       <TableCell className="px-6 py-2">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-7 w-7 p-0 hover:bg-slate-100">
+                            <Button variant="ghost" className="h-7 w-7 p-0 hover:bg-slate-100 rounded-md">
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -525,20 +525,20 @@ function CreateUserDialog({ onEmailCreated }: { onEmailCreated: () => void }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="name">Nama Lengkap</Label>
-          <Input id="name" name="name" placeholder="Contoh: Revi Indika" required />
+          <Input id="name" name="name" placeholder="Contoh: Revi Indika" required className="rounded-md border-slate-300" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" placeholder="user@example.com" required />
+          <Input id="email" name="email" type="email" placeholder="user@example.com" required className="rounded-md border-slate-300" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" name="password" type="password" required />
+          <Input id="password" name="password" type="password" required className="rounded-md border-slate-300" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="role">Role</Label>
           <Select value={role} onValueChange={setRole}>
-            <SelectTrigger className="w-full bg-white border-slate-200 shadow-sm focus:ring-blue-500">
+            <SelectTrigger className="w-full bg-white border-slate-300 rounded-md shadow-sm focus:ring-blue-500">
               <SelectValue placeholder="Pilih Role" />
             </SelectTrigger>
             <SelectContent>
@@ -548,7 +548,7 @@ function CreateUserDialog({ onEmailCreated }: { onEmailCreated: () => void }) {
           </Select>
         </div>
         <DialogFooter>
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading} className="rounded-md">
             {loading ? 'Menyimpan...' : 'Simpan User'}
           </Button>
         </DialogFooter>
@@ -588,16 +588,16 @@ function EditUserForm({ user, onSuccess }: { user: any, onSuccess: () => void })
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="edit-name">Nama Lengkap</Label>
-        <Input id="edit-name" name="name" defaultValue={user?.name} required />
+        <Input id="edit-name" name="name" defaultValue={user?.name} required className="rounded-md border-slate-300" />
       </div>
       <div className="space-y-2">
         <Label htmlFor="edit-email">Email (Tidak dapat diubah)</Label>
-        <Input id="edit-email" value={user?.email} disabled />
+        <Input id="edit-email" value={user?.email} disabled className="rounded-md border-slate-300 bg-slate-50" />
       </div>
       <div className="space-y-2">
         <Label htmlFor="edit-role">Role</Label>
         <Select value={role} onValueChange={setRole}>
-          <SelectTrigger id="edit-role" className="w-full bg-white border-slate-200 shadow-sm focus:ring-blue-500">
+          <SelectTrigger id="edit-role" className="w-full bg-white border-slate-300 rounded-md shadow-sm focus:ring-blue-500">
             <SelectValue placeholder="Pilih Role" />
           </SelectTrigger>
           <SelectContent>
@@ -607,7 +607,7 @@ function EditUserForm({ user, onSuccess }: { user: any, onSuccess: () => void })
         </Select>
       </div>
       <DialogFooter>
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" disabled={loading} className="rounded-md">
           {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
         </Button>
       </DialogFooter>
@@ -649,14 +649,14 @@ function ChangePasswordForm({ userId, onSuccess }: { userId: string, onSuccess: 
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="new-password">Password Baru</Label>
-        <Input id="new-password" name="password" type="password" required minLength={6} />
+        <Input id="new-password" name="password" type="password" required minLength={6} className="rounded-md border-slate-300" />
       </div>
       <div className="space-y-2">
         <Label htmlFor="confirm-password">Konfirmasi Password Baru</Label>
-        <Input id="confirm-password" name="confirm-password" type="password" required minLength={6} />
+        <Input id="confirm-password" name="confirm-password" type="password" required minLength={6} className="rounded-md border-slate-300" />
       </div>
       <DialogFooter>
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" disabled={loading} className="rounded-md">
           {loading ? 'Mengganti...' : 'Ganti Password'}
         </Button>
       </DialogFooter>

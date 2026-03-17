@@ -171,7 +171,7 @@ function DashboardPendaftarPage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="rounded-md border-slate-300 shadow-sm overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
@@ -182,16 +182,16 @@ function DashboardPendaftarPage() {
               Kelola data pendaftar, edit, atau hapus data.
             </CardDescription>
           </div>
-          <Button
-            onClick={() => {
-              setSelectedPendaftar({})
-              setIsFormOpen(true)
-            }}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Tambah
-          </Button>
+            <Button
+              onClick={() => {
+                setSelectedPendaftar({})
+                setIsFormOpen(true)
+              }}
+              className="bg-blue-600 hover:bg-blue-700 rounded-md"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Tambah
+            </Button>
         </CardHeader>
         <CardContent className="p-0">
           {/* Filter Bar */}
@@ -201,7 +201,7 @@ function DashboardPendaftarPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   placeholder="Cari nama pendaftar..."
-                  className="pl-9 bg-white h-9 border-slate-200"
+                  className="pl-9 bg-white h-9 border-slate-300 rounded-md focus:border-blue-400 transition-all"
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value)
@@ -213,7 +213,7 @@ function DashboardPendaftarPage() {
                 <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   placeholder="Filter asal sekolah..."
-                  className="pl-9 bg-white h-9 border-slate-200"
+                  className="pl-9 bg-white h-9 border-slate-300 rounded-md focus:border-blue-400 transition-all"
                   value={sekolahFilter}
                   onChange={(e) => {
                     setSekolahFilter(e.target.value)
@@ -229,7 +229,7 @@ function DashboardPendaftarPage() {
                 setJalurFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="w-[180px] h-9 bg-white border-slate-200">
+                <SelectTrigger className="w-[180px] h-9 bg-white border-slate-300 rounded-md">
                   <SelectValue placeholder="Semua Jalur" />
                 </SelectTrigger>
                 <SelectContent>
@@ -253,7 +253,7 @@ function DashboardPendaftarPage() {
                 setTahapFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="w-[140px] h-9 bg-white border-slate-200">
+                <SelectTrigger className="w-[140px] h-9 bg-white border-slate-300 rounded-md">
                   <SelectValue placeholder="Semua Tahap" />
                 </SelectTrigger>
                 <SelectContent>
@@ -270,7 +270,7 @@ function DashboardPendaftarPage() {
                 setStatusFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="w-[140px] h-9 bg-white border-slate-200">
+                <SelectTrigger className="w-[140px] h-9 bg-white border-slate-300 rounded-md">
                   <SelectValue placeholder="Status Antrian" />
                 </SelectTrigger>
                 <SelectContent>
@@ -701,7 +701,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
               onFocus={() => setShowSekolahResults(true)}
               onBlur={() => setTimeout(() => setShowSekolahResults(false), 300)}
               placeholder="Ketik nama sekolah..."
-              className="bg-white pr-10"
+              className="bg-white pr-10 border-slate-300 rounded-md"
               autoComplete="off"
             />
             {isSearchingSekolah && (
@@ -791,8 +791,8 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
         </div>
       </div>
       <DialogFooter className="pt-4 border-t gap-2">
-        <Button type="button" variant="ghost" onClick={onCancel} disabled={loading}>Batal</Button>
-        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 min-w-[100px]">
+        <Button type="button" variant="ghost" onClick={onCancel} disabled={loading} className="rounded-md">Batal</Button>
+        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 min-w-[100px] rounded-md">
           {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Simpan
         </Button>

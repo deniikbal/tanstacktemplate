@@ -273,11 +273,11 @@ function KelulusanPage() {
       </AlertDialog>
 
 
-      <Card className="shadow-2xl shadow-blue-500/10 border-slate-100/50 rounded-[2.5rem] overflow-hidden bg-white/80 backdrop-blur-sm">
+      <Card className="shadow-sm border-slate-300 rounded-md overflow-hidden bg-white">
         <CardHeader className="p-8 pb-6 bg-gradient-to-b from-blue-50/50 to-transparent">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start sm:items-center gap-5">
-              <div className="hidden sm:flex h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 items-center justify-center shadow-lg shadow-blue-200 shrink-0">
+              <div className="hidden sm:flex h-14 w-14 rounded-md bg-gradient-to-br from-blue-500 to-blue-600 items-center justify-center shadow-md shadow-blue-100 shrink-0 border border-blue-400/20">
                 <CheckCircle2 className="h-8 w-8 text-white" />
               </div>
               <div className="space-y-1">
@@ -296,7 +296,7 @@ function KelulusanPage() {
                   variant="destructive"
                   onClick={handleBulkDelete}
                   disabled={isBulkDeleting}
-                  className="rounded-xl px-6 font-bold shadow-lg shadow-rose-100 transition-all hover:scale-105"
+                  className="rounded-md px-6 font-bold shadow-sm transition-all hover:scale-105"
                 >
                   {isBulkDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
                   Hapus ({selectedIds.size})
@@ -304,7 +304,7 @@ function KelulusanPage() {
               )}
               <Button
                 onClick={() => setIsSyncModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl px-6 shadow-lg shadow-blue-200 transition-all hover:scale-105 active:scale-95"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md px-6 shadow-sm transition-all hover:scale-105 active:scale-95"
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Sinkronisasi
@@ -314,7 +314,7 @@ function KelulusanPage() {
         </CardHeader>
         <CardContent className="p-0">
           {/* Filter Bar */}
-          <div className="flex flex-col lg:flex-row lg:items-center gap-4 p-6 bg-slate-50/30 border-y border-slate-100">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-4 p-6 bg-slate-50/30 border-y border-slate-300">
             <div className="flex flex-wrap items-center gap-3 flex-1">
               <div className="relative w-full max-w-md">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
@@ -326,7 +326,7 @@ function KelulusanPage() {
                 </div>
                 <Input
                   placeholder="Cari nama/nisn..."
-                  className="pl-10 bg-white h-10 border-slate-100 shadow-sm rounded-xl focus:ring-blue-500 transition-all focus:border-blue-200"
+                  className="pl-10 bg-white h-10 border-slate-300 shadow-sm rounded-md focus:ring-blue-500 transition-all focus:border-blue-400"
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value)
@@ -342,7 +342,7 @@ function KelulusanPage() {
                 setJalurFilter('all')
                 setPage(1)
               }}>
-                <SelectTrigger className="bg-white h-10 border-slate-100 shadow-sm focus:ring-blue-500 lg:w-[150px] rounded-xl font-medium">
+                <SelectTrigger className="bg-white h-10 border-slate-300 shadow-sm focus:ring-blue-500 lg:w-[150px] rounded-md font-medium">
                   <SelectValue placeholder="Tahap" />
                 </SelectTrigger>
                 <SelectContent>
@@ -356,7 +356,7 @@ function KelulusanPage() {
                 setStatusFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="bg-white h-10 border-slate-100 shadow-sm focus:ring-blue-500 lg:w-[150px] rounded-xl font-medium">
+                <SelectTrigger className="bg-white h-10 border-slate-300 shadow-sm focus:ring-blue-500 lg:w-[150px] rounded-md font-medium">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -370,7 +370,7 @@ function KelulusanPage() {
                 setJalurFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="col-span-2 lg:w-[180px] bg-white h-10 border-slate-100 shadow-sm focus:ring-blue-500 rounded-xl font-medium">
+                <SelectTrigger className="col-span-2 lg:w-[180px] bg-white h-10 border-slate-300 shadow-sm focus:ring-blue-500 rounded-md font-medium">
                   <SelectValue placeholder="Jalur" />
                 </SelectTrigger>
                 <SelectContent>
@@ -728,6 +728,7 @@ function KelulusanPage() {
           )}
         </CardContent>
       </Card>
+      <div className="h-4" />
     </div >
   )
 }
@@ -796,13 +797,15 @@ function SyncModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[450px]">
+      <DialogContent className="sm:max-w-[450px] rounded-md border-slate-300">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <RefreshCw className="h-5 w-5 text-blue-600" />
+          <div className="w-12 h-12 bg-blue-50 rounded-md flex items-center justify-center mb-4 border border-blue-100">
+            <RefreshCw className="h-6 w-6 text-blue-600" />
+          </div>
+          <DialogTitle className="text-xl font-black text-slate-900">
             Sinkronisasi Data Kelulusan
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-slate-500">
             Menarik semua data siswa yang belum ada di Manajemen Kelulusan secara otomatis.
           </DialogDescription>
         </DialogHeader>
@@ -845,7 +848,11 @@ function SyncModal({
           <Button variant="outline" onClick={onClose} disabled={loading} className="flex-1 sm:flex-none">
             Batal
           </Button>
-          <Button onClick={handleSync} disabled={loading} className="bg-blue-600 hover:bg-blue-700 font-bold flex-1 sm:flex-none">
+          <Button
+            onClick={handleSync}
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 rounded-md"
+          >
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
             Mulai Sinkronisasi
           </Button>
@@ -863,22 +870,22 @@ function EditGraduationModal({
 }: {
   isOpen: boolean
   onClose: () => void
-  data?: any
+  data: any
   onSuccess: () => void
 }) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     status: 'LULUS',
     tahap: 'Tahap 1',
-    jalur: '',
+    jalur: ''
   })
 
   useEffect(() => {
     if (data) {
       setFormData({
-        status: data.status,
-        tahap: data.tahap,
-        jalur: data.jalur,
+        status: data.status || 'LULUS',
+        tahap: data.tahap || 'Tahap 1',
+        jalur: data.jalur || ''
       })
     }
   }, [data])
@@ -890,10 +897,10 @@ function EditGraduationModal({
       await updateKelulusan({
         data: {
           id: data.id,
-          data: formData,
-        },
+          data: formData
+        }
       })
-      toast.success('Data kelulusan berhasil diperbarui')
+      toast.success('Data kelulusan diperbarui')
       onSuccess()
     } catch (err: any) {
       toast.error(err.message || 'Gagal memperbarui data')
@@ -904,35 +911,43 @@ function EditGraduationModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[450px]">
+      <DialogContent className="sm:max-w-[450px] rounded-md border-slate-300">
         <DialogHeader>
-          <DialogTitle>Edit Status Kelulusan</DialogTitle>
-          <DialogDescription>
-            Memperbarui status atau tahap untuk <strong>{data?.studentName}</strong>.
+          <div className="w-12 h-12 bg-blue-50 rounded-md flex items-center justify-center mb-4 border border-blue-100">
+            <GraduationCap className="h-6 w-6 text-blue-600" />
+          </div>
+          <DialogTitle className="text-xl font-black text-slate-900">Edit Status Kelulusan</DialogTitle>
+          <DialogDescription className="text-slate-500">
+            Sesuaikan status kelulusan untuk {data?.studentName}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label>Tahap</Label>
-            <Select value={formData.tahap} onValueChange={(v) => setFormData({ ...formData, tahap: v })}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Status Kelulusan</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(val) => setFormData({ ...formData, status: val })}
+            >
+              <SelectTrigger className="border-slate-300 rounded-md h-11">
+                <SelectValue placeholder="Pilih status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Tahap 1">Tahap 1</SelectItem>
-                <SelectItem value="Tahap 2">Tahap 2</SelectItem>
+                <SelectItem value="LULUS">LULUS</SelectItem>
+                <SelectItem value="TIDAK LULUS">TIDAK LULUS</SelectItem>
               </SelectContent>
             </Select>
           </div>
-
-          <div className="grid gap-2">
-            <Label>Jalur Pendaftaran</Label>
-            <Select value={formData.jalur} onValueChange={(v) => setFormData({ ...formData, jalur: v })}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Jalur Pendaftaran</Label>
+            <Select
+              value={formData.jalur}
+              onValueChange={(val) => setFormData({ ...formData, jalur: val })}
+            >
+              <SelectTrigger className="border-slate-300 rounded-md h-11">
+                <SelectValue placeholder="Pilih jalur" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-[300px]">
                 <SelectItem value="KETM">KETM</SelectItem>
                 <SelectItem value="DOMISILI">DOMISILI</SelectItem>
                 <SelectItem value="AFIRMASI">AFIRMASI</SelectItem>
@@ -945,25 +960,29 @@ function EditGraduationModal({
               </SelectContent>
             </Select>
           </div>
-
-          <div className="grid gap-2">
-            <Label>Hasil / Status</Label>
-            <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
+          <div className="space-y-2">
+            <Label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Tahap Kelulusan</Label>
+            <Select
+              value={formData.tahap}
+              onValueChange={(val) => setFormData({ ...formData, tahap: val })}
+            >
+              <SelectTrigger className="border-slate-300 rounded-md h-11">
+                <SelectValue placeholder="Pilih tahap" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="LULUS">LULUS</SelectItem>
-                <SelectItem value="TIDAK LULUS">TIDAK LULUS</SelectItem>
+                <SelectItem value="Tahap 1">Tahap 1</SelectItem>
+                <SelectItem value="Tahap 2">Tahap 2</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={loading}>Batal</Button>
-          <Button onClick={handleUpdate} disabled={loading} className="bg-blue-600 hover:bg-blue-700">
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button variant="outline" onClick={onClose} disabled={loading} className="border-slate-300 rounded-md">
+            Batal
+          </Button>
+          <Button onClick={handleUpdate} disabled={loading} className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md">
+            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
             Simpan Perubahan
           </Button>
         </DialogFooter>
@@ -971,4 +990,3 @@ function EditGraduationModal({
     </Dialog>
   )
 }
-

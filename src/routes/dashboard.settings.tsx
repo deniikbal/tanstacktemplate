@@ -211,7 +211,7 @@ function SettingsPage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="rounded-md border-slate-300 shadow-sm overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
@@ -224,7 +224,7 @@ function SettingsPage() {
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button className="bg-blue-600 hover:bg-blue-700 rounded-md">
                 <Plus className="w-4 h-4 mr-2" />
                 Tambah Tahun Ajaran
               </Button>
@@ -244,6 +244,7 @@ function SettingsPage() {
                     placeholder="2026/2027"
                     value={newTahun}
                     onChange={(e) => setNewTahun(e.target.value)}
+                    className="rounded-md border-slate-300"
                   />
                   <p className="text-xs text-slate-500">Format: YYYY/YYYY</p>
                 </div>
@@ -254,6 +255,7 @@ function SettingsPage() {
                     placeholder="Contoh: Tahap 2"
                     value={newTahap}
                     onChange={(e) => setNewTahap(e.target.value)}
+                    className="rounded-md border-slate-300"
                   />
                   <p className="text-xs text-slate-500">Teks ini akan muncul di halaman pengumuman</p>
                 </div>
@@ -265,6 +267,7 @@ function SettingsPage() {
                       type="date"
                       value={newTanggal}
                       onChange={(e) => setNewTanggal(e.target.value)}
+                      className="rounded-md border-slate-300"
                     />
                   </div>
                   <div className="space-y-2">
@@ -274,15 +277,16 @@ function SettingsPage() {
                       type="time"
                       value={newJam}
                       onChange={(e) => setNewJam(e.target.value)}
+                      className="rounded-md border-slate-300"
                     />
                   </div>
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)} className="rounded-md">
                   Batal
                 </Button>
-                <Button onClick={handleAdd} disabled={isAdding} className="bg-blue-600 hover:bg-blue-700">
+                <Button onClick={handleAdd} disabled={isAdding} className="bg-blue-600 hover:bg-blue-700 rounded-md">
                   {isAdding ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
                   Tambah
                 </Button>
@@ -339,6 +343,7 @@ function SettingsPage() {
                           size="sm"
                           onClick={() => openEditDialog(item)}
                           title="Edit tanggal pengumuman"
+                          className="rounded-md"
                         >
                           <Pencil className="w-4 h-4" />
                         </Button>
@@ -347,7 +352,7 @@ function SettingsPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleSetActive(item)}
-                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
                             title="Set sebagai aktif"
                           >
                             <Check className="w-4 h-4" />
@@ -358,7 +363,7 @@ function SettingsPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => setDeleteItem(item)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md"
                             title="Hapus"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -391,6 +396,7 @@ function SettingsPage() {
                 placeholder="Contoh: Tahap 2"
                 value={editTahap}
                 onChange={(e) => setEditTahap(e.target.value)}
+                className="rounded-md border-slate-300"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -401,6 +407,7 @@ function SettingsPage() {
                   type="date"
                   value={editTanggal}
                   onChange={(e) => setEditTanggal(e.target.value)}
+                  className="rounded-md border-slate-300"
                 />
               </div>
               <div className="space-y-2">
@@ -410,12 +417,13 @@ function SettingsPage() {
                   type="time"
                   value={editJam}
                   onChange={(e) => setEditJam(e.target.value)}
+                  className="rounded-md border-slate-300"
                 />
               </div>
             </div>
           </div>
           {editTanggal && editJam && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
               <p className="text-sm text-blue-800">
                 <strong>Preview:</strong>{' '}
                 {new Date(`${editTanggal}T${editJam}:00`).toLocaleString('id-ID', {
@@ -430,10 +438,10 @@ function SettingsPage() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditItem(null)}>
+            <Button variant="outline" onClick={() => setEditItem(null)} className="rounded-md">
               Batal
             </Button>
-            <Button onClick={handleEdit} disabled={isEditing} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleEdit} disabled={isEditing} className="bg-blue-600 hover:bg-blue-700 rounded-md">
               {isEditing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
               Simpan
             </Button>

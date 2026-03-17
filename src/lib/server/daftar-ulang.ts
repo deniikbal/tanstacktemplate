@@ -1,23 +1,83 @@
 import { db } from "@/lib/db";
 import { daftarUlang, kelulusan, student } from "@/lib/db/schema";
-import { eq, count, and, ilike, or, asc, sql } from "drizzle-orm";
+import { eq, count, and, ilike, or, asc, sql, not } from "drizzle-orm";
 import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/middleware";
 import { createStudentFolder, uploadToDrive, deleteFromDrive } from "./google-drive";
 
 export const getDaftarUlangList = createServerFn({ method: "GET" })
-    .inputValidator((d: { page?: number; limit?: number; search?: string; jalur?: string }) => d)
+    .inputValidator((d: { page?: number; limit?: number; search?: string; jalur?: string; tahap?: string; status?: string }) => d)
     .handler(async ({ data }) => {
         const page = data?.page || 1;
         const limit = data?.limit || 10;
         const search = data?.search || "";
         const jalur = data?.jalur || "all";
+        const tahap = data?.tahap || "all";
+        const status = data?.status || "all";
         const offset = (page - 1) * limit;
 
         let whereClause = eq(kelulusan.status, "LULUS");
 
         if (jalur !== "all") {
             whereClause = and(whereClause, eq(kelulusan.jalur, jalur)) as any;
+        }
+
+        if (tahap !== "all") {
+            whereClause = and(whereClause, ilike(kelulusan.tahap, `%${tahap}%`)) as any;
+        }
+
+        if (status !== "all") {
+            if (status === "sudah") {
+                whereClause = and(
+                    whereClause,
+                    and(
+                        eq(daftarUlang.skl, true),
+                        eq(daftarUlang.tatib, true),
+                        eq(daftarUlang.kk, true),
+                        eq(daftarUlang.bukti, true),
+                        eq(daftarUlang.pernyataan, true)
+                    )
+                ) as any;
+            } else if (status === "belum") {
+                whereClause = and(
+                    whereClause,
+                    or(
+                        sql`${daftarUlang.id} is null`,
+                        and(
+                            eq(daftarUlang.skl, false),
+                            eq(daftarUlang.tatib, false),
+                            eq(daftarUlang.kk, false),
+                            eq(daftarUlang.bukti, false),
+                            eq(daftarUlang.pernyataan, false)
+                        ) as any
+                    ) as any
+                ) as any;
+            } else if (status === "belum-lengkap") {
+                whereClause = and(
+                    whereClause,
+                    and(
+                        sql`${daftarUlang.id} is not null`,
+                        not(
+                            and(
+                                eq(daftarUlang.skl, true),
+                                eq(daftarUlang.tatib, true),
+                                eq(daftarUlang.kk, true),
+                                eq(daftarUlang.bukti, true),
+                                eq(daftarUlang.pernyataan, true)
+                            ) as any
+                        ) as any,
+                        not(
+                            and(
+                                eq(daftarUlang.skl, false),
+                                eq(daftarUlang.tatib, false),
+                                eq(daftarUlang.kk, false),
+                                eq(daftarUlang.bukti, false),
+                                eq(daftarUlang.pernyataan, false)
+                            ) as any
+                        ) as any
+                    ) as any
+                ) as any;
+            }
         }
 
         if (search) {

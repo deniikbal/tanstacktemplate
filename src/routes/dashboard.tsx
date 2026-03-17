@@ -40,7 +40,6 @@ const routeNames: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/dashboard/users': 'Manajemen User',
   '/dashboard/students': 'Data Siswa',
-  '/dashboard/activity-reports': 'Laporan Kegiatan',
   '/dashboard/settings': 'Setting',
   '/dashboard/sekolah': 'Data Sekolah',
   '/dashboard/jadwal-spmb': 'Jadwal SPMB',
@@ -63,7 +62,7 @@ function DashboardLayout() {
     // Protection for non-admin users
     const userRole = session?.user?.role?.toLowerCase()
     if (userRole !== 'admin') {
-      const restrictedPaths = ['/dashboard/users', '/dashboard/students', '/dashboard/settings', '/dashboard/sekolah', '/dashboard/jadwal-spmb', '/dashboard/activity-reports']
+      const restrictedPaths = ['/dashboard/users', '/dashboard/students', '/dashboard/settings', '/dashboard/sekolah', '/dashboard/jadwal-spmb']
       const currentPath = matches[matches.length - 1]?.pathname || ''
 
       const isRestricted = restrictedPaths.some(path =>
