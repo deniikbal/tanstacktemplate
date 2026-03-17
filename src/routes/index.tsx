@@ -259,7 +259,7 @@ function LandingPage() {
             </div>
             <div className="grid grid-cols-3 gap-3 pt-4">
               <div className="bg-white border border-slate-200 rounded-xl p-4 text-center shadow-sm">
-                <div className="text-2xl md:text-3xl font-black text-slate-900">480</div>
+                <div className="text-2xl md:text-3xl font-black text-slate-900">432</div>
                 <div className="text-xs md:text-sm text-slate-500 font-medium">Siswa Diterima</div>
               </div>
               <div className="bg-white border border-slate-200 rounded-xl p-4 text-center shadow-sm">
@@ -599,15 +599,15 @@ function LandingPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
             {randomGallery.map((item, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="group relative overflow-hidden rounded-xl aspect-square bg-slate-200 cursor-zoom-in"
                 onClick={() => setSelectedImage(item)}
               >
                 <img src={item.src} alt={`Galeri ${index + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center scale-75 group-hover:scale-100 transition-transform duration-300">
-                     <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                    <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -622,9 +622,9 @@ function LandingPage() {
               </DialogHeader>
               {selectedImage && (
                 <div className="relative w-full h-full flex items-center justify-center animate-in fade-in zoom-in duration-300">
-                  <img 
-                    src={selectedImage.src} 
-                    alt="Galeri Full" 
+                  <img
+                    src={selectedImage.src}
+                    alt="Galeri Full"
                     className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border-4 border-white/10"
                   />
                 </div>
