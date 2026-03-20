@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { getPendaftarList, savePendaftar, deletePendaftar, getSchoolSearch } from '@/lib/server/pendaftar'
+import { getActiveTahunAjaran } from '@/lib/server/tahun-ajaran'
 import {
   Table,
   TableBody,
@@ -30,10 +31,10 @@ import {
   Pencil,
   Ticket,
   MessageCircle,
-  Bell,
   CheckCircle,
   SkipForward,
-  Play
+  Play,
+  Volume2
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
@@ -73,6 +74,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export const Route = createFileRoute('/dashboard/pendaftar')({
   component: DashboardPendaftarPage,
@@ -93,10 +100,12 @@ interface Pendaftar {
   noAntrian: string | null
   tglAntrian: string | null
   statusAntrian: string | null
+  tahunAjaran: string | null
 }
 
 import { issueQueueNumber, updateQueueStatus } from '@/lib/server/pendaftar'
 import { Badge } from '@/components/ui/badge'
+import { getJakartaDate } from '@/lib/utils'
 
 function DashboardPendaftarPage() {
   const [pendaftarInfo, setPendaftarInfo] = useState<{ pendaftar: Pendaftar[], total: number } | null>(null)
@@ -111,6 +120,7 @@ function DashboardPendaftarPage() {
   const [jalurFilter, setJalurFilter] = useState('semua')
   const [tahapFilter, setTahapFilter] = useState('semua')
   const [statusFilter, setStatusFilter] = useState('semua')
+  const [activeYear, setActiveYear] = useState<string | null>(null)
 
   // Pagination
   const [page, setPage] = useState(1)
@@ -141,6 +151,10 @@ function DashboardPendaftarPage() {
     fetchPendaftar()
   }, [page, limit, searchTerm, sekolahFilter, jalurFilter, tahapFilter, statusFilter])
 
+  useEffect(() => {
+    getActiveTahunAjaran().then(data => setActiveYear(data?.tahun || null))
+  }, [])
+
   const handleDelete = async () => {
     if (!pendaftarToDelete) return
     setIsDeleting(true)
@@ -156,6 +170,18 @@ function DashboardPendaftarPage() {
     setIsDeleting(false)
   }
 
+  const handleVoiceCall = (p: Pendaftar) => {
+    if (!p.noAntrian) return
+    const text = `Nomor Antrian, ${p.noAntrian.split('').join(' ')}, atas nama, ${p.nmLengkap}, silakan menuju ruang tunggu.`
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = 'id-ID'
+    utterance.rate = 0.9
+    window.speechSynthesis.speak(utterance)
+
+    // Update status to CALLING automatically
+    updateQueueStatus({ data: { id: p.id, status: 'CALLING' } }).then(fetchPendaftar)
+  }
+
   const totalPages = Math.ceil((pendaftarInfo?.total || 0) / Number(limit))
 
   return (
@@ -166,7 +192,14 @@ function DashboardPendaftarPage() {
           <Users className="w-6 h-6 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Data Pendaftar</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-slate-900">Data Pendaftar</h1>
+            {activeYear && (
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 font-bold px-2 py-0.5 rounded-full">
+                TA {activeYear}
+              </Badge>
+            )}
+          </div>
           <p className="text-sm text-slate-500">Kelola data calon peserta didik baru</p>
         </div>
       </div>
@@ -292,6 +325,7 @@ function DashboardPendaftarPage() {
                   <TableHead className="font-semibold text-slate-700 px-4">Antrian</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">Nama Lengkap</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">Asal Sekolah</TableHead>
+                  <TableHead className="font-semibold text-slate-700 px-4">Tahun Ajaran</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">Tahap/Jalur</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">No. HP</TableHead>
                   <TableHead className="w-[100px] text-right px-4">Aksi</TableHead>
@@ -319,7 +353,7 @@ function DashboardPendaftarPage() {
                   pendaftarInfo.pendaftar.map((p) => (
                     <TableRow key={p.id} className="hover:bg-slate-50 transition-colors">
                       <TableCell className="px-4">
-                        {p.noAntrian && p.tglAntrian === new Date().toISOString().split('T')[0] ? (
+                        {p.noAntrian && p.tglAntrian === getJakartaDate() ? (
                           <div className="flex flex-col gap-1">
                             <Badge className={`${p.statusAntrian === 'CALLING' ? 'bg-amber-500 animate-pulse' :
                               p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
@@ -350,6 +384,13 @@ function DashboardPendaftarPage() {
                       <TableCell className="font-medium text-slate-900 px-4">{p.nmLengkap}</TableCell>
                       <TableCell className="px-4">{p.asalSekolah || '-'}</TableCell>
                       <TableCell className="px-4">
+                        {p.tahunAjaran ? (
+                          <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-600 border-indigo-100 font-medium">
+                            {p.tahunAjaran}
+                          </Badge>
+                        ) : '-'}
+                      </TableCell>
+                      <TableCell className="px-4">
                         <div className="flex flex-col gap-1">
                           <span className={`w-fit px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${p.tahap === '1' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
                             Tahap {p.tahap}
@@ -359,85 +400,136 @@ function DashboardPendaftarPage() {
                       </TableCell>
                       <TableCell className="text-slate-600 px-4">{p.noHandphone || '-'}</TableCell>
                       <TableCell className="text-right px-4">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => {
-                              setSelectedPendaftar(p)
-                              setIsFormOpen(true)
-                            }}>
-                              <Pencil className="mr-2 h-4 w-4" />
-                              Edit Data
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={async () => {
-                                try {
-                                  await issueQueueNumber({ data: { id: p.id } })
-                                  toast.success(`Antrian #${p.nmLengkap} berhasil diterbitkan`)
-                                  fetchPendaftar()
-                                } catch (error: any) {
-                                  toast.error(error.message || 'Gagal menerbitkan antrian')
-                                }
-                              }}
-                              className="text-blue-600 focus:text-blue-700 focus:bg-blue-50"
-                            >
-                              <Ticket className="mr-2 h-4 w-4" />
-                              Ambil Antrian
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive focus:bg-destructive/10"
-                              onClick={() => {
-                                setPendaftarToDelete(p)
-                                setIsDeleteDialogOpen(true)
-                              }}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Hapus Data
-                            </DropdownMenuItem>
-
-                            <div className="h-px bg-slate-100 my-1" />
-
-                            <DropdownMenuItem
-                              onClick={() => {
-                                const msg = `Halo ${p.nmLengkap}, nomor antrian Anda untuk hari ini adalah *#${p.noAntrian}*. Silakan tunggu di ruang tunggu. Cek status antrian berkala. Terima kasih.`
-                                const phone = p.noHandphone?.replace(/[^0-9]/g, '')
-                                const finalPhone = phone?.startsWith('0') ? '62' + phone.slice(1) : phone
-                                window.open(`https://wa.me/${finalPhone}?text=${encodeURIComponent(msg)}`, '_blank')
-                              }}
-                              className="text-blue-600"
-                              disabled={!p.noAntrian || !p.noHandphone}
-                            >
-                              <MessageCircle className="mr-2 h-4 w-4" />
-                              Kirim Info WA
-                            </DropdownMenuItem>
-
-                            {p.noAntrian && p.tglAntrian === new Date().toISOString().split('T')[0] && (
+                        <div className="flex items-center justify-end gap-0.5">
+                          <TooltipProvider delayDuration={300}>
+                            {p.noAntrian && p.tglAntrian === getJakartaDate() ? (
                               <>
-                                <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'CALLING' } }).then(fetchPendaftar)}>
-                                  <Bell className="mr-2 h-4 w-4 text-amber-500" />
-                                  Panggil Siswa
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'IN_ROOM' } }).then(fetchPendaftar)}>
-                                  <Play className="mr-2 h-4 w-4 text-blue-500" />
-                                  Masuk Ruangan
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'SKIPPED' } }).then(fetchPendaftar)}>
-                                  <SkipForward className="mr-2 h-4 w-4 text-red-500" />
-                                  Lewati (Skipped)
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => updateQueueStatus({ data: { id: p.id, status: 'DONE' } }).then(fetchPendaftar)}>
-                                  <CheckCircle className="mr-2 h-4 w-4 text-slate-500" />
-                                  Selesai
-                                </DropdownMenuItem>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50 rounded-md"
+                                      onClick={() => handleVoiceCall(p as Pendaftar)}
+                                    >
+                                      <Volume2 className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>Panggil Suara</TooltipContent>
+                                </Tooltip>
+
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-md"
+                                      onClick={() => updateQueueStatus({ data: { id: p.id, status: 'IN_ROOM' } }).then(fetchPendaftar)}
+                                    >
+                                      <Play className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>Masuk Ruangan</TooltipContent>
+                                </Tooltip>
+
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50 rounded-md"
+                                      onClick={() => updateQueueStatus({ data: { id: p.id, status: 'SKIPPED' } }).then(fetchPendaftar)}
+                                    >
+                                      <SkipForward className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>Lewati (Skipped)</TooltipContent>
+                                </Tooltip>
+
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-md"
+                                      onClick={() => updateQueueStatus({ data: { id: p.id, status: 'DONE' } }).then(fetchPendaftar)}
+                                    >
+                                      <CheckCircle className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>Selesai</TooltipContent>
+                                </Tooltip>
                               </>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                            ) : !p.noAntrian ? (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
+                                    onClick={async () => {
+                                      try {
+                                        await issueQueueNumber({ data: { id: p.id } })
+                                        toast.success(`Antrian #${p.nmLengkap} berhasil diterbitkan`)
+                                        fetchPendaftar()
+                                      } catch (error: any) {
+                                        toast.error(error.message || 'Gagal menerbitkan antrian')
+                                      }
+                                    }}
+                                  >
+                                    <Ticket className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Ambil Antrian</TooltipContent>
+                              </Tooltip>
+                            ) : null}
+                          </TooltipProvider>
+
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0 rounded-md">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="rounded-md border-slate-300">
+                              <DropdownMenuItem onClick={() => {
+                                setSelectedPendaftar(p)
+                                setIsFormOpen(true)
+                              }}>
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Edit Data
+                              </DropdownMenuItem>
+
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  const msg = `Halo ${p.nmLengkap}, nomor antrian Anda untuk hari ini adalah *#${p.noAntrian}*. Silakan tunggu di ruang tunggu. Cek status antrian berkala. Terima kasih.`
+                                  const phone = p.noHandphone?.replace(/[^0-9]/g, '')
+                                  const finalPhone = phone?.startsWith('0') ? '62' + phone.slice(1) : phone
+                                  window.open(`https://wa.me/${finalPhone}?text=${encodeURIComponent(msg)}`, '_blank')
+                                }}
+                                className="text-blue-600"
+                                disabled={!p.noAntrian || !p.noHandphone}
+                              >
+                                <MessageCircle className="mr-2 h-4 w-4" />
+                                Kirim Info WA
+                              </DropdownMenuItem>
+
+                              <div className="h-px bg-slate-100 my-1" />
+
+                              <DropdownMenuItem
+                                className="text-destructive focus:text-destructive focus:bg-destructive/10"
+                                onClick={() => {
+                                  setPendaftarToDelete(p)
+                                  setIsDeleteDialogOpen(true)
+                                }}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Hapus Data
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))

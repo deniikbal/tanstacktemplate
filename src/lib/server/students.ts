@@ -9,7 +9,19 @@ export const getStudents = createServerFn({
 })
     .inputValidator((d: { limit?: number; offset?: number; search?: string; tahunAjaran?: string }) => d)
     .handler(async ({ data }) => {
-        const { limit = 10, offset = 0, search, tahunAjaran } = data
+        const { limit = 10, offset = 0, search, tahunAjaran: inputTahunAjaran } = data
+
+        let targetTahunAjaran = inputTahunAjaran
+
+        // If no specific year is provided, get the active one
+        if (!targetTahunAjaran || targetTahunAjaran === 'semua') {
+            const activeTahun = await db
+                .select({ tahun: tahunAjaran.tahun })
+                .from(tahunAjaran)
+                .where(eq(tahunAjaran.isAktif, true))
+                .limit(1)
+            targetTahunAjaran = activeTahun[0]?.tahun || undefined
+        }
 
         const filters = []
 
@@ -23,8 +35,8 @@ export const getStudents = createServerFn({
             )
         }
 
-        if (tahunAjaran && tahunAjaran !== 'semua') {
-            filters.push(eq(student.tahunAjaran, tahunAjaran))
+        if (targetTahunAjaran && targetTahunAjaran !== 'semua') {
+            filters.push(eq(student.tahunAjaran, targetTahunAjaran))
         }
 
         const whereClause = filters.length > 0 ? and(...filters) : undefined

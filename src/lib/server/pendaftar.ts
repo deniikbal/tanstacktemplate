@@ -21,9 +21,21 @@ async function getNextQueueNumber(dateStr: string) {
 export const getPendaftarList = createServerFn({
     method: 'GET',
 })
-    .inputValidator((d: { limit?: number; offset?: number; search?: string, asalSekolah?: string, jalurMasuk?: string, tahap?: string, statusAntrian?: string, tahunAjaran?: string }) => d)
+    .inputValidator((d: { limit?: number; offset?: number; search?: string, asalSekolah?: string, jalurMasuk?: string, tahap?: string, statusAntrian?: string, tahunAjaran?: string, tglAntrian?: string }) => d)
     .handler(async ({ data }) => {
-        const { limit = 10, offset = 0, search, asalSekolah, jalurMasuk, tahap, statusAntrian, tahunAjaran } = data
+        const { limit = 10, offset = 0, search, asalSekolah, jalurMasuk, tahap, statusAntrian, tahunAjaran: inputTahunAjaran, tglAntrian } = data
+
+        let targetTahunAjaran = inputTahunAjaran
+
+        // If no specific year is provided, get the active one
+        if (!targetTahunAjaran || targetTahunAjaran === 'semua') {
+            const activeTahun = await db
+                .select({ tahun: tahunAjaran.tahun })
+                .from(tahunAjaran)
+                .where(eq(tahunAjaran.isAktif, true))
+                .limit(1)
+            targetTahunAjaran = activeTahun[0]?.tahun || undefined
+        }
 
         const filters = []
 
@@ -47,8 +59,12 @@ export const getPendaftarList = createServerFn({
             filters.push(eq(pendaftar.statusAntrian, statusAntrian))
         }
 
-        if (tahunAjaran && tahunAjaran !== 'semua') {
-            filters.push(eq(pendaftar.tahunAjaran, tahunAjaran))
+        if (targetTahunAjaran && targetTahunAjaran !== 'semua') {
+            filters.push(eq(pendaftar.tahunAjaran, targetTahunAjaran))
+        }
+
+        if (tglAntrian) {
+            filters.push(eq(pendaftar.tglAntrian, tglAntrian))
         }
 
         const whereClause = filters.length > 0 ? and(...filters) : undefined

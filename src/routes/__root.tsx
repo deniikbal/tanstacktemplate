@@ -63,7 +63,7 @@ export const Route = createRootRoute({
         </p>
         <a
           href="/"
-          className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm"
+          className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors shadow-sm"
         >
           Kembali ke Beranda
         </a>

@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { getStudents, deleteStudent, updateStudent, importBatchStudents, bulkDeleteStudents } from '@/lib/server/students'
+import { getActiveTahunAjaran } from '@/lib/server/tahun-ajaran'
 import { getSchoolSearch } from '@/lib/server/pendaftar'
 import { Loader2 } from 'lucide-react'
 import {
@@ -110,6 +111,7 @@ interface Student {
     noIjasahnas: string | null
     noTranskrip: string | null
     jalur: string | null
+    tahunAjaran: string | null
     // Meta
     createdAt: Date | null
 }
@@ -165,6 +167,7 @@ function StudentsPage() {
     const [selectedIds, setSelectedIds] = useState<string[]>([])
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [activeYear, setActiveYear] = useState<string | null>(null)
 
     // Single Delete State
     const [studentToDelete, setStudentToDelete] = useState<Student | null>(null)
@@ -197,6 +200,10 @@ function StudentsPage() {
         }, 300)
         return () => clearTimeout(timer)
     }, [page, searchTerm, pageSize])
+
+    useEffect(() => {
+        getActiveTahunAjaran().then(data => setActiveYear(data?.tahun || null))
+    }, [])
 
     const startDeleteStudent = (student: Student) => {
         setStudentToDelete(student)
@@ -360,7 +367,7 @@ function StudentsPage() {
                     <GraduationCap className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Data Siswa</h1>
+                    <div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-slate-900">Data Siswa</h1>{activeYear && (<Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 font-bold px-2 py-0.5 rounded-full whitespace-nowrap">TA {activeYear}</Badge>)}</div>
                     <p className="text-sm text-slate-500">Kelola data peserta didik SPMB SMAN 1 BANTARUJEG</p>
                 </div>
             </div>
@@ -451,6 +458,7 @@ function StudentsPage() {
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">No Daftar</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Nama Lengkap</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">NISN</TableHead>
+                                    <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Tahun Ajaran</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Jalur</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Asal Sekolah</TableHead>
                                     <TableHead className="w-[70px] px-6 py-2 h-10"></TableHead>
@@ -473,6 +481,9 @@ function StudentsPage() {
                                                 <Skeleton className="h-5 w-[100px] bg-slate-200" />
                                             </TableCell>
                                             <TableCell className="px-6 py-2">
+                                                <Skeleton className="h-5 w-[80px] bg-indigo-50/50" />
+                                            </TableCell>
+                                            <TableCell className="px-6 py-2">
                                                 <Skeleton className="h-5 w-[150px] bg-slate-200" />
                                             </TableCell>
                                             <TableCell className="px-6 py-2">
@@ -491,7 +502,7 @@ function StudentsPage() {
                                     </TableRow>
                                 ) : (
                                     studentsInfo.students.map((s) => (
-                                        <TableRow key={s.id} className={`hover:bg-slate-50/50 border-b border-slate-100 transition-colors group ${selectedIds.includes(s.id) ? 'bg-blue-50' : ''} ${isPending ? 'opacity-50 pointer-events-none' : ''}`}>
+                                        <TableRow key={s.id} className={`hover:bg-slate-50/50 border-b border-slate-100 transition-colors group ${selectedIds.includes(s.id) ? `bg-blue-50` : ``} ${isPending ? `opacity-50 pointer-events-none` : ``}`}>
                                             <TableCell className="px-4 py-2">
                                                 <Checkbox
                                                     checked={selectedIds.includes(s.id)}
@@ -499,9 +510,16 @@ function StudentsPage() {
                                                     aria-label={`Select ${s.nmSiswa}`}
                                                 />
                                             </TableCell>
-                                            <TableCell className="text-slate-600 px-6 py-2">{s.noDaftar || '-'}</TableCell>
-                                            <TableCell className="font-medium text-slate-900 px-6 py-2">{s.nmSiswa || '-'}</TableCell>
-                                            <TableCell className="text-slate-600 px-6 py-2">{s.nisn || '-'}</TableCell>
+                                            <TableCell className="text-slate-600 px-6 py-2">{s.noDaftar || "-"}</TableCell>
+                                            <TableCell className="font-medium text-slate-900 px-6 py-2">{s.nmSiswa || "-"}</TableCell>
+                                            <TableCell className="text-slate-600 px-6 py-2">{s.nisn || "-"}</TableCell>
+                                            <TableCell className="px-6 py-2">
+                                                {s.tahunAjaran ? (
+                                                    <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-600 border-indigo-100 font-medium whitespace-nowrap">
+                                                        {s.tahunAjaran}
+                                                    </Badge>
+                                                ) : '-'}
+                                            </TableCell>
                                             <TableCell className="px-6 py-2">
                                                 {s.jalur ? (
                                                     <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-100 uppercase font-bold">
@@ -509,7 +527,7 @@ function StudentsPage() {
                                                     </Badge>
                                                 ) : '-'}
                                             </TableCell>
-                                            <TableCell className="text-slate-600 px-6 py-2">{s.sekolahAsal || '-'}</TableCell>
+                                            <TableCell className="text-slate-600 px-6 py-2">{s.sekolahAsal || "-"}</TableCell>
                                             <TableCell className="px-6 py-2">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -549,8 +567,8 @@ function StudentsPage() {
                     <div className="flex items-center gap-4">
                         <p className="text-sm text-slate-500">
                             Menampilkan <span className="font-medium text-slate-900">{Math.min(studentsInfo?.total || 0, (page - 1) * Number(pageSize) + 1)}</span>
-                            {' '}- <span className="font-medium text-slate-900">{Math.min(studentsInfo?.total || 0, page * Number(pageSize))}</span>
-                            {' '}dari <span className="font-medium text-slate-900">{studentsInfo?.total || 0}</span> data
+                            {' '}- <span className='font-medium text-slate-900'>{Math.min(studentsInfo?.total || 0, page * Number(pageSize))}</span>
+                            {' '}dari <span className='font-medium text-slate-900'>{studentsInfo?.total || 0}</span> data
                         </p>
                         <div className="flex items-center gap-2">
                             <span className="text-xs text-slate-400 font-medium">Baris:</span>
@@ -911,7 +929,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     <div className="grid grid-cols-5 gap-3">
                         <div className="space-y-1">
                             <Label htmlFor="edit-noDaftar" className="text-xs">No Daftar</Label>
-                            <Input id="edit-noDaftar" name="noDaftar" defaultValue={student?.noDaftar || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-noDaftar" name="noDaftar" defaultValue={student?.noDaftar || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1 col-span-2">
                             <Label htmlFor="edit-nmSiswa" className="text-xs">Nama Lengkap *</Label>
@@ -919,18 +937,18 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-nis" className="text-xs">NIS</Label>
-                            <Input id="edit-nis" name="nis" defaultValue={student?.nis || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-nis" name="nis" defaultValue={student?.nis || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-nisn" className="text-xs">NISN</Label>
-                            <Input id="edit-nisn" name="nisn" defaultValue={student?.nisn || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-nisn" name="nisn" defaultValue={student?.nisn || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-4 gap-3">
                         <div className="space-y-1">
                             <Label htmlFor="edit-jenisKelamin" className="text-xs">Jenis Kelamin</Label>
-                            <Select name="jenisKelamin" defaultValue={student?.jenisKelamin || ''}>
+                            <Select name="jenisKelamin" defaultValue={student?.jenisKelamin || ""}>
                                 <SelectTrigger id="edit-jenisKelamin" className="w-full h-8 border-slate-300 rounded-md">
                                     <SelectValue placeholder="Pilih L/P" />
                                 </SelectTrigger>
@@ -942,15 +960,15 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-tempatLahir" className="text-xs">Tempat Lahir</Label>
-                            <Input id="edit-tempatLahir" name="tempatLahir" defaultValue={student?.tempatLahir || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-tempatLahir" name="tempatLahir" defaultValue={student?.tempatLahir || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-tanggalLahir" className="text-xs">Tanggal Lahir</Label>
-                            <Input id="edit-tanggalLahir" name="tanggalLahir" type="date" defaultValue={student?.tanggalLahir || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-tanggalLahir" name="tanggalLahir" type="date" defaultValue={student?.tanggalLahir || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-agama" className="text-xs">Agama</Label>
-                            <Select name="agama" defaultValue={student?.agama || ''}>
+                            <Select name="agama" defaultValue={student?.agama || ""}>
                                 <SelectTrigger id="edit-agama" className="w-full h-8 border-slate-300 rounded-md">
                                     <SelectValue placeholder="Pilih Agama" />
                                 </SelectTrigger>
@@ -969,7 +987,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     <div className="grid grid-cols-4 gap-3">
                         <div className="space-y-1">
                             <Label htmlFor="edit-teleponSiswa" className="text-xs">Telepon Siswa</Label>
-                            <Input id="edit-teleponSiswa" name="teleponSiswa" defaultValue={student?.teleponSiswa || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-teleponSiswa" name="teleponSiswa" defaultValue={student?.teleponSiswa || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="col-span-2 space-y-1">
                             <Label htmlFor="edit-alamatSiswa" className="text-xs">Alamat Siswa</Label>
@@ -983,7 +1001,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-jalur" className="text-xs">Jalur Pendaftaran</Label>
-                            <Select name="jalur" defaultValue={student?.jalur || ''}>
+                            <Select name="jalur" defaultValue={student?.jalur || ""}>
                                 <SelectTrigger id="edit-jalur" className="w-full h-8 border-slate-300 rounded-md">
                                     <SelectValue placeholder="Pilih Jalur" />
                                 </SelectTrigger>
@@ -1011,19 +1029,19 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     <div className="grid grid-cols-4 gap-3">
                         <div className="space-y-1">
                             <Label htmlFor="edit-nmAyah" className="text-xs">Nama Ayah</Label>
-                            <Input id="edit-nmAyah" name="nmAyah" defaultValue={student?.nmAyah || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-nmAyah" name="nmAyah" defaultValue={student?.nmAyah || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-pekerjaanAyah" className="text-xs">Pekerjaan Ayah</Label>
-                            <Input id="edit-pekerjaanAyah" name="pekerjaanAyah" defaultValue={student?.pekerjaanAyah || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-pekerjaanAyah" name="pekerjaanAyah" defaultValue={student?.pekerjaanAyah || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-nmIbu" className="text-xs">Nama Ibu</Label>
-                            <Input id="edit-nmIbu" name="nmIbu" defaultValue={student?.nmIbu || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-nmIbu" name="nmIbu" defaultValue={student?.nmIbu || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-pekerjaanIbu" className="text-xs">Pekerjaan Ibu</Label>
-                            <Input id="edit-pekerjaanIbu" name="pekerjaanIbu" defaultValue={student?.pekerjaanIbu || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-pekerjaanIbu" name="pekerjaanIbu" defaultValue={student?.pekerjaanIbu || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                     </div>
                     <div className="grid grid-cols-4 gap-3">
@@ -1039,7 +1057,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                         </div>
                         <div className="col-span-1 space-y-1">
                             <Label htmlFor="edit-teleponOrtu" className="text-xs">Telepon Orang Tua</Label>
-                            <Input id="edit-teleponOrtu" name="teleponOrtu" defaultValue={student?.teleponOrtu || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-teleponOrtu" name="teleponOrtu" defaultValue={student?.teleponOrtu || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                     </div>
 
@@ -1049,19 +1067,19 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     <div className="grid grid-cols-4 gap-3">
                         <div className="space-y-1">
                             <Label htmlFor="edit-nmWali" className="text-xs">Nama Wali</Label>
-                            <Input id="edit-nmWali" name="nmWali" defaultValue={student?.nmWali || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-nmWali" name="nmWali" defaultValue={student?.nmWali || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-pekerjaanWali" className="text-xs">Pekerjaan Wali</Label>
-                            <Input id="edit-pekerjaanWali" name="pekerjaanWali" defaultValue={student?.pekerjaanWali || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-pekerjaanWali" name="pekerjaanWali" defaultValue={student?.pekerjaanWali || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-teleponWali" className="text-xs">Telepon Wali</Label>
-                            <Input id="edit-teleponWali" name="teleponWali" defaultValue={student?.teleponWali || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-teleponWali" name="teleponWali" defaultValue={student?.teleponWali || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-alamatWali" className="text-xs">Alamat Wali</Label>
-                            <Input id="edit-alamatWali" name="alamatWali" defaultValue={student?.alamatWali || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-alamatWali" name="alamatWali" defaultValue={student?.alamatWali || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                     </div>
                 </TabsContent>
@@ -1105,7 +1123,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                                         >
                                             <div className="flex items-center gap-2">
                                                 <span className="font-medium text-slate-900 group-hover:text-blue-700">{s.sekolah}</span>
-                                                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${s.status === 'N' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}`}>
+                                                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${s.status === `N` ? `bg-blue-50 text-blue-600` : `bg-amber-50 text-amber-600`}`}>
                                                     {s.status === 'N' ? 'Negeri' : 'Swasta'}
                                                 </span>
                                             </div>
@@ -1117,18 +1135,18 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-diterimaKelas" className="text-xs">Diterima Kelas</Label>
-                            <Input id="edit-diterimaKelas" name="diterimaKelas" defaultValue={student?.diterimaKelas || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-diterimaKelas" name="diterimaKelas" defaultValue={student?.diterimaKelas || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1">
                             <Label htmlFor="edit-diterimaTanggal" className="text-xs">Tanggal Diterima</Label>
-                            <Input id="edit-diterimaTanggal" name="diterimaTanggal" type="date" defaultValue={student?.diterimaTanggal || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-diterimaTanggal" name="diterimaTanggal" type="date" defaultValue={student?.diterimaTanggal || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-1">
                             <Label htmlFor="edit-statusDalamKel" className="text-xs">Status Keluarga</Label>
-                            <Select name="statusDalamKel" defaultValue={student?.statusDalamKel || ''}>
+                            <Select name="statusDalamKel" defaultValue={student?.statusDalamKel || ""}>
                                 <SelectTrigger id="edit-statusDalamKel" className="w-full h-8 border-slate-300 rounded-md">
                                     <SelectValue placeholder="Pilih Status" />
                                 </SelectTrigger>
@@ -1144,15 +1162,15 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                     <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
                         <div className="space-y-1 md:col-span-1">
                             <Label htmlFor="edit-anakKe" className="text-xs">Anak Ke-</Label>
-                            <Input id="edit-anakKe" name="anakKe" defaultValue={student?.anakKe || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-anakKe" name="anakKe" defaultValue={student?.anakKe || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1 md:col-span-2">
                             <Label htmlFor="edit-noIjasahnas" className="text-xs">No. Ijazah Nasional</Label>
-                            <Input id="edit-noIjasahnas" name="noIjasahnas" defaultValue={student?.noIjasahnas || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-noIjasahnas" name="noIjasahnas" defaultValue={student?.noIjasahnas || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                         <div className="space-y-1 md:col-span-3">
                             <Label htmlFor="edit-noTranskrip" className="text-xs">No. Transkrip</Label>
-                            <Input id="edit-noTranskrip" name="noTranskrip" defaultValue={student?.noTranskrip || ''} className="h-8 border-slate-300 rounded-md" />
+                            <Input id="edit-noTranskrip" name="noTranskrip" defaultValue={student?.noTranskrip || ""} className="h-8 border-slate-300 rounded-md" />
                         </div>
                     </div>
                 </TabsContent>
