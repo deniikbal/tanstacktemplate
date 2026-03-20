@@ -458,7 +458,6 @@ function StudentsPage() {
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">No Daftar</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Nama Lengkap</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">NISN</TableHead>
-                                    <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Tahun Ajaran</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Jalur</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Asal Sekolah</TableHead>
                                     <TableHead className="w-[70px] px-6 py-2 h-10"></TableHead>
@@ -481,9 +480,6 @@ function StudentsPage() {
                                                 <Skeleton className="h-5 w-[100px] bg-slate-200" />
                                             </TableCell>
                                             <TableCell className="px-6 py-2">
-                                                <Skeleton className="h-5 w-[80px] bg-indigo-50/50" />
-                                            </TableCell>
-                                            <TableCell className="px-6 py-2">
                                                 <Skeleton className="h-5 w-[150px] bg-slate-200" />
                                             </TableCell>
                                             <TableCell className="px-6 py-2">
@@ -496,7 +492,7 @@ function StudentsPage() {
                                     ))
                                 ) : !studentsInfo || studentsInfo.students.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="h-32 text-center text-slate-500 italic">
+                                        <TableCell colSpan={7} className="h-32 text-center text-slate-500 italic">
                                             Tidak ada data siswa ditemukan.
                                         </TableCell>
                                     </TableRow>
@@ -513,13 +509,6 @@ function StudentsPage() {
                                             <TableCell className="text-slate-600 px-6 py-2">{s.noDaftar || "-"}</TableCell>
                                             <TableCell className="font-medium text-slate-900 px-6 py-2">{s.nmSiswa || "-"}</TableCell>
                                             <TableCell className="text-slate-600 px-6 py-2">{s.nisn || "-"}</TableCell>
-                                            <TableCell className="px-6 py-2">
-                                                {s.tahunAjaran ? (
-                                                    <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-600 border-indigo-100 font-medium whitespace-nowrap">
-                                                        {s.tahunAjaran}
-                                                    </Badge>
-                                                ) : '-'}
-                                            </TableCell>
                                             <TableCell className="px-6 py-2">
                                                 {s.jalur ? (
                                                     <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-100 uppercase font-bold">

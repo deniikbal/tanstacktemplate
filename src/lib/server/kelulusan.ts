@@ -161,7 +161,9 @@ export const bulkDeleteKelulusan = createServerFn({ method: "POST" })
     });
 
 export const getJalurStats = createServerFn({ method: "GET" })
-    .handler(async () => {
+    .inputValidator((d: { tahunAjaran?: string }) => d)
+    .handler(async ({ data }) => {
+        const { tahunAjaran } = data;
         try {
             const results = await db
                 .select({
@@ -169,7 +171,13 @@ export const getJalurStats = createServerFn({ method: "GET" })
                     count: sql<number>`CAST(count(*) AS INTEGER)`,
                 })
                 .from(kelulusan)
-                .where(eq(sql`upper(${kelulusan.status})`, 'LULUS'))
+                .leftJoin(student, eq(kelulusan.studentId, student.id))
+                .where(and(
+                    eq(sql`upper(${kelulusan.status})`, "LULUS"),
+                    tahunAjaran && tahunAjaran !== "semua"
+                        ? eq(student.tahunAjaran, tahunAjaran)
+                        : sql`true`
+                ))
                 .groupBy(kelulusan.jalur);
 
             return results;

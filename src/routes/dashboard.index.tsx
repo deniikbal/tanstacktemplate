@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { getPendaftarStats, getRegistrationChartData } from '@/lib/server/pendaftar'
 import { getJalurStats } from '@/lib/server/kelulusan'
+import { getActiveTahunAjaran } from '@/lib/server/tahun-ajaran'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Users, CheckCircle2, Clock, ArrowUpCircle, GraduationCap, School, TrendingUp, PieChart as PieChartIcon, Activity } from "lucide-react"
 import {
@@ -21,12 +22,20 @@ function DashboardIndexPage() {
     jalurData: { name: string, value: number }[],
     statusData: { name: string, value: number }[]
   } | null>(null)
+  const [activeTA, setActiveTA] = useState<string | null>(null)
 
   useEffect(() => {
-    getPendaftarStats().then(setStats)
-    getJalurStats().then(setJalurStats as any)
-    getRegistrationChartData().then(setChartData as any)
+    getActiveTahunAjaran().then((res) => {
+      if (res) setActiveTA(res.tahun)
+    })
   }, [])
+
+  useEffect(() => {
+    const ta = activeTA || "2026/2027"
+    getPendaftarStats({ data: { tahunAjaran: ta } }).then(setStats)
+    getJalurStats({ data: { tahunAjaran: ta } }).then(setJalurStats as any)
+    getRegistrationChartData({ data: { tahunAjaran: ta } }).then(setChartData as any)
+  }, [activeTA])
 
   const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']
 
@@ -41,7 +50,9 @@ function DashboardIndexPage() {
         </div>
         <div className="hidden sm:flex items-center gap-2 bg-white px-4 py-2 rounded-md border border-slate-300 shadow-sm">
           <School className="h-4 w-4 text-blue-600" />
-          <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">TA 2026/2027</span>
+          <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+            TA {activeTA || '2026/2027'}
+          </span>
         </div>
       </div>
 

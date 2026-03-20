@@ -94,7 +94,13 @@ export const getPendaftarList = createServerFn({
 export const getPendaftarStats = createServerFn({
     method: 'GET',
 })
-    .handler(async () => {
+    .inputValidator((d: { tahunAjaran?: string }) => d)
+    .handler(async ({ data }) => {
+        const { tahunAjaran: filterTA } = data
+        const filters = []
+        if (filterTA && filterTA !== 'semua') {
+            filters.push(eq(pendaftar.tahunAjaran, filterTA))
+        }
 
         const stats = await db
             .select({
@@ -105,6 +111,7 @@ export const getPendaftarStats = createServerFn({
                 tahap2: sql<number>`count(*) filter (where ${pendaftar.tahap} = '2')`,
             })
             .from(pendaftar)
+            .where(filters.length > 0 ? and(...filters) : undefined)
 
         return stats[0] || { total: 0, verified: 0, unverified: 0, tahap1: 0, tahap2: 0 }
     })
@@ -112,7 +119,14 @@ export const getPendaftarStats = createServerFn({
 export const getRegistrationChartData = createServerFn({
     method: 'GET',
 })
-    .handler(async () => {
+    .inputValidator((d: { tahunAjaran?: string }) => d)
+    .handler(async ({ data }) => {
+        const { tahunAjaran: filterTA } = data
+        const filters = []
+        if (filterTA && filterTA !== 'semua') {
+            filters.push(eq(pendaftar.tahunAjaran, filterTA))
+        }
+
         // 1. Daily Trend (Last 30 days)
         const trendData = await db
             .select({
@@ -120,7 +134,10 @@ export const getRegistrationChartData = createServerFn({
                 count: sql<number>`count(*)`
             })
             .from(pendaftar)
-            .where(sql`${pendaftar.createdAt} > NOW() - INTERVAL '30 days'`)
+            .where(and(
+                sql`${pendaftar.createdAt} > NOW() - INTERVAL '30 days'`,
+                filters.length > 0 ? and(...filters) : sql`true`
+            ))
             .groupBy(sql`TO_CHAR(${pendaftar.createdAt}, 'YYYY-MM-DD')`)
             .orderBy(sql`TO_CHAR(${pendaftar.createdAt}, 'YYYY-MM-DD')`)
 
@@ -131,6 +148,7 @@ export const getRegistrationChartData = createServerFn({
                 value: sql<number>`count(*)`
             })
             .from(pendaftar)
+            .where(filters.length > 0 ? and(...filters) : undefined)
             .groupBy(pendaftar.jalurMasuk)
 
         // 3. Verification Status
@@ -143,6 +161,7 @@ export const getRegistrationChartData = createServerFn({
                 value: sql<number>`count(*)`
             })
             .from(pendaftar)
+            .where(filters.length > 0 ? and(...filters) : undefined)
             .groupBy(sql`CASE 
                     WHEN ${pendaftar.keterangan} = 'Sudah Verifikasi' THEN 'Terverifikasi' 
                     ELSE 'Belum Verifikasi' 
