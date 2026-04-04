@@ -334,13 +334,65 @@ interface SingleStudentImportData {
     telepon_wali?: string
 }
 
+// Helper: parse date from various Excel formats to YYYY-MM-DD or null
+function parseDate(value: any): string | null {
+    if (!value) return null
+    const str = String(value).trim()
+    if (!str) return null
+
+    // Excel serial number (e.g. 44927)
+    if (/^\d{4,5}$/.test(str)) {
+        const serial = Number(str)
+        // Excel epoch starts at 1900-01-01, but has a leap year bug (+1 day offset)
+        const excelEpoch = new Date(1899, 11, 30)
+        const date = new Date(excelEpoch.getTime() + serial * 86400000)
+        if (!isNaN(date.getTime())) {
+            return date.toISOString().split('T')[0]
+        }
+    }
+
+    // Try ISO format YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+        const d = new Date(str)
+        if (!isNaN(d.getTime())) return d.toISOString().split('T')[0]
+    }
+
+    // DD/MM/YYYY or DD-MM-YYYY
+    const ddmmyyyy = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/)
+    if (ddmmyyyy) {
+        const d = new Date(`${ddmmyyyy[3]}-${ddmmyyyy[2].padStart(2, '0')}-${ddmmyyyy[1].padStart(2, '0')}`)
+        if (!isNaN(d.getTime())) return d.toISOString().split('T')[0]
+    }
+
+    // MM/DD/YYYY
+    const mmddyyyy = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/)
+    if (mmddyyyy) {
+        const d = new Date(str)
+        if (!isNaN(d.getTime())) return d.toISOString().split('T')[0]
+    }
+
+    // Last resort: try native Date parse
+    const fallback = new Date(str)
+    if (!isNaN(fallback.getTime())) return fallback.toISOString().split('T')[0]
+
+    return null
+}
+
+// Helper: sanitize string value from Excel (trim, convert empty/0 to null)
+function sanitizeString(value: any): string | null {
+    if (value === null || value === undefined) return null
+    const str = String(value).trim()
+    if (str === '' || str === '0' || str === 'undefined' || str === 'null') return null
+    return str
+}
+
 export const importBatchStudents = createServerFn({ method: 'POST' })
     .inputValidator((d: { students: SingleStudentImportData[] }) => d)
     .handler(async ({ data }) => {
         const { students: batch } = data
 
         if (!batch || batch.length === 0) {
-            return { imported: 0, failed: 0 }
+            return { imported: 0, failed: 0, errors: [] as { name: string; reason: string }[] }
         }
 
         // Get active tahun ajaran
@@ -352,46 +404,71 @@ export const importBatchStudents = createServerFn({ method: 'POST' })
 
         const aktiveTahunAjaran = activeTahun[0]?.tahun || null
 
-        const values = batch.map(row => ({
-            id: crypto.randomUUID(),
-            noDaftar: row.no_daftar || null,
-            nis: row.nis || null,
-            nisn: row.nisn || null,
-            nmSiswa: row.nm_siswa,
-            tempatLahir: row.tempat_lahir || null,
-            tanggalLahir: row.tanggal_lahir || null,
-            jenisKelamin: row.jenis_kelamin || null,
-            agama: row.agama || null,
-            alamatSiswa: row.alamat_siswa || null,
-            teleponSiswa: row.telepon_siswa || null,
-            sekolahAsal: row.sekolah_asal || null,
-            diterimaTanggal: row.diterima_tanggal || null,
-            diterimaKelas: row.diterima_kelas || null,
-            nmAyah: row.nm_ayah || null,
-            nmIbu: row.nm_ibu || null,
-            pekerjaanAyah: row.pekerjaan_ayah || null,
-            pekerjaanIbu: row.pekerjaan_ibu || null,
-            nmWali: row.nm_wali || null,
-            pekerjaanWali: row.pekerjaan_wali || null,
-            alamatOrtu: row.alamat_ortu || null,
-            teleponOrtu: row.telepon_ortu || null,
-            alamatWali: row.alamat_wali || null,
-            teleponWali: row.telepon_wali || null,
-            statusDalamKel: row.status_dalam_kel || null,
-            anakKe: row.anak_ke || null,
-            jalur: row.jalur || null,
-            tahunAjaran: aktiveTahunAjaran,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        }))
+        let imported = 0
+        let failed = 0
+        const errors: { name: string; reason: string }[] = []
 
-        try {
-            await db.insert(student).values(values)
-            return { imported: batch.length, failed: 0 }
-        } catch (error) {
-            console.error('Batch insert failed:', error)
-            return { imported: 0, failed: batch.length }
+        for (const row of batch) {
+            try {
+                // Sanitize NISN - must be null if empty (unique constraint)
+                const nisn = sanitizeString(row.nisn)
+
+                await db.insert(student).values({
+                    id: crypto.randomUUID(),
+                    noDaftar: sanitizeString(row.no_daftar),
+                    nis: sanitizeString(row.nis),
+                    nisn: nisn,
+                    nmSiswa: row.nm_siswa,
+                    tempatLahir: sanitizeString(row.tempat_lahir),
+                    tanggalLahir: parseDate(row.tanggal_lahir),
+                    jenisKelamin: sanitizeString(row.jenis_kelamin),
+                    agama: sanitizeString(row.agama),
+                    alamatSiswa: sanitizeString(row.alamat_siswa),
+                    teleponSiswa: sanitizeString(row.telepon_siswa),
+                    sekolahAsal: sanitizeString(row.sekolah_asal),
+                    diterimaTanggal: parseDate(row.diterima_tanggal),
+                    diterimaKelas: sanitizeString(row.diterima_kelas),
+                    nmAyah: sanitizeString(row.nm_ayah),
+                    nmIbu: sanitizeString(row.nm_ibu),
+                    pekerjaanAyah: sanitizeString(row.pekerjaan_ayah),
+                    pekerjaanIbu: sanitizeString(row.pekerjaan_ibu),
+                    nmWali: sanitizeString(row.nm_wali),
+                    pekerjaanWali: sanitizeString(row.pekerjaan_wali),
+                    alamatOrtu: sanitizeString(row.alamat_ortu),
+                    teleponOrtu: sanitizeString(row.telepon_ortu),
+                    alamatWali: sanitizeString(row.alamat_wali),
+                    teleponWali: sanitizeString(row.telepon_wali),
+                    statusDalamKel: sanitizeString(row.status_dalam_kel),
+                    anakKe: sanitizeString(row.anak_ke),
+                    jalur: sanitizeString(row.jalur),
+                    tahunAjaran: aktiveTahunAjaran,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                })
+                imported++
+            } catch (error: any) {
+                failed++
+                const reason = error?.message || String(error)
+                // Simplify common DB error messages
+                let friendlyReason = reason
+                if (reason.includes('duplicate key') || reason.includes('unique constraint')) {
+                    friendlyReason = `Data duplikat (NISN: ${row.nisn || '-'})`
+                } else if (reason.includes('not-null') || reason.includes('null value')) {
+                    friendlyReason = 'Kolom wajib tidak diisi'
+                } else if (reason.includes('invalid input syntax') && reason.includes('date')) {
+                    friendlyReason = `Format tanggal tidak valid: "${row.tanggal_lahir || row.diterima_tanggal}"`
+                } else if (reason.length > 100) {
+                    friendlyReason = reason.substring(0, 100) + '...'
+                }
+                errors.push({
+                    name: row.nm_siswa || '(Tanpa Nama)',
+                    reason: friendlyReason,
+                })
+                console.error(`Failed to import: ${row.nm_siswa}`, error)
+            }
         }
+
+        return { imported, failed, errors }
     })
 
 // Get distinct tahunAjaran values for filter dropdown

@@ -157,6 +157,8 @@ function StudentsPage() {
     const [importData, setImportData] = useState<ImportStudent[]>([])
     const [isImporting, setIsImporting] = useState(false)
     const [importProgress, setImportProgress] = useState({ current: 0, total: 0, failed: 0 })
+    const [importErrors, setImportErrors] = useState<{ name: string; reason: string }[]>([])
+    const [isErrorReportOpen, setIsErrorReportOpen] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     // Pagination State
@@ -323,10 +325,12 @@ function StudentsPage() {
 
         setIsImporting(true)
         setImportProgress({ current: 0, total: importData.length, failed: 0 })
+        setImportErrors([])
 
         const BATCH_SIZE = 50 // Insert 50 records at a time
         let totalImported = 0
         let totalFailed = 0
+        const allErrors: { name: string; reason: string }[] = []
 
         for (let i = 0; i < importData.length; i += BATCH_SIZE) {
             const batch = importData.slice(i, i + BATCH_SIZE)
@@ -334,9 +338,15 @@ function StudentsPage() {
                 const result = await importBatchStudents({ data: { students: batch } })
                 totalImported += result.imported
                 totalFailed += result.failed
+                if (result.errors && result.errors.length > 0) {
+                    allErrors.push(...result.errors)
+                }
             } catch (error) {
                 console.error('Batch import failed:', error)
                 totalFailed += batch.length
+                batch.forEach(row => {
+                    allErrors.push({ name: row.nm_siswa || '(Tanpa Nama)', reason: 'Batch gagal total (koneksi error)' })
+                })
             }
             setImportProgress({
                 current: Math.min(i + BATCH_SIZE, importData.length),
@@ -347,7 +357,14 @@ function StudentsPage() {
 
         toast.success(`Berhasil import ${totalImported} dari ${importData.length} data siswa`)
         if (totalFailed > 0) {
-            toast.warning(`${totalFailed} data gagal diimport`)
+            setImportErrors(allErrors)
+            toast.warning(`${totalFailed} data gagal diimport. Klik untuk lihat detail.`, {
+                action: {
+                    label: 'Lihat Detail',
+                    onClick: () => setIsErrorReportOpen(true),
+                },
+                duration: 10000,
+            })
         }
 
         setIsImportOpen(false)
@@ -355,6 +372,11 @@ function StudentsPage() {
         setImportProgress({ current: 0, total: 0, failed: 0 })
         fetchStudents()
         setIsImporting(false)
+
+        // Auto-open error report if there are errors
+        if (allErrors.length > 0) {
+            setIsErrorReportOpen(true)
+        }
     }
 
     const totalPages = Math.ceil((studentsInfo?.total || 0) / Number(pageSize))
@@ -821,6 +843,53 @@ function StudentsPage() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* Import Error Report Dialog */}
+            <Dialog open={isErrorReportOpen} onOpenChange={setIsErrorReportOpen}>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-red-600">
+                            <span className="material-icons-round text-xl">error_outline</span>
+                            Laporan Error Import
+                        </DialogTitle>
+                        <DialogDescription>
+                            {importErrors.length} data gagal diimport. Berikut detail kegagalannya:
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex-1 overflow-auto border rounded-lg">
+                        <Table>
+                            <TableHeader className="bg-red-50 sticky top-0">
+                                <TableRow>
+                                    <TableHead className="font-semibold w-[50px]">No</TableHead>
+                                    <TableHead className="font-semibold">Nama Siswa</TableHead>
+                                    <TableHead className="font-semibold">Alasan Gagal</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {importErrors.map((err, index) => (
+                                    <TableRow key={index} className="hover:bg-red-50/50">
+                                        <TableCell className="text-slate-500">{index + 1}</TableCell>
+                                        <TableCell className="font-medium text-slate-900">{err.name}</TableCell>
+                                        <TableCell>
+                                            <span className="text-sm text-red-600 bg-red-50 px-2 py-1 rounded-md inline-block">
+                                                {err.reason}
+                                            </span>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setIsErrorReportOpen(false)}
+                        >
+                            Tutup
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div >
     )
 }

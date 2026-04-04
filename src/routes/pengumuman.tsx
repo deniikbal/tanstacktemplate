@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -8,13 +8,12 @@ import QRCode from 'qrcode'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { QRCodeSVG } from 'qrcode.react'
-import * as htmlToImage from 'html-to-image'
-import { useRef } from 'react'
-import { Download, QrCode as QrIcon } from 'lucide-react'
+
+import { Download } from 'lucide-react'
 import { getActiveTahunAjaran } from '@/lib/server/tahun-ajaran'
 import { checkAnnouncement } from '@/lib/server/students'
 import { Badge } from '@/components/ui/badge'
-import { toast } from 'sonner'
+
 
 export const Route = createFileRoute('/pengumuman')({
     component: AnnouncementPage,
@@ -66,28 +65,7 @@ function AnnouncementPage() {
         jalur?: string | null
     } | null>(null)
 
-    const identityCardRef = useRef<HTMLDivElement>(null)
 
-    const downloadIdentityCard = async () => {
-        if (!identityCardRef.current || !result) return
-
-        try {
-            const dataUrl = await htmlToImage.toPng(identityCardRef.current, {
-                quality: 1.0,
-                pixelRatio: 2,
-                backgroundColor: '#ffffff',
-                cacheBust: true,
-            })
-            const link = document.createElement('a')
-            link.download = `Kartu_SPMB_${result.name?.replace(/\s+/g, '_')}.png`
-            link.href = dataUrl
-            link.click()
-            toast.success('Kartu identitas berhasil diunduh')
-        } catch (error) {
-            console.error('Failed to download image:', error)
-            toast.error('Gagal mengunduh kartu identitas')
-        }
-    }
 
     useEffect(() => {
         setIsMounted(true)
@@ -423,58 +401,44 @@ function AnnouncementPage() {
     }
 
     return (
-        <div className="antialiased bg-slate-50 dark:bg-slate-900 min-h-screen flex flex-col font-sans transition-colors duration-300">
-            {/* Navbar */}
-            <nav className="sticky top-0 z-50 w-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <Link
-                            to="/"
-                            className="flex items-center text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors gap-2 group"
-                        >
-                            <span className="material-icons-round text-xl group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                            <span className="font-medium">Beranda</span>
-                        </Link>
-                        <div className="flex items-center gap-3">
-                            <div className="bg-blue-600 p-1.5 rounded-lg">
-                                <span className="material-icons-round text-white text-xl">school</span>
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-xs font-bold text-blue-600 dark:text-blue-400 leading-none">SPMB</span>
-                                <span className="text-sm font-bold text-slate-800 dark:text-white leading-none">SMANSABA</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+        <div className="antialiased min-h-screen flex flex-col font-sans transition-colors duration-300 relative">
+            {/* Background Image with Blur */}
+            <div
+                className="fixed inset-0 z-0"
+                style={{
+                    backgroundImage: 'url(/background.jpeg)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    filter: 'blur(8px)',
+                    transform: 'scale(1.1)',
+                }}
+            />
+            {/* Dark overlay for readability */}
+            <div className="fixed inset-0 z-0 bg-slate-900/60" />
 
-            <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-                {/* Background decorations */}
-                <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-400/10 blur-3xl dark:bg-blue-600/10"></div>
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-400/10 blur-3xl dark:bg-indigo-600/10"></div>
-                </div>
+            <main className="flex-grow flex items-center justify-center py-10 md:py-20 px-4 sm:px-6 lg:px-8 relative z-10">
 
                 {!timeLeft.isExpired ? (
                     /* Countdown View */
                     <div className="w-full max-w-2xl space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
                         <div className="flex justify-center">
-                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 border border-blue-600/20 shadow-sm">
+                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-white/15 backdrop-blur-sm text-white border border-white/20 shadow-sm">
                                 <span className="material-icons-round text-base">schedule</span>
                                 <span className="text-xs font-semibold uppercase tracking-wide">Menunggu Waktu Pengumuman</span>
                             </span>
                         </div>
 
                         <div className="text-center space-y-2">
-                            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 leading-tight">
+                            <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight drop-shadow-md">
                                 Pengumuman Hasil SPMB
                             </h1>
-                            <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base font-medium">
+                            <p className="text-slate-200 text-sm md:text-base font-medium">
                                 {tahap} - Tahun Ajaran {tahunAjaran}
                             </p>
                         </div>
 
-                        <div className="w-full bg-white dark:bg-slate-800 rounded-2xl px-3 py-6 md:p-6 shadow-sm dark:border dark:border-slate-700 transition-colors duration-300">
+                        <div className="w-full bg-white dark:bg-slate-800 rounded-md px-3 py-6 md:p-6 shadow-sm dark:border dark:border-slate-700 transition-colors duration-300">
                             <div className="grid grid-cols-4 gap-2 sm:gap-4 md:gap-6">
                                 {[
                                     { label: 'Hari', value: timeLeft.days },
@@ -483,7 +447,7 @@ function AnnouncementPage() {
                                     { label: 'Detik', value: timeLeft.seconds }
                                 ].map((item, i) => (
                                     <div key={i} className="flex flex-col items-center">
-                                        <div className={`w-full min-h-[90px] sm:min-h-[110px] md:min-h-[130px] bg-slate-50 dark:bg-slate-900 rounded-xl flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-inner mb-2 group hover:border-blue-600/50 transition-colors relative overflow-hidden px-4`}>
+                                        <div className={`w-full min-h-[90px] sm:min-h-[110px] md:min-h-[130px] bg-slate-50 dark:bg-slate-900 rounded-md flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-inner mb-2 group hover:border-blue-600/50 transition-colors relative overflow-hidden px-4`}>
                                             {item.label === 'Detik' && (
                                                 <div className="absolute inset-0 bg-blue-600/5 animate-pulse rounded-xl"></div>
                                             )}
@@ -491,7 +455,7 @@ function AnnouncementPage() {
                                                 {String(item.value).padStart(2, '0')}
                                             </span>
                                         </div>
-                                        <span className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">
+                                        <span className="text-[10px] md:text-xs text-slate-200 uppercase tracking-wider font-semibold">
                                             {item.label}
                                         </span>
                                     </div>
@@ -499,7 +463,7 @@ function AnnouncementPage() {
                             </div>
                         </div>
 
-                        <div className="w-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex items-start gap-3 shadow-sm transition-colors duration-300">
+                        <div className="w-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4 flex items-start gap-3 shadow-sm transition-colors duration-300">
                             <span className="material-icons-round text-blue-600 flex-shrink-0 mt-0.5">lightbulb</span>
                             <p className="text-sm text-blue-700 dark:text-blue-300 font-medium leading-relaxed">
                                 <span className="font-bold">Info:</span> Hasil seleksi akan dapat diakses setelah waktu pengumuman tiba.
@@ -513,31 +477,31 @@ function AnnouncementPage() {
                             /* Search Form */
                             <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in duration-500">
                                 <div className="flex justify-center mb-6">
-                                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 border border-blue-600/20 shadow-sm">
+                                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-white/15 backdrop-blur-sm text-white border border-white/20 shadow-sm">
                                         <span className="material-icons-round text-base">check_circle</span>
                                         <span className="text-xs font-semibold uppercase tracking-wide">Pengumuman Terbuka</span>
                                     </span>
                                 </div>
 
                                 <div className="text-center mb-8 space-y-2">
-                                    <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 leading-tight">
+                                    <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight drop-shadow-md">
                                         Cek Hasil SPMB
                                     </h1>
-                                    <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base font-medium">
+                                    <p className="text-slate-300 text-sm md:text-base font-medium">
                                         Masukkan NISN untuk melihat hasil seleksi
                                     </p>
                                 </div>
 
-                                <Card className="border-slate-200 dark:border-slate-700 shadow-sm rounded-xl overflow-hidden bg-white dark:bg-slate-800">
+                                <Card className="border-slate-700/50 shadow-xl rounded-md overflow-hidden bg-slate-900/90 backdrop-blur-sm">
                                     <CardContent className="p-6 space-y-5">
                                         <form onSubmit={handleSearch} className="space-y-4">
                                             <div className="space-y-2">
-                                                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">NISN (10 Digit)</label>
+                                                <label className="text-sm font-medium text-slate-300">NISN (10 Digit)</label>
                                                 <div className="relative">
-                                                    <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base">tag</span>
+                                                    <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-base">tag</span>
                                                     <Input
                                                         placeholder="Contoh: 0012345678"
-                                                        className="h-12 pl-10 pr-16 text-base border-slate-200 dark:border-slate-700 focus:border-blue-600 focus:ring-blue-600 rounded-lg bg-slate-50 dark:bg-slate-900"
+                                                        className="h-12 pl-10 pr-16 text-base text-white border-slate-600 focus:border-amber-500 focus:ring-amber-500 rounded-md bg-slate-800/80 placeholder:text-slate-500"
                                                         value={searchQuery}
                                                         onChange={(e) => {
                                                             const val = e.target.value.replace(/\\D/g, '').slice(0, 10)
@@ -553,7 +517,7 @@ function AnnouncementPage() {
                                             <Button
                                                 type="submit"
                                                 disabled={isSearching || searchQuery.length !== 10}
-                                                className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-600/20"
+                                                className="w-full h-12 text-base font-semibold bg-amber-500 hover:bg-amber-600 text-white rounded-md shadow-lg shadow-amber-500/20"
                                             >
                                                 {isSearching ? (
                                                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -568,15 +532,15 @@ function AnnouncementPage() {
 
                                         {/* Not Found Message */}
                                         {!result?.found && result !== null && (
-                                            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-center">
-                                                <span className="material-icons-round text-red-500 text-xl mb-2 block">cancel</span>
-                                                <p className="text-red-700 dark:text-red-400 text-sm font-medium">Data tidak ditemukan</p>
+                                            <div className="p-4 bg-red-900/30 border border-red-800/50 rounded-md text-center">
+                                                <span className="material-icons-round text-red-400 text-xl mb-2 block">cancel</span>
+                                                <p className="text-red-300 text-sm font-medium">Data tidak ditemukan</p>
                                             </div>
                                         )}
 
-                                        <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
+                                        <div className="pt-4 border-t border-slate-700/50">
                                             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Petunjuk:</p>
-                                            <ul className="text-xs text-slate-500 space-y-1 list-disc pl-4">
+                                            <ul className="text-xs text-slate-400 space-y-1 list-disc pl-4">
                                                 <li>NISN harus terdiri dari 10 digit angka</li>
                                                 <li>Data diperbarui secara real-time</li>
                                             </ul>
@@ -585,247 +549,157 @@ function AnnouncementPage() {
                                 </Card>
                             </div>
                         ) : (
-                            /* Result View - Grid Layout */
-                            <div className={`grid grid-cols-1 ${result.status === 'LULUS' ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-8 animate-in fade-in duration-500`}>
-                                {/* Left Column - Result Card */}
-                                <div className={result.status === 'LULUS' ? 'lg:col-span-2' : 'lg:col-span-1 max-w-4xl mx-auto w-full'}>
-                                    <div className={`bg-white dark:bg-slate-800 rounded-2xl shadow-sm border overflow-hidden relative ${result.status === 'LULUS' ? 'border-white/50 dark:border-gray-700' : 'border-red-200 dark:border-red-900'}`}>
-                                        {/* Header */}
-                                        <div className={`py-10 px-6 text-center border-b ${result.status === 'LULUS' ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-100 dark:border-blue-900/30' : 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/30'}`}>
-                                            <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 shadow-lg ring-4 ${result.status === 'LULUS' ? 'bg-blue-600 shadow-blue-500/30 ring-white dark:ring-slate-800' : 'bg-red-600 shadow-red-500/30 ring-white dark:ring-slate-800'}`}>
-                                                <span className="material-icons-round text-4xl text-white">{result.status === 'LULUS' ? 'check' : 'close'}</span>
-                                            </div>
-                                            <h1 className={`text-4xl md:text-5xl font-black mb-4 leading-tight ${result.status === 'LULUS' ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
-                                                {result.status === 'LULUS' ? (
-                                                    <>
-                                                        SELAMAT !<br />
-                                                        ANDA LULUS
-                                                    </>
-                                                ) : 'MOHON MAAF'}
-                                            </h1>
-                                            <p className={`font-medium ${result.status === 'LULUS' ? 'text-slate-500 dark:text-slate-400' : 'text-red-700 dark:text-red-300'}`}>
-                                                {result.status === 'LULUS' ? 'Pendaftaran SMAN 1 Bantarujeg' : 'Anda belum diterima di tahap ini'}
-                                            </p>
+                            /* Result View - Simple Layout */
+                            <div className="w-full max-w-5xl animate-in fade-in duration-500 space-y-6">
+                                {/* Big Heading */}
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white drop-shadow-lg leading-tight">
+                                    {result.status === 'LULUS' ? (
+                                        <>SELAMAT! ANDA DINYATAKAN <span className="text-amber-400">LULUS</span> {tahunAjaran?.split('/')[0] || '2026'}</>
+                                    ) : (
+                                        <>MOHON MAAF, ANDA <span className="text-red-400">BELUM LULUS</span> {tahunAjaran?.split('/')[0] || '2026'}</>
+                                    )}
+                                </h1>
+
+                                {/* Main Content Grid */}
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                                    {/* Student Info Card - Dark */}
+                                    <div className="lg:col-span-2 bg-slate-900/90 backdrop-blur-sm rounded-md border border-slate-700/50 p-6 md:p-8 space-y-6">
+                                        {/* NISN & Name */}
+                                        <div>
+                                            <p className="text-slate-400 text-sm font-semibold tracking-wide mb-1">NISN {result.nisn || '-'}</p>
+                                            <h2 className="text-2xl md:text-3xl font-black text-white uppercase">{result.name}</h2>
                                         </div>
 
-                                        {/* Info Grid */}
-                                        <div className="p-8">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                {[
-                                                    { label: 'Nama Lengkap', value: result.name, icon: 'person' },
-                                                    { label: 'NISN', value: result.nisn, icon: 'tag' },
-                                                    { label: 'Asal Sekolah', value: result.sekolahAsal, icon: 'school' },
-                                                    { label: 'Jalur', value: result.jalur, icon: 'emoji_events' }
-                                                ].map((info, idx) => (
-                                                    <div key={idx} className="bg-gray-50 dark:bg-slate-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700 flex items-start gap-4 hover:border-blue-200 dark:hover:border-blue-800 transition-colors">
-                                                        <div className="bg-white dark:bg-slate-700 p-2.5 rounded-lg shadow-sm text-slate-400">
-                                                            <span className="material-icons-round">{info.icon}</span>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-0.5">{info.label}</p>
-                                                            <p className="text-lg font-bold text-slate-800 dark:text-white">{info.value || '-'}</p>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                        {/* Status Badge */}
+                                        <div>
+                                            <Badge className={`text-sm font-bold px-4 py-1.5 rounded-md border-none ${result.status === 'LULUS' ? 'bg-green-600 hover:bg-green-600 text-white' : 'bg-red-600 hover:bg-red-600 text-white'}`}>
+                                                {result.status === 'LULUS' ? 'LULUS' : 'TIDAK LULUS'}
+                                            </Badge>
+                                        </div>
+
+                                        {/* Info & QR Row */}
+                                        <div className="flex flex-col sm:flex-row gap-8 items-start">
+                                            {/* Info Grid */}
+                                            <div className="grid grid-cols-2 gap-x-8 gap-y-5 flex-1 w-full">
+                                                <div>
+                                                    <p className="text-amber-500 text-xs font-bold uppercase tracking-wider mb-1">Tempat Lahir</p>
+                                                    <p className="text-white text-base font-bold">{result.tempatLahir || '-'}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-amber-500 text-xs font-bold uppercase tracking-wider mb-1">Tanggal Lahir</p>
+                                                    <p className="text-white text-base font-bold">
+                                                        {result.tanggalLahir
+                                                            ? new Date(result.tanggalLahir).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+                                                            : '-'}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-amber-500 text-xs font-bold uppercase tracking-wider mb-1">Jalur</p>
+                                                    <p className="text-white text-base font-bold">{result.jalur || '-'}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-amber-500 text-xs font-bold uppercase tracking-wider mb-1">Asal Sekolah</p>
+                                                    <p className="text-white text-base font-bold">{result.sekolahAsal || '-'}</p>
+                                                </div>
                                             </div>
 
-                                            {/* Identity Card Section - New Feature */}
-                                            {result.status === 'LULUS' && (
-                                                <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="h-0.5 flex-1 bg-slate-100 dark:bg-slate-700"></div>
-                                                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Kartu Identitas Digital</h3>
-                                                        <div className="h-0.5 flex-1 bg-slate-100 dark:bg-slate-700"></div>
+                                            {/* QR Code */}
+                                            {result.nisn && (
+                                                <div className="flex-shrink-0 bg-white p-2.5 rounded-md shadow-lg border border-white/20 self-center sm:self-start group hover:scale-105 transition-transform duration-300">
+                                                    <div className="bg-white p-1 rounded-md">
+                                                        <QRCodeSVG 
+                                                            value={result.nisn} 
+                                                            size={90} 
+                                                            level="H"
+                                                            includeMargin={false}
+                                                            imageSettings={{
+                                                                src: "/school-logo.png", // If exists, otherwise remove
+                                                                x: undefined,
+                                                                y: undefined,
+                                                                height: 20,
+                                                                width: 20,
+                                                                excavate: true,
+                                                            }}
+                                                        />
                                                     </div>
-
-                                                    <div className="flex flex-col items-center gap-6">
-                                                        {/* The Card that will be exported as Image */}
-                                                        <div
-                                                            ref={identityCardRef}
-                                                            className="w-full max-w-[340px] bg-white rounded-3xl shadow-2xl border-2 border-blue-50 relative overflow-hidden p-6 text-center"
-                                                        >
-                                                            {/* Decorative background */}
-                                                            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-12 -mt-12"></div>
-                                                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-500/5 rounded-full -ml-10 -mb-10"></div>
-
-                                                            {/* Card Header */}
-                                                            <div className="flex items-center justify-center gap-2 mb-6">
-                                                                <div className="bg-blue-600 p-1.5 rounded-lg shadow-md shadow-blue-500/20">
-                                                                    <QrIcon className="w-5 h-5 text-white" />
-                                                                </div>
-                                                                <div className="text-left">
-                                                                    <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest leading-none">IDENTITAS SISWA</p>
-                                                                    <p className="text-sm font-black text-slate-900 leading-none mt-0.5">SPMB SMANSABA 2026</p>
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Student Main Info */}
-                                                            <div className="space-y-1 mb-6">
-                                                                <h4 className="text-lg font-black text-slate-900 uppercase leading-none truncate px-2">{result.name}</h4>
-                                                                <p className="text-xs font-bold text-slate-400 tracking-[0.15em]">{result.nisn}</p>
-                                                            </div>
-
-                                                            {/* QR Code Container */}
-                                                            <div className="bg-slate-50 p-4 rounded-2xl border-2 border-blue-100/50 inline-block mb-6 shadow-inner">
-                                                                <QRCodeSVG
-                                                                    value={result.nisn || 'SPMB-SMANSABA'}
-                                                                    size={160}
-                                                                    level="H"
-                                                                    includeMargin={false}
-                                                                    className="rounded-lg"
-                                                                />
-                                                            </div>
-
-                                                            {/* Card Footer Info */}
-                                                            <div className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-5">
-                                                                <div className="text-center">
-                                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Jalur Masuk</p>
-                                                                    <Badge variant="outline" className="text-[10px] font-black border-blue-200 text-blue-700 bg-blue-50/50">
-                                                                        {result.jalur}
-                                                                    </Badge>
-                                                                </div>
-                                                                <div className="text-center border-l border-slate-100">
-                                                                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status</p>
-                                                                    <Badge className="text-[10px] font-black bg-blue-600 border-none">
-                                                                        LULUS
-                                                                    </Badge>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="w-full max-w-[340px]">
-                                                            <Button
-                                                                onClick={downloadIdentityCard}
-                                                                className="w-full bg-slate-900 hover:bg-black text-white py-6 rounded-2xl font-black shadow-xl flex items-center justify-center gap-3 transition-all active:scale-95 group text-base"
-                                                            >
-                                                                <Download className="w-5 h-5 group-hover:translate-y-0.5 transition-transform" />
-                                                                Simpan Gambar
-                                                            </Button>
-                                                        </div>
-                                                    </div>
+                                                    <p className="text-[10px] text-slate-900 font-black text-center mt-1.5 tracking-widest leading-none">
+                                                        {result.nisn}
+                                                    </p>
                                                 </div>
                                             )}
+                                        </div>
+                                    </div>
 
-                                            {/* Not Lulus Info Cards - New Feature */}
-                                            {result.status !== 'LULUS' && (
-                                                <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-                                                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                                                        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                                                            <span className="material-icons-round text-blue-600 dark:text-blue-400">info</span>
-                                                            Informasi Penting
-                                                        </h3>
-                                                        <ul className="space-y-4">
-                                                            <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
-                                                                <span className="material-icons-round text-lg text-blue-500 mt-0.5">sentiment_satisfied_alt</span>
-                                                                <span>Tetap semangat dan jangan putus asa. Masih banyak peluang lain menunggu Anda.</span>
-                                                            </li>
-                                                            <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
-                                                                <span className="material-icons-round text-lg text-orange-500 mt-0.5">calendar_today</span>
-                                                                <span>Pendaftaran Gelombang 2 akan dibuka pada tanggal 10 Juli 2026.</span>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-
-                                                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                                                        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                                                            <span className="material-icons-round text-blue-600 dark:text-blue-400">support_agent</span>
-                                                            Bantuan
-                                                        </h3>
-                                                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                                                            Jika terdapat kesalahan data atau kendala teknis, silakan hubungi panitia.
-                                                        </p>
-                                                        <Button className="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 py-3 rounded-lg font-bold text-sm shadow-none border border-slate-200 transition-all active:scale-95">
-                                                            Hubungi Panitia
-                                                        </Button>
-                                                    </div>
+                                    {/* Right Sidebar */}
+                                    <div className="lg:col-span-1 space-y-5">
+                                        {result.status === 'LULUS' ? (
+                                            /* Download Surat Card */
+                                            <div className="bg-white/95 backdrop-blur-sm rounded-md p-6 space-y-4">
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-slate-900">Unduh Surat Kelulusan</h3>
+                                                    <p className="text-sm text-slate-500 mt-1">Surat kelulusan resmi tersedia untuk diunduh atau dilihat secara online.</p>
                                                 </div>
-                                            )}
-
-                                            {/* Action Buttons */}
-                                            <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                                                {result.status === 'LULUS' && (
+                                                <div className="space-y-3">
                                                     <Button
                                                         onClick={() => generateCoverMapPDF(result)}
-                                                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-6 rounded-xl font-semibold shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                                        className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-md flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-amber-500/20"
                                                     >
-                                                        <span className="material-icons-round text-xl">print</span>
-                                                        Cetak Bukti Kelulusan
+                                                        <span className="material-icons-round text-lg">visibility</span>
+                                                        Preview Surat
                                                     </Button>
-                                                )}
-                                                <Button
-                                                    onClick={() => setResult(null)}
-                                                    variant="outline"
-                                                    className="flex-1 bg-transparent border-2 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 py-3.5 px-6 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
-                                                >
-                                                    <span className="material-icons-round text-xl">replay</span>
-                                                    Kembali
-                                                </Button>
+                                                    <Button
+                                                        onClick={() => generateCoverMapPDF(result)}
+                                                        variant="outline"
+                                                        className="w-full border-2 border-slate-300 text-slate-700 font-bold py-3 rounded-md flex items-center justify-center gap-2 hover:bg-slate-50 transition-all active:scale-[0.98]"
+                                                    >
+                                                        <Download className="w-4 h-4" />
+                                                        Download Surat
+                                                    </Button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        ) : (
+                                            /* Tidak Lulus Info Card */
+                                            <div className="bg-white/95 backdrop-blur-sm rounded-md p-6 space-y-4">
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-slate-900">Informasi Penting</h3>
+                                                    <p className="text-sm text-slate-500 mt-1">Tetap semangat, masih banyak peluang lain menunggu Anda.</p>
+                                                </div>
+                                                <ul className="space-y-3 text-sm text-slate-600">
+                                                    <li className="flex gap-2 items-start">
+                                                        <span className="material-icons-round text-amber-500 text-lg mt-0.5">calendar_today</span>
+                                                        <span>Pendaftaran Gelombang 2 akan dibuka pada tanggal 10 Juli 2026.</span>
+                                                    </li>
+                                                    <li className="flex gap-2 items-start">
+                                                        <span className="material-icons-round text-blue-500 text-lg mt-0.5">support_agent</span>
+                                                        <span>Hubungi panitia jika terdapat kesalahan data.</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        )}
+
+                                        {/* Back Button */}
+                                        <Button
+                                            onClick={() => setResult(null)}
+                                            variant="outline"
+                                            className="w-full bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:text-white font-bold py-3 rounded-md flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                        >
+                                            <span className="material-icons-round text-lg">arrow_back</span>
+                                            Cari NISN Lain
+                                        </Button>
                                     </div>
                                 </div>
 
-                                {/* Right Column - Sidebar */}
-                                {result.status === 'LULUS' && (
-                                    <div className="lg:col-span-1 space-y-6">
-                                        {/* Info Penting */}
-                                        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                                            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                                                <span className="material-icons-round text-blue-600 dark:text-blue-400">info</span>
-                                                Informasi Penting
-                                            </h3>
-                                            <ul className="space-y-4">
-                                                <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
-                                                    <span className="material-icons-round text-lg text-yellow-500 mt-0.5">lightbulb</span>
-                                                    <span>Silakan cetak bukti kelulusan sebagai syarat daftar ulang.</span>
-                                                </li>
-                                                <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
-                                                    <span className="material-icons-round text-lg text-green-500 mt-0.5">calendar_today</span>
-                                                    <span>Jadwal daftar ulang dimulai tanggal 20 - 25 Juni 2026.</span>
-                                                </li>
-                                                <li className="flex gap-3 text-sm text-slate-600 dark:text-slate-300">
-                                                    <span className="material-icons-round text-lg text-red-500 mt-0.5">warning</span>
-                                                    <span>Siswa yang tidak mendaftar ulang dianggap mengundurkan diri.</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-
-                                        {/* Bantuan */}
-                                        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-                                            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                                                <span className="material-icons-round text-blue-600 dark:text-blue-400">support_agent</span>
-                                                Bantuan
-                                            </h3>
-                                            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                                                Jika terdapat kesalahan data atau kendala teknis, silakan hubungi panitia.
-                                            </p>
-                                            <a
-                                                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                                                href="#"
-                                            >
-                                                <span className="material-icons-round text-lg">chat</span>
-                                                Hubungi Panitia
-                                            </a>
-                                        </div>
-                                    </div>
-                                )}
+                                {/* Footer Note */}
+                                <div className="bg-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-lg px-5 py-4">
+                                    <p className="text-sm text-slate-300 leading-relaxed">
+                                        Status kelulusan Anda sebagai siswa akan ditetapkan setelah sekolah melakukan verifikasi data akademik. Silakan hubungi pihak sekolah jika memerlukan informasi lebih lanjut.
+                                    </p>
+                                </div>
                             </div>
                         )}
                     </div>
                 )}
             </main>
-
-            {/* Footer */}
-            <footer className="py-6 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-800">
-                <div className="max-w-7xl mx-auto px-4 text-center">
-                    <p className="text-slate-500 dark:text-slate-400 text-sm mb-2">
-                        © 2026 SPMB Online SMAN 1 Bantarujeg
-                    </p>
-                    <p className="text-xs text-slate-400 dark:text-slate-500 font-medium flex items-center justify-center gap-1">
-                        MADE WITH <span className="material-icons-round text-xs text-red-500 animate-pulse">favorite</span> BY <span className="text-slate-600 dark:text-slate-300 font-bold">DENI_IKBAL</span>
-                    </p>
-                </div>
-            </footer>
         </div>
     )
 }
