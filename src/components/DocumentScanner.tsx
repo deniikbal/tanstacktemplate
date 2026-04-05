@@ -218,7 +218,7 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
             <DialogContent className="max-w-[100vw] w-screen h-[100vh] sm:h-[90vh] sm:max-w-[600px] flex flex-col p-0 overflow-hidden sm:rounded-3xl border-none shadow-2xl bg-slate-950">
                 <DialogHeader className="p-4 sm:p-6 bg-white border-b shrink-0 h-20 sm:h-auto flex flex-col justify-center">
                     <DialogTitle className="text-base sm:text-xl font-bold text-slate-900 flex items-center gap-2">
-                        <Scissors className="w-5 h-5 text-blue-600" />
+                        <Scissors className="w-5 h-5 text-primary" />
                         Scan {title}
                     </DialogTitle>
                     <DialogDescription className="text-[10px] sm:text-xs text-slate-500">Ambil foto dokumen & simpan sebagai PDF.</DialogDescription>
@@ -235,10 +235,10 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
                                 className="w-full h-full object-cover"
                             />
                             <div className="absolute inset-x-6 inset-y-16 sm:inset-x-8 sm:inset-y-20 border-2 border-white/30 rounded-xl pointer-events-none">
-                                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-blue-500 -mt-1 -ml-1 rounded-tl-md"></div>
-                                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-blue-500 -mt-1 -mr-1 rounded-tr-md"></div>
-                                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-blue-500 -mb-1 -ml-1 rounded-bl-md"></div>
-                                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-blue-500 -mb-1 -mr-1 rounded-br-md"></div>
+                                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary -mt-1 -ml-1 rounded-tl-md"></div>
+                                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary -mt-1 -mr-1 rounded-tr-md"></div>
+                                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary -mb-1 -ml-1 rounded-bl-md"></div>
+                                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary -mb-1 -mr-1 rounded-br-md"></div>
                             </div>
                         </div>
                     )}
@@ -296,7 +296,7 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
                                 onClick={handleProcessAndUpload}
                                 disabled={isProcessing}
                                 size="sm"
-                                className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-100 h-10 sm:h-11"
+                                className="flex-1 rounded-xl bg-primary hover:bg-primary/90 shadow-lg shadow-primary/10 h-10 sm:h-11"
                             >
                                 {isProcessing ? (
                                     <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -320,7 +320,7 @@ export function DocumentScanner({ isOpen, onClose, onUpload, title }: DocumentSc
                             <Button
                                 onClick={capturePhoto}
                                 size="sm"
-                                className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-100 h-11 sm:h-12 font-bold px-4 sm:px-8 transition-transform active:scale-95"
+                                className="flex-1 rounded-xl bg-primary hover:bg-primary/90 shadow-lg shadow-primary/10 h-11 sm:h-12 font-bold px-4 sm:px-8 transition-transform active:scale-95"
                             >
                                 <Camera className="w-5 h-5 mr-1.5 sm:mr-2" />
                                 <span className="text-sm sm:text-base">Ambil Foto Dokumen</span>

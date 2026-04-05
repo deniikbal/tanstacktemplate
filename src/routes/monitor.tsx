@@ -96,7 +96,7 @@ function MonitorPage() {
     // const recentDone = pendaftar.filter((p: Pendaftar) => p.statusAntrian === 'DONE').slice(0, 3)
 
     return (
-        <div className="h-screen bg-slate-50 text-slate-900 p-4 font-sans selection:bg-blue-500/30 overflow-hidden flex flex-col relative">
+        <div className="h-screen bg-slate-50 text-slate-900 p-4 font-sans selection:bg-primary/30 overflow-hidden flex flex-col relative">
             {/* Subtle Background Pattern */}
             <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
                 style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23475569' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }}
@@ -107,7 +107,7 @@ function MonitorPage() {
                 <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-0.5 shrink-0">
                     <div className="flex items-center gap-3">
                         <div className="p-1.5 bg-white border border-slate-400 shadow-sm rounded-md">
-                            <Users className="w-4 h-4 text-blue-600" />
+                            <Users className="w-4 h-4 text-primary" />
                         </div>
                         <div>
                             <h1 className="text-lg font-black tracking-tight text-slate-900 uppercase leading-none">Monitor Antrian</h1>
@@ -120,13 +120,13 @@ function MonitorPage() {
 
                     <div className="flex items-center gap-3">
                         <div className="flex gap-2">
-                            <div className="bg-blue-50 border border-blue-100 rounded-md px-3 py-1 flex items-center gap-2">
-                                <div className="p-1 bg-blue-500 rounded-md">
+                            <div className="bg-primary/10 border border-primary/20 rounded-md px-3 py-1 flex items-center gap-2">
+                                <div className="p-1 bg-primary rounded-md">
                                     <CheckCircle className="w-2.5 h-2.5 text-white" />
                                 </div>
                                 <div className="leading-tight">
-                                    <p className="text-[8px] font-black uppercase tracking-widest text-blue-400">Selesai</p>
-                                    <p className="text-base font-black text-blue-700">{pendaftar.filter((p: Pendaftar) => p.statusAntrian === 'DONE').length}</p>
+                                    <p className="text-[8px] font-black uppercase tracking-widest text-primary/70">Selesai</p>
+                                    <p className="text-base font-black text-primary">{pendaftar.filter((p: Pendaftar) => p.statusAntrian === 'DONE').length}</p>
                                 </div>
                             </div>
                             <div className="bg-amber-50 border border-amber-100 rounded-md px-3 py-1 flex items-center gap-2">
@@ -166,12 +166,12 @@ function MonitorPage() {
                     <div className="flex-[1.8] flex flex-col min-h-0">
                         <Card className="flex-1 bg-white border border-slate-400 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.12)] rounded-md overflow-hidden relative flex flex-col justify-center min-h-0">
                             {/* Decorative Background */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-white to-indigo-50/50" />
-                            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-400/5 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2" />
-                            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-400/5 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-white to-primary/10" />
+                            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2" />
+                            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-primary/5 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
                             <CardContent className="p-4 md:p-6 text-center relative z-10 flex flex-col items-center justify-center space-y-4">
-                                <div className="inline-flex items-center gap-2.5 bg-blue-600 px-6 py-2 rounded-full text-white shadow-lg shadow-blue-500/20 animate-bounce-slow shrink-0">
+                                <div className="inline-flex items-center gap-2.5 bg-primary px-6 py-2 rounded-full text-white shadow-lg shadow-primary/20 animate-bounce-slow shrink-0">
                                     <Bell className="w-5 h-5" />
                                     <span className="text-sm font-black uppercase tracking-[0.2em]">Panggilan Antrian</span>
                                 </div>
@@ -184,7 +184,7 @@ function MonitorPage() {
                                                 #{calling.noAntrian}
                                             </span>
                                         ) : (
-                                            <Ticket className="w-32 h-32 md:w-48 md:h-48 text-blue-100 animate-pulse" />
+                                            <Ticket className="w-32 h-32 md:w-48 md:h-48 text-primary/10 animate-pulse" />
                                         )}
                                     </h2>
                                 </div>
@@ -195,7 +195,7 @@ function MonitorPage() {
                                     </p>
                                     <div className="flex items-center justify-center gap-3">
                                         <div className="h-px w-10 bg-slate-200" />
-                                        <p className="text-indigo-600 text-lg font-bold italic tracking-wide">
+                                        <p className="text-primary text-lg font-bold italic tracking-wide">
                                             Silakan menuju Meja Pendaftaran Utama
                                         </p>
                                         <div className="h-px w-10 bg-slate-200" />
@@ -249,27 +249,27 @@ function MonitorPage() {
                         <Card className="flex-1 bg-white border border-slate-400 shadow-xl rounded-md flex flex-col min-h-0 overflow-hidden">
                             <CardHeader className="p-1.5 px-3 border-b border-slate-100 bg-slate-50/80 shrink-0">
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-blue-600">
-                                        <div className="p-1 bg-blue-100 rounded-md">
+                                    <div className="flex items-center gap-2 text-primary">
+                                        <div className="p-1 bg-primary/10 rounded-md">
                                             <Ticket className="w-3 h-3" />
                                         </div>
                                         <h3 className="text-[12px] font-black uppercase tracking-wider">Sedang Dilayani</h3>
                                     </div>
-                                    <Badge variant="outline" className="border-blue-200 text-blue-600 font-extrabold text-[8px] px-1.5 py-0 rounded-md">BUSY</Badge>
+                                    <Badge variant="outline" className="border-primary/20 text-primary font-extrabold text-[8px] px-1.5 py-0 rounded-md">BUSY</Badge>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-0 overflow-hidden flex-1 overflow-y-auto">
                                 <div className="divide-y divide-slate-100">
                                     {inRoom.length > 0 ? inRoom.slice(0, 5).map((p: Pendaftar) => (
-                                        <div key={p.id} className="py-1.5 px-3 flex items-center justify-between bg-blue-50/30 group">
+                                        <div key={p.id} className="py-1.5 px-3 flex items-center justify-between bg-primary/5 group">
                                             <div className="flex items-center gap-2.5">
-                                                <div className="w-1 h-6 bg-blue-500 rounded-full" />
+                                                <div className="w-1 h-6 bg-primary rounded-full" />
                                                 <div>
                                                     <p className="text-[12px] font-black text-slate-800 leading-tight uppercase">{p.nmLengkap}</p>
-                                                    <p className="text-[8px] text-blue-500 font-black uppercase tracking-widest">Status: Di Ruangan</p>
+                                                    <p className="text-[8px] text-primary font-black uppercase tracking-widest">Status: Di Ruangan</p>
                                                 </div>
                                             </div>
-                                            <div className="bg-blue-600 px-2 py-0.5 rounded-md shadow-md shadow-blue-500/10 flex-shrink-0">
+                                            <div className="bg-primary px-2 py-0.5 rounded-md shadow-md shadow-primary/10 flex-shrink-0">
                                                 <span className="text-sm font-black text-white">#{p.noAntrian}</span>
                                             </div>
                                         </div>
@@ -290,8 +290,8 @@ function MonitorPage() {
             <style dangerouslySetInnerHTML={{
                 __html: `
                 @keyframes bounce-slow {
-                    0%, 100% { transform: translateY(-8px); filter: drop-shadow(0 20px 20px rgba(59, 130, 246, 0.2)); }
-                    50% { transform: translateY(8px); filter: drop-shadow(0 5px 5px rgba(59, 130, 246, 0.1)); }
+                    0%, 100% { transform: translateY(-8px); filter: drop-shadow(0 20px 20px rgba(var(--primary-rgb, 59, 130, 246), 0.2)); }
+                    50% { transform: translateY(8px); filter: drop-shadow(0 5px 5px rgba(var(--primary-rgb, 59, 130, 246), 0.1)); }
                 }
                 .animate-bounce-slow {
                     animation: bounce-slow 4s ease-in-out infinite;

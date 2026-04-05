@@ -287,7 +287,7 @@ function StudentDashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center space-y-2">
-          <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+          <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto" />
           <p className="text-slate-500 font-medium text-xs">Sedang memuat...</p>
         </div>
       </div>
@@ -318,10 +318,10 @@ function StudentDashboard() {
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-3 h-12 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 bg-primary rounded-md flex items-center justify-center shrink-0">
               <GraduationCap className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-slate-900 tracking-tight text-xs sm:text-sm">SPMB <span className="text-blue-600">SMANSABA</span></span>
+            <span className="font-bold text-slate-900 tracking-tight text-xs sm:text-sm">SPMB <span className="text-primary">SMANSABA</span></span>
           </div>
           <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-red-600 rounded-md h-7 px-2 text-xs">
             <LogOut className="w-3.5 h-3.5 mr-1" />
@@ -336,7 +336,7 @@ function StudentDashboard() {
         <div className="flex items-center justify-between bg-white p-1.5 sm:p-2 border border-slate-200 rounded-md shadow-sm overflow-x-auto no-scrollbar scroll-smooth">
           {steps.map((step, idx) => (
             <div key={step.id} className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md border transition-all ${activeStep === step.id ? 'bg-blue-50 border-blue-200 text-blue-700 font-bold' : activeStep > step.id ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-transparent border-transparent text-slate-400'}`}>
+              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md border transition-all ${activeStep === step.id ? 'bg-primary/10 border-primary/20 text-primary font-bold' : activeStep > step.id ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-transparent border-transparent text-slate-400'}`}>
                 <step.icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5`} />
                 <span className="text-[9px] sm:text-[10px] whitespace-nowrap">{step.label}</span>
               </div>
@@ -354,12 +354,12 @@ function StudentDashboard() {
                 </CardTitle>
                 <CardDescription className="text-[10px] font-medium text-slate-500">Tahap {activeStep} dari 5</CardDescription>
               </div>
-              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-blue-600/10 rounded-md flex items-center justify-center">
-                {activeStep === 1 && <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />}
-                {activeStep === 2 && <User className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />}
-                {activeStep === 3 && <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />}
-                {activeStep === 4 && <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />}
-                {activeStep === 5 && <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />}
+              <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-md flex items-center justify-center">
+                {activeStep === 1 && <Info className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
+                {activeStep === 2 && <User className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
+                {activeStep === 3 && <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
+                {activeStep === 4 && <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
+                {activeStep === 5 && <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
               </div>
             </div>
           </CardHeader>
@@ -367,14 +367,14 @@ function StudentDashboard() {
             {/* Step 1: Welcome & Status */}
             {activeStep === 1 && (
               <div className="space-y-4 animate-in fade-in duration-500">
-                <div className="bg-blue-600 rounded-md p-4 sm:p-6 text-white relative overflow-hidden">
+                <div className="bg-primary rounded-md p-4 sm:p-6 text-white relative overflow-hidden">
                   <div className="absolute -right-10 -bottom-10 opacity-10">
                     <GraduationCap className="w-32 h-32 sm:w-64 sm:h-64 rotate-12" />
                   </div>
                   <div className="relative z-10 space-y-2 sm:space-y-3">
                     <h2 className="text-lg sm:text-2xl font-black">Selamat, {profile.student.nmSiswa}!</h2>
-                    <p className="text-blue-50 leading-relaxed font-medium text-xs sm:text-sm">
-                      Anda dinyatakan <span className="underline decoration-indigo-300 font-bold">LULUS SELEKSI</span> di SMA Negeri 1 Bantarujeg melalui jalur {profile.kelulusan.jalur}.
+                    <p className="text-primary-foreground/90 leading-relaxed font-medium text-xs sm:text-sm">
+                      Anda dinyatakan <span className="underline decoration-white/30 font-bold">LULUS SELEKSI</span> di SMA Negeri 1 Bantarujeg melalui jalur {profile.kelulusan.jalur}.
                       Langkah selanjutnya adalah melengkapi biodata dan dokumen untuk proses daftar ulang.
                     </p>
                   </div>
@@ -382,7 +382,7 @@ function StudentDashboard() {
                 <div className="grid grid-cols-2 gap-2">
                   <div className="p-3 rounded-md border border-slate-100 bg-slate-50/50 flex items-start gap-2">
                     <div className="w-8 h-8 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0">
-                      <User className="w-4 h-4 text-blue-600" />
+                      <User className="w-4 h-4 text-primary" />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Nama Lengkap</p>
@@ -391,7 +391,7 @@ function StudentDashboard() {
                   </div>
                   <div className="p-3 rounded-md border border-slate-100 bg-slate-50/50 flex items-start gap-2">
                     <div className="w-8 h-8 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0">
-                      <FileDigit className="w-4 h-4 text-blue-600" />
+                      <FileDigit className="w-4 h-4 text-primary" />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">NISN</p>
@@ -478,7 +478,7 @@ function StudentDashboard() {
                         <button
                           key={idx}
                           type="button"
-                          className="w-full text-left px-3 py-2 text-xs hover:bg-blue-50 border-b border-slate-50 flex flex-col group transition-colors"
+                          className="w-full text-left px-3 py-2 text-xs hover:bg-primary/5 border-b border-slate-50 flex flex-col group transition-colors"
                           onMouseDown={(e) => e.preventDefault()}
                           onClick={() => {
                             setFormData({ ...formData, sekolahAsal: s.sekolah })
@@ -486,8 +486,8 @@ function StudentDashboard() {
                           }}
                         >
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-900 group-hover:text-blue-700 capitalize">{s.sekolah.toLowerCase()}</span>
-                            <Badge variant="outline" className={`text-[8px] font-bold px-1 py-0 rounded-md shrink-0 ${s.status === 'N' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+                            <span className="font-bold text-slate-900 group-hover:text-primary capitalize">{s.sekolah.toLowerCase()}</span>
+                            <Badge variant="outline" className={`text-[8px] font-bold px-1 py-0 rounded-md shrink-0 ${s.status === 'N' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
                               {s.status === 'N' ? 'Negeri' : 'Swasta'}
                             </Badge>
                           </div>
@@ -555,7 +555,7 @@ function StudentDashboard() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setFormData({ ...formData, alamatOrtu: formData.alamatSiswa })}
-                      className="h-6 text-[9px] text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium"
+                      className="h-6 text-[9px] text-primary hover:text-primary/90 hover:bg-primary/10 font-medium"
                       disabled={!formData.alamatSiswa}
                     >
                       <FileText className="w-3 h-3 mr-1" />
@@ -579,7 +579,7 @@ function StudentDashboard() {
                     const driveId = profile.daftarUlang?.[doc.field]
                     const isUploading = uploadingField === doc.id
                     return (
-                      <div key={doc.id} className="p-3 border border-slate-200 rounded-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-blue-200 transition-colors">
+                      <div key={doc.id} className="p-3 border border-slate-200 rounded-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-primary/30 transition-colors">
                         <div className="flex items-center gap-2">
                           <div className={`w-8 h-8 rounded-md flex items-center justify-center ${driveId ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}`}>
                             <doc.icon className="w-4 h-4" />
@@ -590,7 +590,7 @@ function StudentDashboard() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          {driveId && <Button size="sm" variant="ghost" onClick={() => setPreviewConfig({ isOpen: true, driveId, label: doc.label })} className="h-7 rounded-md text-slate-500 hover:text-blue-600"><Eye className="w-3.5 h-3.5" /></Button>}
+                          {driveId && <Button size="sm" variant="ghost" onClick={() => setPreviewConfig({ isOpen: true, driveId, label: doc.label })} className="h-7 rounded-md text-slate-500 hover:text-primary"><Eye className="w-3.5 h-3.5" /></Button>}
                           <Button size="sm" variant="outline" onClick={() => setScannerConfig({ isOpen: true, type: doc.id, label: doc.label })} className="h-7 rounded-md text-xs"><Camera className="w-3.5 h-3.5 sm:mr-1" /><span className="hidden sm:inline"> Foto</span></Button>
                           <label className="cursor-pointer">
                             <input type="file" className="hidden" accept=".pdf" onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleUpload(e, doc.id)} />
@@ -632,7 +632,7 @@ function StudentDashboard() {
             </Button>
 
             {activeStep < 4 ? (
-              <Button onClick={handleSaveBiodata} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 rounded-md px-3 sm:px-6 h-8 font-bold shadow-lg shadow-blue-200 active:scale-[0.98] flex-1 sm:flex-none justify-center text-xs">
+              <Button onClick={handleSaveBiodata} disabled={isSaving} className="bg-primary hover:bg-primary/90 rounded-md px-3 sm:px-6 h-8 font-bold shadow-lg shadow-primary/20 active:scale-[0.98] flex-1 sm:flex-none justify-center text-xs">
                 {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
                 <span className="hidden sm:inline">{activeStep === 1 ? 'Mulai Sekarang' : 'Simpan & Lanjut'}</span>
                 <span className="sm:hidden">{activeStep === 1 ? 'Mulai' : 'Lanjut'}</span>
@@ -662,7 +662,7 @@ function StudentDashboard() {
         <DialogContent className="w-[90vw] sm:max-w-4xl h-[90vh] p-0 overflow-hidden rounded-2xl sm:rounded-3xl border-none shadow-2xl flex flex-col bg-slate-900">
           <DialogHeader className="p-4 bg-white border-b flex flex-row items-center justify-between shrink-0 h-16">
             <div className="flex items-center gap-3">
-              <FileText className="w-5 h-5 text-blue-600" />
+              <FileText className="w-5 h-5 text-primary" />
               <DialogTitle className="text-sm font-bold text-slate-900">{previewConfig.label}</DialogTitle>
             </div>
           </DialogHeader>
@@ -674,10 +674,10 @@ function StudentDashboard() {
 
       {uploadingField && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-50/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <Card className="w-[300px] border-none shadow-2xl p-6 text-center space-y-4 rounded-md bg-gradient-to-br from-blue-50 to-indigo-50">
+          <Card className="w-[300px] border-none shadow-2xl p-6 text-center space-y-4 rounded-md bg-gradient-to-br from-primary/5 to-primary/10">
             <div className="relative mx-auto w-16 h-16">
-              <div className="absolute inset-0 bg-blue-200 rounded-full animate-ping opacity-20"></div>
-              <div className="relative w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+              <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping opacity-20"></div>
+              <div className="relative w-16 h-16 bg-gradient-to-br from-primary to-primary/80 rounded-full flex items-center justify-center shadow-lg">
                 <Upload className="w-7 h-7 text-white animate-bounce" />
               </div>
             </div>
@@ -686,9 +686,9 @@ function StudentDashboard() {
               <p className="text-[10px] text-slate-500 font-medium">Berkas sedang diproses ke Google Drive</p>
             </div>
             <div className="flex justify-center gap-1 pt-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-              <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+              <div className="w-2 h-2 bg-primary/80 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"></div>
             </div>
           </Card>
         </div>

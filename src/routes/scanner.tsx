@@ -118,7 +118,7 @@ function ScannerPage() {
       <div className="w-full max-w-md">
         <header className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-blue-600 p-2 rounded-lg">
+            <div className="bg-primary p-2 rounded-lg">
               <QrCode className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -139,14 +139,14 @@ function ScannerPage() {
           )}
         </header>
 
-        <div className="mb-6 bg-blue-50 border border-blue-100 p-3 rounded-xl flex items-center justify-between">
+        <div className="mb-6 bg-primary/10 border border-primary/20 p-3 rounded-xl flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="w-8 h-8 rounded-lg">
               <AvatarImage src={session.user.image || ''} />
-              <AvatarFallback className="bg-blue-600 text-white text-[10px]">{session.user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="bg-primary text-white text-[10px]">{session.user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Petugas Aktif</p>
+              <p className="text-[10px] font-bold text-primary uppercase tracking-widest">Petugas Aktif</p>
               <p className="text-sm font-bold text-slate-900">{session.user.name}</p>
             </div>
           </div>
@@ -164,7 +164,7 @@ function ScannerPage() {
               />
               <div className="absolute inset-0 border-[40px] border-black/40 pointer-events-none flex items-center justify-center">
                 <div className="w-full aspect-square border-2 border-white/80 rounded-lg relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-blue-500 animate-[scan_2s_linear_infinite]" />
+                  <div className="absolute top-0 left-0 w-full h-[2px] bg-primary animate-[scan_2s_linear_infinite]" />
                 </div>
               </div>
             </div>
@@ -177,17 +177,17 @@ function ScannerPage() {
           </Card>
         ) : loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+            <Loader2 className="w-12 h-12 text-primary animate-spin" />
             <p className="text-slate-600 font-medium">Mencari data siswa...</p>
           </div>
         ) : data ? (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Student Info Card */}
             <Card className="border-none shadow-lg bg-white overflow-hidden">
-              <div className="bg-blue-600 p-5 text-white flex justify-between items-center">
+              <div className="bg-primary p-5 text-white flex justify-between items-center">
                 <div>
                   <h2 className="text-xl font-black tracking-tight leading-tight mb-1">{data.student.nmSiswa}</h2>
-                  <p className="text-blue-100 text-xs font-bold uppercase tracking-widest">{data.student.noDaftar}</p>
+                  <p className="text-white/80 text-xs font-bold uppercase tracking-widest">{data.student.noDaftar}</p>
                 </div>
                 <Badge variant="outline" className="bg-white/20 text-white border-white/20 px-3 py-1 font-bold text-[10px] uppercase tracking-tighter backdrop-blur-md">
                   {data.student.jalur}
@@ -198,14 +198,14 @@ function ScannerPage() {
                   <div className="space-y-1">
                     <Label className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Asal Sekolah</Label>
                     <div className="flex items-start gap-2 text-sm font-semibold text-slate-800 leading-snug">
-                      <School className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                      <School className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                       <span>{data.student.sekolahAsal}</span>
                     </div>
                   </div>
                   <div className="space-y-1">
                     <Label className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Jenis Kelamin</Label>
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-                      <User className="w-4 h-4 text-blue-600" />
+                      <User className="w-4 h-4 text-primary" />
                       <span>{data.student.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
                     </div>
                   </div>
@@ -215,13 +215,13 @@ function ScannerPage() {
                   <div className="space-y-1">
                     <Label className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Telepon Ortu</Label>
                     <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-                      <Phone className="w-4 h-4 text-blue-600" />
+                      <Phone className="w-4 h-4 text-primary" />
                       <span>{data.student.teleponOrtu || '-'}</span>
                     </div>
                   </div>
                   <div className="space-y-1 flex flex-col justify-center items-end">
                     <div className={`px-4 py-1.5 rounded-full text-xs font-black border-2 flex items-center gap-2 ${data.student.status === 'LULUS'
-                      ? 'bg-blue-50 text-blue-700 border-blue-500/30'
+                      ? 'bg-primary/10 text-primary border-primary/30'
                       : 'bg-rose-50 text-rose-700 border-rose-500/30'
                       }`}>
                       {data.student.status === 'LULUS' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
@@ -236,7 +236,7 @@ function ScannerPage() {
             <Card className="border-none shadow-lg bg-white overflow-hidden">
               <CardHeader className="pb-3 pt-4 border-b border-slate-100 bg-slate-50/50">
                 <CardTitle className="text-sm font-black flex items-center gap-2 text-slate-800">
-                  <User className="w-4 h-4 text-blue-600" /> Detail Profil & Orang Tua
+                  <User className="w-4 h-4 text-primary" /> Detail Profil & Orang Tua
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 space-y-4 text-xs font-semibold">
@@ -308,7 +308,7 @@ function ScannerPage() {
                       checked={!!data.daftarUlang[item.id]}
                       onCheckedChange={(checked) => handleToggleCheck(item.id, !!checked)}
                       disabled={saving}
-                      className="w-5 h-5 rounded-md border-slate-300 data-[state=checked]:bg-blue-600"
+                      className="w-5 h-5 rounded-md border-slate-300 data-[state=checked]:bg-primary"
                     />
                     <Label htmlFor={item.id} className="text-sm font-medium text-slate-700 cursor-pointer flex-1">
                       {item.label}
@@ -323,7 +323,7 @@ function ScannerPage() {
                             label: `${item.label}: ${data.student.nmSiswa}`,
                             field: item.id
                           })}
-                          className="flex items-center justify-center px-2 py-1 bg-blue-50 rounded-md text-blue-600 border border-blue-100 active:scale-95 transition-transform"
+                          className="flex items-center justify-center px-2 py-1 bg-primary/10 rounded-md text-primary border border-primary/20 active:scale-95 transition-transform"
                         >
                           <FileText className="h-3 w-3" />
                           <span className="text-[10px] font-black ml-1">LIHAT</span>
@@ -331,7 +331,7 @@ function ScannerPage() {
                       )}
 
                       {data.daftarUlang[item.id] ? (
-                        <CheckCircle2 className="w-5 h-5 text-blue-500" />
+                        <CheckCircle2 className="w-5 h-5 text-primary" />
                       ) : (
                          <div className="w-5 h-5 rounded-md border-2 border-slate-200" />
                       )}
@@ -350,7 +350,7 @@ function ScannerPage() {
               </CardContent>
             </Card>
 
-            <Button onClick={resetScanner} className="w-full bg-blue-600 hover:bg-blue-700 h-12 rounded-md text-md font-bold shadow-blue-200 shadow-lg mb-8">
+            <Button onClick={resetScanner} className="w-full bg-primary hover:bg-primary/90 h-12 rounded-md text-md font-bold shadow-primary/20 shadow-lg mb-8">
               Selesai & Scan Siswa Lain
             </Button>
           </div>
@@ -387,8 +387,8 @@ function ScannerPage() {
         >
           <DialogHeader className="p-3 sm:p-6 bg-white border-b flex flex-row items-center justify-between shrink-0 h-14 sm:h-20">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-50 rounded-md flex items-center justify-center border border-blue-100">
-                <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary/10 rounded-md flex items-center justify-center border border-primary/20">
+                <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               </div>
               <div className="min-w-0 flex-1">
                 <DialogTitle className="text-xs sm:text-base font-bold text-slate-900 truncate">Preview Berkas</DialogTitle>
@@ -398,7 +398,7 @@ function ScannerPage() {
 
             <div className="flex items-center gap-2 sm:gap-3">
               {previewConfig.field && (
-                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-50/50 rounded-md border border-blue-100/50">
+                <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-primary/10 rounded-md border border-primary/20">
                   <Checkbox
                     id="modal-verify-scanner"
                     checked={data?.daftarUlang?.[previewConfig.field] || false}
@@ -407,9 +407,9 @@ function ScannerPage() {
                         handleToggleCheck(previewConfig.field, checked as boolean);
                       }
                     }}
-                    className="h-4 w-4 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                    className="h-4 w-4 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                   />
-                  <label htmlFor="modal-verify-scanner" className="text-[9px] sm:text-xs font-black text-blue-700 cursor-pointer whitespace-nowrap">
+                  <label htmlFor="modal-verify-scanner" className="text-[9px] sm:text-xs font-black text-primary cursor-pointer whitespace-nowrap">
                     SESUAI
                   </label>
                 </div>

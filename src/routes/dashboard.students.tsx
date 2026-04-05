@@ -385,8 +385,8 @@ function StudentsPage() {
         <div className="p-6 space-y-6">
             {/* Page Header with Icon */}
             <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                    <GraduationCap className="w-6 h-6 text-blue-600" />
+                <div className="p-2 bg-primary/10 rounded-lg">
+                    <GraduationCap className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                     <div className="flex items-center gap-2"><h1 className="text-2xl font-bold text-slate-900">Data Siswa</h1>{activeYear && (<Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 font-bold px-2 py-0.5 rounded-full whitespace-nowrap">TA {activeYear}</Badge>)}</div>
@@ -398,7 +398,7 @@ function StudentsPage() {
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle className="flex items-center gap-2">
-                            <UserCog className="w-5 h-5 text-blue-600" />
+                            <UserCog className="w-5 h-5 text-primary" />
                             Daftar Peserta Didik
                         </CardTitle>
                         <CardDescription>
@@ -416,14 +416,14 @@ function StudentsPage() {
                         <Button
                             variant="outline"
                             onClick={downloadTemplate}
-                            className="border-slate-300 text-blue-600 hover:bg-blue-50 rounded-md shadow-sm"
+                            className="border-slate-300 text-primary hover:bg-primary/10 rounded-md shadow-sm"
                         >
                             <FileSpreadsheet className="w-4 h-4 mr-2" />
                             Template
                         </Button>
                         <Button
                             onClick={() => fileInputRef.current?.click()}
-                            className="bg-blue-600 hover:bg-blue-700 rounded-md"
+                            className="bg-primary hover:bg-primary/90 text-white rounded-md"
                         >
                             <Upload className="w-4 h-4 mr-2" />
                             Import Excel
@@ -448,7 +448,7 @@ function StudentsPage() {
                             <div className="relative w-full">
                                 <div className="absolute left-3 top-1/2 -translate-y-1/2">
                                     {isPending ? (
-                                        <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                                        <Loader2 className="h-4 w-4 text-primary animate-spin" />
                                     ) : (
                                         <Search className="h-4 w-4 text-slate-400" />
                                     )}
@@ -520,7 +520,7 @@ function StudentsPage() {
                                     </TableRow>
                                 ) : (
                                     studentsInfo.students.map((s) => (
-                                        <TableRow key={s.id} className={`hover:bg-slate-50/50 border-b border-slate-100 transition-colors group ${selectedIds.includes(s.id) ? `bg-blue-50` : ``} ${isPending ? `opacity-50 pointer-events-none` : ``}`}>
+                                        <TableRow key={s.id} className={`hover:bg-slate-50/50 border-b border-slate-100 transition-colors group ${selectedIds.includes(s.id) ? `bg-primary/10` : ``} ${isPending ? `opacity-50 pointer-events-none` : ``}`}>
                                             <TableCell className="px-4 py-2">
                                                 <Checkbox
                                                     checked={selectedIds.includes(s.id)}
@@ -533,7 +533,7 @@ function StudentsPage() {
                                             <TableCell className="text-slate-600 px-6 py-2">{s.nisn || "-"}</TableCell>
                                             <TableCell className="px-6 py-2">
                                                 {s.jalur ? (
-                                                    <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-100 uppercase font-bold">
+                                                    <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 uppercase font-bold">
                                                         {s.jalur}
                                                     </Badge>
                                                 ) : '-'}
@@ -587,7 +587,7 @@ function StudentsPage() {
                                 setPageSize(val)
                                 setPage(1)
                             }}>
-                                <SelectTrigger className="w-[70px] bg-white h-7 border-slate-300 rounded-md shadow-sm focus:ring-blue-500 text-xs text-slate-700">
+                                <SelectTrigger className="w-[70px] bg-white h-7 border-slate-300 rounded-md shadow-sm focus:ring-primary text-xs text-slate-700">
                                     <SelectValue placeholder="10" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -646,7 +646,7 @@ function StudentsPage() {
                                             key={p}
                                             onClick={() => setPage(p as number)}
                                             className={`min-w-[32px] h-8 px-3 py-1.5 text-sm rounded-md transition-colors ${page === p
-                                                ? 'bg-blue-600 text-white font-medium'
+                                                ? 'bg-primary text-white font-medium'
                                                 : 'text-slate-600 hover:bg-slate-100'
                                                 }`}
                                         >
@@ -693,7 +693,7 @@ function StudentsPage() {
                 <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <FileSpreadsheet className="h-5 w-5 text-blue-600" />
+                            <FileSpreadsheet className="h-5 w-5 text-primary" />
                             Preview Import Data
                         </DialogTitle>
                         <DialogDescription>
@@ -726,7 +726,7 @@ function StudentsPage() {
                                                 <TableCell>{row.tanggal_lahir || '-'}</TableCell>
                                                 <TableCell>
                                                     {row.jalur ? (
-                                                        <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-100 uppercase font-bold">
+                                                        <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 uppercase font-bold">
                                                             {row.jalur}
                                                         </Badge>
                                                     ) : '-'}
@@ -756,7 +756,7 @@ function StudentsPage() {
                                 </Button>
                                 <Button
                                     onClick={handleImport}
-                                    className="bg-blue-600 hover:bg-blue-700"
+                                    className="bg-primary hover:bg-primary/90 text-white"
                                 >
                                     <Upload className="mr-2 h-4 w-4" />
                                     Import {importData.length} Data
@@ -766,7 +766,7 @@ function StudentsPage() {
                     ) : (
                         <div className="flex-1 flex flex-col items-center justify-center py-12 space-y-6">
                             <div className="text-center space-y-2">
-                                <FileSpreadsheet className="h-12 w-12 text-blue-600 mx-auto animate-pulse" />
+                                <FileSpreadsheet className="h-12 w-12 text-primary mx-auto animate-pulse" />
                                 <h3 className="text-lg font-semibold text-slate-900">Mengimport Data Siswa...</h3>
                                 <p className="text-sm text-slate-500">
                                     {importProgress.current} dari {importProgress.total} data
@@ -778,11 +778,11 @@ function StudentsPage() {
                             <div className="w-full max-w-md space-y-2">
                                 <div className="h-4 bg-slate-200 rounded-full overflow-hidden">
                                     <div
-                                        className="h-full bg-blue-600 transition-all duration-300 ease-out"
+                                        className="h-full bg-primary transition-all duration-300 ease-out"
                                         style={{ width: `${importProgress.total > 0 ? (importProgress.current / importProgress.total) * 100 : 0}%` }}
                                     />
                                 </div>
-                                <p className="text-center text-xl font-bold text-blue-600">
+                                <p className="text-center text-xl font-bold text-primary">
                                     {importProgress.total > 0 ? Math.round((importProgress.current / importProgress.total) * 100) : 0}%
                                 </p>
                             </div>
@@ -977,10 +977,10 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
     return (
         <form onSubmit={handleSubmit} className="space-y-3">
             <Tabs defaultValue="identity" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 bg-blue-50 p-1">
-                    <TabsTrigger value="identity" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Identitas Siswa</TabsTrigger>
-                    <TabsTrigger value="parents" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Orang Tua/Wali</TabsTrigger>
-                    <TabsTrigger value="supplementary" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">Kelengkapan</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 bg-primary/10 p-1">
+                    <TabsTrigger value="identity" className="data-[state=active]:bg-primary data-[state=active]:text-white">Identitas Siswa</TabsTrigger>
+                    <TabsTrigger value="parents" className="data-[state=active]:bg-primary data-[state=active]:text-white">Orang Tua/Wali</TabsTrigger>
+                    <TabsTrigger value="supplementary" className="data-[state=active]:bg-primary data-[state=active]:text-white">Kelengkapan</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="identity" forceMount className="space-y-3 mt-3 data-[state=inactive]:hidden">
@@ -1172,7 +1172,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                                         <button
                                             key={idx}
                                             type="button"
-                                            className="w-full text-left px-3 py-2 text-[11px] hover:bg-blue-50 border-b border-slate-100 flex flex-col group"
+                                            className="w-full text-left px-3 py-2 text-[11px] hover:bg-primary/5 border-b border-slate-100 flex flex-col group"
                                             onMouseDown={(e) => e.preventDefault()}
                                             onClick={() => {
                                                 setSekolahQuery(s.sekolah)
@@ -1180,8 +1180,8 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
                                             }}
                                         >
                                             <div className="flex items-center gap-2">
-                                                <span className="font-medium text-slate-900 group-hover:text-blue-700">{s.sekolah}</span>
-                                                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${s.status === `N` ? `bg-blue-50 text-blue-600` : `bg-amber-50 text-amber-600`}`}>
+                                                <span className="font-medium text-slate-900 group-hover:text-primary">{s.sekolah}</span>
+                                                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${s.status === `N` ? `bg-primary/10 text-primary` : `bg-amber-50 text-amber-600`}`}>
                                                     {s.status === 'N' ? 'Negeri' : 'Swasta'}
                                                 </span>
                                             </div>
@@ -1235,7 +1235,7 @@ function EditStudentForm({ student, onSuccess }: { student: Student | null, onSu
             </Tabs>
 
             <DialogFooter className="mt-4">
-                <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 h-9 rounded-md">
+                <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90 text-white h-9 rounded-md">
                     {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
                 </Button>
             </DialogFooter>

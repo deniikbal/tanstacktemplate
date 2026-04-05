@@ -97,7 +97,7 @@ function KelulusanPage() {
 
   const fetchStats = async () => {
     try {
-      const stats = await getJalurStats()
+      const stats = await getJalurStats({ data: { tahunAjaran: 'semua' } })
       setJalurStats(stats as any[])
     } catch (err) {
       console.error('Failed to fetch stats', err)
@@ -187,8 +187,8 @@ function KelulusanPage() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-100 rounded-lg">
-          <GraduationCap className="w-6 h-6 text-blue-600" />
+        <div className="p-2 bg-primary/10 rounded-lg">
+          <GraduationCap className="w-6 h-6 text-primary" />
         </div>
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-slate-900">Manajemen Kelulusan</h1>
@@ -274,19 +274,19 @@ function KelulusanPage() {
 
 
       <Card className="shadow-sm border-slate-300 rounded-md overflow-hidden bg-white">
-        <CardHeader className="p-8 pb-6 bg-gradient-to-b from-blue-50/50 to-transparent">
+        <CardHeader className="p-8 pb-6 bg-gradient-to-b from-primary/5 to-transparent">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-start sm:items-center gap-5">
-              <div className="hidden sm:flex h-14 w-14 rounded-md bg-gradient-to-br from-blue-500 to-blue-600 items-center justify-center shadow-md shadow-blue-100 shrink-0 border border-blue-400/20">
+              <div className="hidden sm:flex h-14 w-14 rounded-md bg-gradient-to-br from-primary/80 to-primary items-center justify-center shadow-md shadow-primary/10 shrink-0 border border-primary/20">
                 <CheckCircle2 className="h-8 w-8 text-white" />
               </div>
               <div className="space-y-1">
                 <CardTitle className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <CheckCircle2 className="h-6 w-6 text-blue-600 sm:hidden" />
+                  <CheckCircle2 className="h-6 w-6 text-primary sm:hidden" />
                   Daftar Kelulusan
                 </CardTitle>
                 <CardDescription className="text-slate-500 font-medium">
-                  Manajemen status kelulusan siswa • <span className="text-blue-600 font-bold uppercase tracking-wider text-[10px]">Portal Admin v2026</span>
+                  Manajemen status kelulusan siswa • <span className="text-primary font-bold uppercase tracking-wider text-[10px]">Portal Admin v2026</span>
                 </CardDescription>
               </div>
             </div>
@@ -304,7 +304,7 @@ function KelulusanPage() {
               )}
               <Button
                 onClick={() => setIsSyncModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md px-6 shadow-sm transition-all hover:scale-105 active:scale-95"
+                className="bg-primary hover:bg-primary/90 text-white font-bold rounded-md px-6 shadow-sm transition-all hover:scale-105 active:scale-95"
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Sinkronisasi
@@ -319,14 +319,14 @@ function KelulusanPage() {
               <div className="relative w-full max-w-md">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
                   {isPending ? (
-                    <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                    <Loader2 className="h-4 w-4 text-primary animate-spin" />
                   ) : (
                     <Search className="h-4 w-4 text-slate-400" />
                   )}
                 </div>
                 <Input
                   placeholder="Cari nama/nisn..."
-                  className="pl-10 bg-white h-10 border-slate-300 shadow-sm rounded-md focus:ring-blue-500 transition-all focus:border-blue-400"
+                  className="pl-10 bg-white h-10 border-slate-300 shadow-sm rounded-md focus:ring-1 focus:ring-primary transition-all focus:border-primary/50"
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value)
@@ -342,7 +342,7 @@ function KelulusanPage() {
                 setJalurFilter('all')
                 setPage(1)
               }}>
-                <SelectTrigger className="bg-white h-10 border-slate-300 shadow-sm focus:ring-blue-500 lg:w-[150px] rounded-md font-medium">
+                <SelectTrigger className="bg-white h-10 border-slate-300 shadow-sm focus:ring-1 focus:ring-primary lg:w-[150px] rounded-md font-medium">
                   <SelectValue placeholder="Tahap" />
                 </SelectTrigger>
                 <SelectContent>
@@ -356,7 +356,7 @@ function KelulusanPage() {
                 setStatusFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="bg-white h-10 border-slate-300 shadow-sm focus:ring-blue-500 lg:w-[150px] rounded-md font-medium">
+                <SelectTrigger className="bg-white h-10 border-slate-300 shadow-sm focus:ring-1 focus:ring-primary lg:w-[150px] rounded-md font-medium">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -370,7 +370,7 @@ function KelulusanPage() {
                 setJalurFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="col-span-2 lg:w-[180px] bg-white h-10 border-slate-300 shadow-sm focus:ring-blue-500 rounded-md font-medium">
+                <SelectTrigger className="col-span-2 lg:w-[180px] bg-white h-10 border-slate-300 shadow-sm focus:ring-1 focus:ring-primary rounded-md font-medium">
                   <SelectValue placeholder="Jalur" />
                 </SelectTrigger>
                 <SelectContent>
@@ -465,7 +465,7 @@ function KelulusanPage() {
                             </TableCell>
                           </TableRow>
                         )}
-                        <TableRow className={`${selectedIds.has(item.id) ? 'bg-blue-50/50' : 'hover:bg-slate-50/50'} transition-colors group ${isPending ? 'opacity-50 pointer-events-none' : ''}`}>
+                        <TableRow className={`${selectedIds.has(item.id) ? 'bg-primary/10' : 'hover:bg-slate-50/50'} transition-colors group ${isPending ? 'opacity-50 pointer-events-none' : ''}`}>
                           <TableCell className="text-center">
                             <Checkbox
                               checked={selectedIds.has(item.id)}
@@ -490,14 +490,14 @@ function KelulusanPage() {
                           <TableCell>
                             <div className="flex flex-col">
                               <span
-                                className="text-sm text-slate-600 font-medium hover:text-blue-600 cursor-pointer transition-colors"
+                                className="text-sm text-slate-600 font-medium hover:text-primary cursor-pointer transition-colors"
                                 onClick={() => handleCopy(item.studentNisn, 'NISN')}
                                 title="Klik untuk salin NISN"
                               >
                                 {item.studentNisn}
                               </span>
                               <span
-                                className="text-[10px] text-muted-foreground uppercase font-semibold hover:text-blue-600 cursor-pointer transition-colors"
+                                className="text-[10px] text-muted-foreground uppercase font-semibold hover:text-primary cursor-pointer transition-colors"
                                 onClick={() => handleCopy(item.noDaftar, 'No. Daftar')}
                                 title="Klik untuk salin No. Daftar"
                               >
@@ -617,13 +617,13 @@ function KelulusanPage() {
                           <span className="text-slate-400">NISN / No. Daftar</span>
                           <div className="text-right">
                             <div
-                              className="font-bold text-slate-600 hover:text-blue-600 active:scale-95 transition-all cursor-pointer"
+                              className="font-bold text-slate-600 hover:text-primary active:scale-95 transition-all cursor-pointer"
                               onClick={() => handleCopy(item.studentNisn, 'NISN')}
                             >
                               {item.studentNisn}
                             </div>
                             <div
-                              className="text-[10px] text-slate-400 uppercase font-black hover:text-blue-600 active:scale-95 transition-all cursor-pointer"
+                              className="text-[10px] text-slate-400 uppercase font-black hover:text-primary active:scale-95 transition-all cursor-pointer"
                               onClick={() => handleCopy(item.noDaftar, 'No. Daftar')}
                             >
                               {item.noDaftar || '-'}
@@ -662,7 +662,7 @@ function KelulusanPage() {
                       setLimit(e.target.value)
                       setPage(1)
                     }}
-                    className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-primary"
                   >
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -750,7 +750,7 @@ function getJalurColor(jalur: string) {
 function StatusBadge({ status }: { status: string }) {
   if (status === 'LULUS') {
     return (
-      <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-blue-200 flex w-fit gap-1 items-center px-2 py-0.5">
+      <Badge className="bg-primary/10 text-primary hover:bg-primary/10 border-primary/20 flex w-fit gap-1 items-center px-2 py-0.5 shadow-none">
         <CheckCircle2 className="h-3 w-3" />
         LULUS
       </Badge>
@@ -799,8 +799,8 @@ function SyncModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[450px] rounded-md border-slate-300">
         <DialogHeader>
-          <div className="w-12 h-12 bg-blue-50 rounded-md flex items-center justify-center mb-4 border border-blue-100">
-            <RefreshCw className="h-6 w-6 text-blue-600" />
+          <div className="w-12 h-12 bg-primary/10 rounded-md flex items-center justify-center mb-4 border border-primary/20">
+            <RefreshCw className="h-6 w-6 text-primary" />
           </div>
           <DialogTitle className="text-xl font-black text-slate-900">
             Sinkronisasi Data Kelulusan
@@ -851,7 +851,7 @@ function SyncModal({
           <Button
             onClick={handleSync}
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-11 rounded-md"
+            className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-md"
           >
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
             Mulai Sinkronisasi
@@ -913,8 +913,8 @@ function EditGraduationModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[450px] rounded-md border-slate-300">
         <DialogHeader>
-          <div className="w-12 h-12 bg-blue-50 rounded-md flex items-center justify-center mb-4 border border-blue-100">
-            <GraduationCap className="h-6 w-6 text-blue-600" />
+          <div className="w-12 h-12 bg-primary/10 rounded-md flex items-center justify-center mb-4 border border-primary/20">
+            <GraduationCap className="h-6 w-6 text-primary" />
           </div>
           <DialogTitle className="text-xl font-black text-slate-900">Edit Status Kelulusan</DialogTitle>
           <DialogDescription className="text-slate-500">
@@ -981,7 +981,7 @@ function EditGraduationModal({
           <Button variant="outline" onClick={onClose} disabled={loading} className="border-slate-300 rounded-md">
             Batal
           </Button>
-          <Button onClick={handleUpdate} disabled={loading} className="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-md">
+          <Button onClick={handleUpdate} disabled={loading} className="bg-primary hover:bg-primary/90 text-white font-bold rounded-md">
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
             Simpan Perubahan
           </Button>

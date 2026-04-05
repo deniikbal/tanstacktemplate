@@ -153,7 +153,7 @@ function StudentBiodataPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center space-y-4">
-          <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto" />
+          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto" />
           <p className="text-slate-500 font-medium text-sm">Sedang memuat data...</p>
         </div>
       </div>
@@ -173,7 +173,7 @@ function StudentBiodataPage() {
         <div className="flex items-center justify-between">
           <Link
             to="/student-dashboard"
-            className="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors font-bold text-sm bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200"
+            className="flex items-center gap-2 text-slate-500 hover:text-primary transition-colors font-bold text-sm bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200"
           >
             <ArrowLeft className="w-4 h-4" />
             Ke Dashboard
@@ -204,14 +204,14 @@ function StudentBiodataPage() {
                         key={step.id}
                         onClick={() => setActiveStep(step.id)}
                         className={`flex items-center gap-3 w-full p-2 rounded-xl transition-all ${activeStep === step.id
-                            ? 'bg-blue-50 text-blue-700'
+                            ? 'bg-primary/10 text-primary'
                             : activeStep > step.id
                               ? 'text-emerald-600'
                               : 'text-slate-400 hover:bg-slate-50'
                           }`}
                       >
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${activeStep === step.id
-                            ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
+                            ? 'bg-primary text-white shadow-lg shadow-primary/20'
                             : activeStep > step.id
                               ? 'bg-emerald-500 text-white'
                               : 'bg-slate-100 text-slate-400'
@@ -271,7 +271,7 @@ function StudentBiodataPage() {
                         <Input
                           value={formData.nmSiswa}
                           onChange={(e) => setFormData({ ...formData, nmSiswa: e.target.value })}
-                          className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                          className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                           placeholder="Nama Lengkap"
                           autoFocus
                         />
@@ -289,7 +289,7 @@ function StudentBiodataPage() {
                         <Input
                           value={formData.tempatLahir}
                           onChange={(e) => setFormData({ ...formData, tempatLahir: e.target.value })}
-                          className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                          className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                           placeholder="Contoh: Majalengka"
                         />
                       </div>
@@ -299,13 +299,13 @@ function StudentBiodataPage() {
                           type="date"
                           value={formData.tanggalLahir}
                           onChange={(e) => setFormData({ ...formData, tanggalLahir: e.target.value })}
-                          className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                          className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                         />
                       </div>
                       <div className="space-y-2">
                         <Label className="text-xs font-bold text-slate-700 ml-1">Jenis Kelamin</Label>
                         <Select value={formData.jenisKelamin} onValueChange={(val) => setFormData({ ...formData, jenisKelamin: val })}>
-                          <SelectTrigger className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium">
+                          <SelectTrigger className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium">
                             <SelectValue placeholder="Pilih Jenis Kelamin" />
                           </SelectTrigger>
                           <SelectContent>
@@ -317,7 +317,7 @@ function StudentBiodataPage() {
                       <div className="space-y-2">
                         <Label className="text-xs font-bold text-slate-700 ml-1">Agama</Label>
                         <Select value={formData.agama} onValueChange={(val) => setFormData({ ...formData, agama: val })}>
-                          <SelectTrigger className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium">
+                          <SelectTrigger className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium">
                             <SelectValue placeholder="Pilih Agama" />
                           </SelectTrigger>
                           <SelectContent>
@@ -335,7 +335,7 @@ function StudentBiodataPage() {
                         <Input
                           value={formData.statusDalamKel}
                           onChange={(e) => setFormData({ ...formData, statusDalamKel: e.target.value })}
-                          className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                          className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                           placeholder="Contoh: Anak Kandung"
                         />
                       </div>
@@ -344,7 +344,7 @@ function StudentBiodataPage() {
                         <Input
                           value={formData.anakKe}
                           onChange={(e) => setFormData({ ...formData, anakKe: e.target.value })}
-                          className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                          className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                           placeholder="Contoh: 1"
                         />
                       </div>
@@ -359,7 +359,7 @@ function StudentBiodataPage() {
                         <Input
                           value={formData.alamatSiswa}
                           onChange={(e) => setFormData({ ...formData, alamatSiswa: e.target.value })}
-                          className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                          className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                           placeholder="Jalan, RT/RW, Dusun, Desa/Kelurahan, Kecamatan"
                           autoFocus
                         />
@@ -369,23 +369,23 @@ function StudentBiodataPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label className="text-xs font-bold text-slate-700 ml-1 flex items-center gap-1.5">
-                            <Phone className="w-3.5 h-3.5 text-blue-500" /> No Handphone (Whatsapp)
+                            <Phone className="w-3.5 h-3.5 text-primary" /> No Handphone (Whatsapp)
                           </Label>
                           <Input
                             value={formData.teleponSiswa}
                             onChange={(e) => setFormData({ ...formData, teleponSiswa: e.target.value })}
-                            className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                            className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                             placeholder="08xxxxxxxxxx"
                           />
                         </div>
                         <div className="space-y-2">
                           <Label className="text-xs font-bold text-slate-700 ml-1 flex items-center gap-1.5">
-                            <Home className="w-3.5 h-3.5 text-blue-500" /> Asal Sekolah
+                            <Home className="w-3.5 h-3.5 text-primary" /> Asal Sekolah
                           </Label>
                           <Input
                             value={formData.sekolahAsal}
                             onChange={(e) => setFormData({ ...formData, sekolahAsal: e.target.value })}
-                            className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                            className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                             placeholder="Nama SMP/MTs Asal"
                           />
                         </div>
@@ -400,14 +400,14 @@ function StudentBiodataPage() {
                         {/* Ayah */}
                         <div className="space-y-4">
                           <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-                            <span className="text-xs font-black text-blue-600 uppercase tracking-wider">Data Ayah</span>
+                            <span className="text-xs font-black text-primary uppercase tracking-wider">Data Ayah</span>
                           </div>
                           <div className="space-y-2">
                             <Label className="text-xs font-bold text-slate-700 ml-1">Nama Ayah Kandung</Label>
                             <Input
                               value={formData.nmAyah}
                               onChange={(e) => setFormData({ ...formData, nmAyah: e.target.value })}
-                              className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                              className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                               placeholder="Nama Lengkap Ayah"
                               autoFocus
                             />
@@ -417,7 +417,7 @@ function StudentBiodataPage() {
                             <Input
                               value={formData.pekerjaanAyah}
                               onChange={(e) => setFormData({ ...formData, pekerjaanAyah: e.target.value })}
-                              className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                              className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                               placeholder="Pekerjaan saat ini"
                             />
                           </div>
@@ -433,7 +433,7 @@ function StudentBiodataPage() {
                             <Input
                               value={formData.nmIbu}
                               onChange={(e) => setFormData({ ...formData, nmIbu: e.target.value })}
-                              className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                              className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                               placeholder="Nama Lengkap Ibu"
                             />
                           </div>
@@ -442,7 +442,7 @@ function StudentBiodataPage() {
                             <Input
                               value={formData.pekerjaanIbu}
                               onChange={(e) => setFormData({ ...formData, pekerjaanIbu: e.target.value })}
-                              className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                              className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                               placeholder="Pekerjaan saat ini"
                             />
                           </div>
@@ -457,18 +457,18 @@ function StudentBiodataPage() {
                           <Input
                             value={formData.alamatOrtu}
                             onChange={(e) => setFormData({ ...formData, alamatOrtu: e.target.value })}
-                            className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                            className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                             placeholder="Alamat lengkap tempat tinggal orang tua"
                           />
                         </div>
                         <div className="space-y-2">
                           <Label className="text-xs font-bold text-slate-700 ml-1 flex items-center gap-1.5">
-                            <Users className="w-3.5 h-3.5 text-blue-500" /> No WA Orang Tua (Aktif)
+                            <Users className="w-3.5 h-3.5 text-primary" /> No WA Orang Tua (Aktif)
                           </Label>
                           <Input
                             value={formData.teleponOrtu}
                             onChange={(e) => setFormData({ ...formData, teleponOrtu: e.target.value })}
-                            className="rounded-2xl h-12 border-slate-200 focus:ring-blue-600 font-medium"
+                            className="rounded-2xl h-12 border-slate-200 focus:ring-primary font-medium"
                             placeholder="08xxxxxxxxxx"
                           />
                         </div>
@@ -494,7 +494,7 @@ function StudentBiodataPage() {
                     <Button
                       type="button"
                       onClick={nextStep}
-                      className="rounded-2xl h-12 px-8 bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-100 active:scale-95 transition-all"
+                      className="rounded-2xl h-12 px-8 bg-primary hover:bg-primary/90 text-white font-bold shadow-lg shadow-primary/10 active:scale-95 transition-all"
                     >
                       Selanjutnya
                       <ChevronRight className="w-5 h-5 ml-1" />

@@ -182,8 +182,8 @@ function UsersPage() {
       </AlertDialog>
       {/* Page Header with Icon */}
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-100 rounded-lg">
-          <Users className="w-6 h-6 text-blue-600" />
+        <div className="p-2 bg-primary/10 rounded-lg">
+          <Users className="w-6 h-6 text-primary" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Manajemen User</h1>
@@ -195,7 +195,7 @@ function UsersPage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <UserCog className="w-5 h-5 text-blue-600" />
+              <UserCog className="w-5 h-5 text-primary" />
               Daftar Pengguna
             </CardTitle>
             <CardDescription>
@@ -204,7 +204,7 @@ function UsersPage() {
           </div>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 rounded-md">
+              <Button className="bg-primary hover:bg-primary/90 text-white rounded-md">
                 <Plus className="w-4 h-4 mr-2" />
                 Tambah User
               </Button>
@@ -224,7 +224,7 @@ function UsersPage() {
                 setPageSize(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="w-[70px] bg-white h-9 border-slate-300 rounded-md shadow-sm focus:ring-blue-500">
+                <SelectTrigger className="w-[70px] bg-white h-9 border-slate-300 rounded-md shadow-sm focus:ring-primary">
                   <SelectValue placeholder="10" />
                 </SelectTrigger>
                 <SelectContent>
@@ -254,7 +254,7 @@ function UsersPage() {
                 setRoleFilter(val)
                 setPage(1)
               }}>
-                <SelectTrigger className="w-[120px] bg-white h-9 border-slate-300 rounded-md shadow-sm focus:ring-blue-500">
+                <SelectTrigger className="w-[120px] bg-white h-9 border-slate-300 rounded-md shadow-sm focus:ring-primary">
                   <SelectValue placeholder="Role" />
                 </SelectTrigger>
                 <SelectContent>
@@ -311,7 +311,7 @@ function UsersPage() {
                       <TableCell className="text-slate-600 px-6 py-2">{user.email}</TableCell>
                       <TableCell className="px-6 py-2">
                         <span className={`inline-flex items-center rounded-full px-2 py-0 text-[11px] font-semibold shadow-sm ${(user.role || 'user') === 'admin'
-                          ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                          ? 'bg-primary/10 text-primary border border-primary/20'
                           : 'bg-slate-50 text-slate-700 border border-slate-200'
                           }`}>
                           {user.role || 'user'}
@@ -382,7 +382,7 @@ function UsersPage() {
                     setPageSize(e.target.value)
                     setPage(1)
                   }}
-                  className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>
@@ -424,7 +424,7 @@ function UsersPage() {
                         key={p}
                         onClick={() => setPage(p as number)}
                         className={`min-w-[32px] h-8 px-3 py-1.5 text-sm rounded-md transition-colors ${page === p
-                          ? 'bg-blue-600 text-white font-medium'
+                          ? 'bg-primary text-white font-medium'
                           : 'text-slate-600 hover:bg-slate-100'
                           }`}
                       >
@@ -538,7 +538,7 @@ function CreateUserDialog({ onEmailCreated }: { onEmailCreated: () => void }) {
         <div className="space-y-2">
           <Label htmlFor="role">Role</Label>
           <Select value={role} onValueChange={setRole}>
-            <SelectTrigger className="w-full bg-white border-slate-300 rounded-md shadow-sm focus:ring-blue-500">
+            <SelectTrigger className="w-full bg-white border-slate-300 rounded-md shadow-sm focus:ring-primary">
               <SelectValue placeholder="Pilih Role" />
             </SelectTrigger>
             <SelectContent>
@@ -597,7 +597,7 @@ function EditUserForm({ user, onSuccess }: { user: any, onSuccess: () => void })
       <div className="space-y-2">
         <Label htmlFor="edit-role">Role</Label>
         <Select value={role} onValueChange={setRole}>
-          <SelectTrigger id="edit-role" className="w-full bg-white border-slate-300 rounded-md shadow-sm focus:ring-blue-500">
+          <SelectTrigger id="edit-role" className="w-full bg-white border-slate-300 rounded-md shadow-sm focus:ring-primary">
             <SelectValue placeholder="Pilih Role" />
           </SelectTrigger>
           <SelectContent>

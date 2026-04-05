@@ -23,7 +23,7 @@ export const getPendaftarList = createServerFn({
 })
     .inputValidator((d: { limit?: number; offset?: number; search?: string, asalSekolah?: string, jalurMasuk?: string, tahap?: string, statusAntrian?: string, tahunAjaran?: string, tglAntrian?: string }) => d)
     .handler(async ({ data }) => {
-        const { limit = 10, offset = 0, search, asalSekolah, jalurMasuk, tahap, statusAntrian, tahunAjaran: inputTahunAjaran, tglAntrian } = data
+        const { limit = 10, offset = 0, search, asalSekolah, jalurMasuk, tahap, statusAntrian, tahunAjaran: inputTahunAjaran, tglAntrian } = data || {}
 
         let targetTahunAjaran = inputTahunAjaran
 
@@ -94,9 +94,9 @@ export const getPendaftarList = createServerFn({
 export const getPendaftarStats = createServerFn({
     method: 'GET',
 })
-    .inputValidator((d: { tahunAjaran?: string }) => d)
+    .inputValidator((d: { tahunAjaran?: string }) => d || {})
     .handler(async ({ data }) => {
-        const { tahunAjaran: filterTA } = data
+        const { tahunAjaran: filterTA } = (data || {}) as any
         const filters = []
         if (filterTA && filterTA !== 'semua') {
             filters.push(eq(pendaftar.tahunAjaran, filterTA))
@@ -119,9 +119,9 @@ export const getPendaftarStats = createServerFn({
 export const getRegistrationChartData = createServerFn({
     method: 'GET',
 })
-    .inputValidator((d: { tahunAjaran?: string }) => d)
+    .inputValidator((d: { tahunAjaran?: string }) => d || {})
     .handler(async ({ data }) => {
-        const { tahunAjaran: filterTA } = data
+        const { tahunAjaran: filterTA } = (data || {}) as any
         const filters = []
         if (filterTA && filterTA !== 'semua') {
             filters.push(eq(pendaftar.tahunAjaran, filterTA))

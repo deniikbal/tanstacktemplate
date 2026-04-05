@@ -144,7 +144,7 @@ function DashboardLayout() {
               <Button variant="ghost" className="flex items-center gap-2 px-2">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={userData.avatar || undefined} alt={userData.name} />
-                  <AvatarFallback className="bg-blue-600 text-white text-xs">
+                  <AvatarFallback className="bg-primary text-white text-xs">
                     {getInitials(userData.name)}
                   </AvatarFallback>
                 </Avatar>

@@ -188,14 +188,14 @@ function DashboardPendaftarPage() {
     <div className="p-6 space-y-6">
       {/* Page Header with Icon */}
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-100 rounded-lg">
-          <Users className="w-6 h-6 text-blue-600" />
+        <div className="p-2 bg-primary/10 rounded-lg">
+          <Users className="w-6 h-6 text-primary" />
         </div>
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-slate-900">Data Pendaftar</h1>
             {activeYear && (
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 font-bold px-2 py-0.5 rounded-full">
+              <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 font-bold px-2 py-0.5 rounded-full">
                 TA {activeYear}
               </Badge>
             )}
@@ -208,7 +208,7 @@ function DashboardPendaftarPage() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <UserCog className="w-5 h-5 text-blue-600" />
+              <UserCog className="w-5 h-5 text-primary" />
               Daftar Calon Pendaftar
             </CardTitle>
             <CardDescription>
@@ -220,7 +220,7 @@ function DashboardPendaftarPage() {
                 setSelectedPendaftar({})
                 setIsFormOpen(true)
               }}
-              className="bg-blue-600 hover:bg-blue-700 rounded-md"
+              className="bg-primary hover:bg-primary/90 text-white rounded-md"
             >
               <Plus className="w-4 h-4 mr-2" />
               Tambah
@@ -234,7 +234,7 @@ function DashboardPendaftarPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   placeholder="Cari nama pendaftar..."
-                  className="pl-9 bg-white h-9 border-slate-300 rounded-md focus:border-blue-400 transition-all"
+                  className="pl-9 bg-white h-9 border-slate-300 rounded-md focus:ring-1 focus:ring-primary transition-all"
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value)
@@ -246,7 +246,7 @@ function DashboardPendaftarPage() {
                 <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   placeholder="Filter asal sekolah..."
-                  className="pl-9 bg-white h-9 border-slate-300 rounded-md focus:border-blue-400 transition-all"
+                  className="pl-9 bg-white h-9 border-slate-300 rounded-md focus:ring-1 focus:ring-primary transition-all"
                   value={sekolahFilter}
                   onChange={(e) => {
                     setSekolahFilter(e.target.value)
@@ -356,10 +356,10 @@ function DashboardPendaftarPage() {
                         {p.noAntrian && p.tglAntrian === getJakartaDate() ? (
                           <div className="flex flex-col gap-1">
                             <Badge className={`${p.statusAntrian === 'CALLING' ? 'bg-amber-500 animate-pulse' :
-                              p.statusAntrian === 'IN_ROOM' ? 'bg-blue-600' :
+                              p.statusAntrian === 'IN_ROOM' ? 'bg-primary' :
                                 p.statusAntrian === 'SKIPPED' ? 'bg-red-500' :
                                   p.statusAntrian === 'DONE' ? 'bg-slate-400' :
-                                    'bg-blue-600'} hover:opacity-90 text-white font-black px-3 py-1 text-sm shadow-sm w-fit`}>
+                                    'bg-primary'} hover:opacity-90 text-white font-black px-3 py-1 text-sm shadow-sm w-fit`}>
                               #{p.noAntrian}
                             </Badge>
                             <span className="text-[10px] font-bold text-slate-500 uppercase">
@@ -392,7 +392,7 @@ function DashboardPendaftarPage() {
                       </TableCell>
                       <TableCell className="px-4">
                         <div className="flex flex-col gap-1">
-                          <span className={`w-fit px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${p.tahap === '1' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                          <span className={`w-fit px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${p.tahap === '1' ? 'bg-primary/10 text-primary' : 'bg-purple-100 text-purple-700'}`}>
                             Tahap {p.tahap}
                           </span>
                           <span className="text-xs text-slate-600 font-medium">{p.jalurMasuk || '-'}</span>
@@ -423,7 +423,7 @@ function DashboardPendaftarPage() {
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="h-8 w-8 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-md"
+                                      className="h-8 w-8 text-primary hover:text-primary/90 hover:bg-primary/10 rounded-md"
                                       onClick={() => updateQueueStatus({ data: { id: p.id, status: 'IN_ROOM' } }).then(fetchPendaftar)}
                                     >
                                       <Play className="h-4 w-4" />
@@ -466,7 +466,7 @@ function DashboardPendaftarPage() {
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-md"
+                                    className="h-8 w-8 text-primary hover:text-primary/90 hover:bg-primary/10 rounded-md"
                                     onClick={async () => {
                                       try {
                                         await issueQueueNumber({ data: { id: p.id } })
@@ -554,7 +554,7 @@ function DashboardPendaftarPage() {
                       setLimit(e.target.value)
                       setPage(1)
                     }}
-                    className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-primary"
                   >
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -596,7 +596,7 @@ function DashboardPendaftarPage() {
                           key={p}
                           onClick={() => setPage(p as number)}
                           className={`min-w-[32px] h-8 px-3 py-1.5 text-sm rounded-md transition-colors ${page === p
-                            ? 'bg-blue-600 text-white font-medium'
+                            ? 'bg-primary text-white font-medium'
                             : 'text-slate-600 hover:bg-slate-100'
                             }`}
                         >
@@ -808,7 +808,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
                 <button
                   key={idx}
                   type="button"
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-blue-100 border-b border-slate-100 flex flex-col group"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-primary/10 border-b border-slate-100 flex flex-col group"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => {
                     setSekolahQuery(s.sekolah)
@@ -816,8 +816,8 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
                   }}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-slate-900 group-hover:text-blue-700">{s.sekolah}</span>
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${s.status === 'N' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}`}>
+                    <span className="font-medium text-slate-900 group-hover:text-primary">{s.sekolah}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${s.status === 'N' ? 'bg-primary/10 text-primary' : 'bg-amber-50 text-amber-600'}`}>
                       {s.status === 'N' ? 'Negeri' : 'Swasta'}
                     </span>
                   </div>
@@ -884,7 +884,7 @@ function PendaftarForm({ initialData, onSuccess, onCancel }: {
       </div>
       <DialogFooter className="pt-4 border-t gap-2">
         <Button type="button" variant="ghost" onClick={onCancel} disabled={loading} className="rounded-md">Batal</Button>
-        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 min-w-[100px] rounded-md">
+        <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90 text-white min-w-[100px] rounded-md">
           {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
           Simpan
         </Button>

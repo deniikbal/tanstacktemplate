@@ -395,7 +395,7 @@ function AnnouncementPage() {
     if (!isMounted) {
         return (
             <div className="min-h-screen bg-slate-50 flex col items-center justify-center p-4">
-                <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+                <Loader2 className="w-10 h-10 animate-spin text-primary" />
             </div>
         )
     }
@@ -447,11 +447,11 @@ function AnnouncementPage() {
                                     { label: 'Detik', value: timeLeft.seconds }
                                 ].map((item, i) => (
                                     <div key={i} className="flex flex-col items-center">
-                                        <div className={`w-full min-h-[90px] sm:min-h-[110px] md:min-h-[130px] bg-slate-50 dark:bg-slate-900 rounded-md flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-inner mb-2 group hover:border-blue-600/50 transition-colors relative overflow-hidden px-4`}>
+                                        <div className={`w-full min-h-[90px] sm:min-h-[110px] md:min-h-[130px] bg-slate-50 dark:bg-slate-900 rounded-md flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-inner mb-2 group hover:border-primary/50 transition-colors relative overflow-hidden px-4`}>
                                             {item.label === 'Detik' && (
-                                                <div className="absolute inset-0 bg-blue-600/5 animate-pulse rounded-xl"></div>
+                                                <div className="absolute inset-0 bg-primary/5 animate-pulse rounded-xl"></div>
                                             )}
-                                            <span className={`text-4xl sm:text-5xl md:text-6xl font-['Orbitron'] ${item.label === 'Detik' ? 'text-blue-600' : 'text-slate-900 dark:text-slate-100'} group-hover:text-blue-600 transition-colors leading-none tabular-nums relative z-10`}>
+                                            <span className={`text-4xl sm:text-5xl md:text-6xl font-['Orbitron'] ${item.label === 'Detik' ? 'text-primary' : 'text-slate-900 dark:text-slate-100'} group-hover:text-primary transition-colors leading-none tabular-nums relative z-10`}>
                                                 {String(item.value).padStart(2, '0')}
                                             </span>
                                         </div>
@@ -463,9 +463,9 @@ function AnnouncementPage() {
                             </div>
                         </div>
 
-                        <div className="w-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md p-4 flex items-start gap-3 shadow-sm transition-colors duration-300">
-                            <span className="material-icons-round text-blue-600 flex-shrink-0 mt-0.5">lightbulb</span>
-                            <p className="text-sm text-blue-700 dark:text-blue-300 font-medium leading-relaxed">
+                        <div className="w-full bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 rounded-md p-4 flex items-start gap-3 shadow-sm transition-colors duration-300">
+                            <span className="material-icons-round text-primary flex-shrink-0 mt-0.5">lightbulb</span>
+                            <p className="text-sm text-primary dark:text-primary-foreground font-medium leading-relaxed">
                                 <span className="font-bold">Info:</span> Hasil seleksi akan dapat diakses setelah waktu pengumuman tiba.
                             </p>
                         </div>
@@ -552,7 +552,7 @@ function AnnouncementPage() {
                             /* Result View - Simple Layout */
                             <div className="w-full max-w-5xl animate-in fade-in duration-500 space-y-6">
                                 {/* Big Heading */}
-                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white drop-shadow-lg leading-tight">
+                                <h1 className="text-2xl md:text-3xl lg:text-5xl font-black text-white drop-shadow-lg leading-tight lg:whitespace-nowrap">
                                     {result.status === 'LULUS' ? (
                                         <>SELAMAT! ANDA DINYATAKAN <span className="text-amber-400">LULUS</span> {tahunAjaran?.split('/')[0] || '2026'}</>
                                     ) : (
@@ -607,9 +607,9 @@ function AnnouncementPage() {
                                             {result.nisn && (
                                                 <div className="flex-shrink-0 bg-white p-2.5 rounded-md shadow-lg border border-white/20 self-center sm:self-start group hover:scale-105 transition-transform duration-300">
                                                     <div className="bg-white p-1 rounded-md">
-                                                        <QRCodeSVG 
-                                                            value={result.nisn} 
-                                                            size={90} 
+                                                        <QRCodeSVG
+                                                            value={result.nisn}
+                                                            size={90}
                                                             level="H"
                                                             includeMargin={false}
                                                             imageSettings={{
@@ -670,7 +670,7 @@ function AnnouncementPage() {
                                                         <span>Pendaftaran Gelombang 2 akan dibuka pada tanggal 10 Juli 2026.</span>
                                                     </li>
                                                     <li className="flex gap-2 items-start">
-                                                        <span className="material-icons-round text-blue-500 text-lg mt-0.5">support_agent</span>
+                                                        <span className="material-icons-round text-primary text-lg mt-0.5">support_agent</span>
                                                         <span>Hubungi panitia jika terdapat kesalahan data.</span>
                                                     </li>
                                                 </ul>

@@ -162,8 +162,8 @@ function DaftarUlangPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-100 rounded-lg">
-          <ClipboardList className="w-6 h-6 text-blue-600" />
+        <div className="p-2 bg-primary/10 rounded-lg">
+          <ClipboardList className="w-6 h-6 text-primary" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Daftar Ulang</h1>
@@ -173,7 +173,7 @@ function DaftarUlangPage() {
 
        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card
-          className={`cursor-pointer transition-all hover:shadow-md rounded-md ${statusFilter === 'sudah' ? 'ring-2 ring-blue-500 border-blue-500' : 'border-slate-300 bg-blue-50/30'}`}
+          className={`cursor-pointer transition-all hover:shadow-md rounded-md ${statusFilter === 'sudah' ? 'ring-2 ring-primary border-primary' : 'border-slate-300 bg-primary/5'}`}
           onClick={() => {
             const newFilter = statusFilter === 'sudah' ? 'all' : 'sudah'
             setStatusFilter(newFilter)
@@ -181,14 +181,14 @@ function DaftarUlangPage() {
           }}
         >
           <CardContent className="p-4 flex items-center gap-4">
-            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-              <CheckCircle2 className="h-6 w-6 text-blue-600" />
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <CheckCircle2 className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <p className="text-xs font-medium text-blue-600 uppercase tracking-wider">Sudah Daftar Ulang</p>
+              <p className="text-xs font-medium text-primary uppercase tracking-wider">Sudah Daftar Ulang</p>
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-blue-700">{globalStats.sudah}</span>
-                <span className="text-xs text-blue-600/70">Siswa</span>
+                <span className="text-2xl font-bold text-primary">{globalStats.sudah}</span>
+                <span className="text-xs text-primary/70">Siswa</span>
               </div>
             </div>
           </CardContent>
@@ -243,7 +243,7 @@ function DaftarUlangPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                <CheckCircle2 className="h-5 w-5 text-primary" />
                 Monitoring Berkas Daftar Ulang
               </CardTitle>
               <CardDescription>
@@ -254,7 +254,7 @@ function DaftarUlangPage() {
               <div className="relative w-full md:w-64">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2">
                   {isPending ? (
-                    <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                    <Loader2 className="h-4 w-4 text-primary animate-spin" />
                   ) : (
                     <Search className="h-4 w-4 text-slate-400" />
                   )}
@@ -365,7 +365,7 @@ function DaftarUlangPage() {
                             {(item.teleponSiswa || item.teleponOrtu) && (
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-blue-50 hover:text-blue-600">
+                                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-primary/10 hover:text-primary">
                                     <Phone className="h-3.5 w-3.5" />
                                   </Button>
                                 </DropdownMenuTrigger>
@@ -374,7 +374,7 @@ function DaftarUlangPage() {
                                   <DropdownMenuSeparator />
                                   {item.teleponSiswa && (
                                     <DropdownMenuItem onClick={() => window.open(`https://wa.me/${item.teleponSiswa.replace(/\D/g, '').replace(/^0/, '62')}`, '_blank')}>
-                                      <MessageCircle className="mr-2 h-4 w-4 text-blue-500" />
+                                      <MessageCircle className="mr-2 h-4 w-4 text-primary" />
                                       <div className="flex flex-col">
                                         <span className="text-xs font-medium">WhatsApp Siswa</span>
                                         <span className="text-[10px] text-slate-500">{item.teleponSiswa}</span>
@@ -383,7 +383,7 @@ function DaftarUlangPage() {
                                   )}
                                   {item.teleponOrtu && (
                                     <DropdownMenuItem onClick={() => window.open(`https://wa.me/${item.teleponOrtu.replace(/\D/g, '').replace(/^0/, '62')}`, '_blank')}>
-                                      <MessageCircle className="mr-2 h-4 w-4 text-blue-500" />
+                                      <MessageCircle className="mr-2 h-4 w-4 text-primary" />
                                       <div className="flex flex-col">
                                         <span className="text-xs font-medium">WhatsApp Ortu</span>
                                         <span className="text-[10px] text-slate-500">{item.teleponOrtu}</span>
@@ -401,7 +401,7 @@ function DaftarUlangPage() {
                       <TableCell className="text-center">
                         <div className="flex justify-center">
                           <Badge variant="outline" className={`w-8 h-8 flex items-center justify-center p-0 rounded-full border-2 ${(item.jenisKelamin === 'Laki-laki' || item.jenisKelamin === 'L')
-                            ? 'border-blue-200 bg-blue-50 text-blue-700'
+                            ? 'border-primary/20 bg-primary/10 text-primary'
                             : 'border-pink-200 bg-pink-50 text-pink-700'
                             }`}>
                             {item.jenisKelamin === 'Laki-laki' || item.jenisKelamin === 'L' ? 'L' :
@@ -414,7 +414,7 @@ function DaftarUlangPage() {
                           <Checkbox
                             checked={item.daftarUlang.skl}
                             onCheckedChange={(checked) => handleCheckboxChange(item.id, 'skl', checked as boolean)}
-                            className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           />
                           {item.daftarUlang.fileSklId && (
                             <button
@@ -425,10 +425,10 @@ function DaftarUlangPage() {
                                 studentId: item.id,
                                 field: 'skl'
                               })}
-                              className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                              className="p-1 hover:bg-primary/10 rounded-md transition-colors"
                               title="Lihat Berkas"
                             >
-                              <FileText className="h-3.5 w-3.5 text-blue-500" />
+                              <FileText className="h-3.5 w-3.5 text-primary" />
                             </button>
                           )}
                         </div>
@@ -438,7 +438,7 @@ function DaftarUlangPage() {
                           <Checkbox
                             checked={item.daftarUlang.tatib}
                             onCheckedChange={(checked) => handleCheckboxChange(item.id, 'tatib', checked as boolean)}
-                            className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           />
                           {item.daftarUlang.fileTatibId && (
                             <button
@@ -449,10 +449,10 @@ function DaftarUlangPage() {
                                 studentId: item.id,
                                 field: 'tatib'
                               })}
-                              className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                              className="p-1 hover:bg-primary/10 rounded-md transition-colors"
                               title="Lihat Berkas"
                             >
-                              <FileText className="h-3.5 w-3.5 text-blue-500" />
+                              <FileText className="h-3.5 w-3.5 text-primary" />
                             </button>
                           )}
                         </div>
@@ -462,7 +462,7 @@ function DaftarUlangPage() {
                           <Checkbox
                             checked={item.daftarUlang.kk}
                             onCheckedChange={(checked) => handleCheckboxChange(item.id, 'kk', checked as boolean)}
-                            className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           />
                           {item.daftarUlang.fileKkId && (
                             <button
@@ -473,10 +473,10 @@ function DaftarUlangPage() {
                                 studentId: item.id,
                                 field: 'kk'
                               })}
-                              className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                              className="p-1 hover:bg-primary/10 rounded-md transition-colors"
                               title="Lihat Berkas"
                             >
-                              <FileText className="h-3.5 w-3.5 text-blue-500" />
+                              <FileText className="h-3.5 w-3.5 text-primary" />
                             </button>
                           )}
                         </div>
@@ -486,7 +486,7 @@ function DaftarUlangPage() {
                           <Checkbox
                             checked={item.daftarUlang.bukti}
                             onCheckedChange={(checked) => handleCheckboxChange(item.id, 'bukti', checked as boolean)}
-                            className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           />
                           {item.daftarUlang.fileBuktiId && (
                             <button
@@ -497,10 +497,10 @@ function DaftarUlangPage() {
                                 studentId: item.id,
                                 field: 'bukti'
                               })}
-                              className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                              className="p-1 hover:bg-primary/10 rounded-md transition-colors"
                               title="Lihat Berkas"
                             >
-                              <FileText className="h-3.5 w-3.5 text-blue-500" />
+                              <FileText className="h-3.5 w-3.5 text-primary" />
                             </button>
                           )}
                         </div>
@@ -510,7 +510,7 @@ function DaftarUlangPage() {
                           <Checkbox
                             checked={item.daftarUlang.pernyataan}
                             onCheckedChange={(checked) => handleCheckboxChange(item.id, 'pernyataan', checked as boolean)}
-                            className="data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                            className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                           />
                           {item.daftarUlang.filePernyataanId && (
                             <button
@@ -521,10 +521,10 @@ function DaftarUlangPage() {
                                 studentId: item.id,
                                 field: 'pernyataan'
                               })}
-                              className="p-1 hover:bg-blue-50 rounded-md transition-colors"
+                              className="p-1 hover:bg-primary/10 rounded-md transition-colors"
                               title="Lihat Berkas"
                             >
-                              <FileText className="h-3.5 w-3.5 text-blue-500" />
+                              <FileText className="h-3.5 w-3.5 text-primary" />
                             </button>
                           )}
                         </div>
@@ -534,7 +534,7 @@ function DaftarUlangPage() {
                           {(() => {
                             const status = calculateKeterangan(item.daftarUlang);
                              if (status === 'Lengkap') return (
-                               <Badge className="justify-center font-medium w-full py-1 bg-blue-500 hover:bg-blue-600 rounded-md">Lengkap</Badge>
+                               <Badge className="justify-center font-medium w-full py-1 bg-primary hover:bg-primary/90 rounded-md">Lengkap</Badge>
                              )
                              if (status === 'Belum Daftar Ulang') return (
                                <Badge variant="destructive" className="justify-center font-medium w-full py-1 bg-rose-500 hover:bg-rose-600 rounded-md">Belum Daftar</Badge>
@@ -564,8 +564,8 @@ function DaftarUlangPage() {
                               <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
                             </div>
                           ) : (
-                            <div className="h-7 w-7 flex items-center justify-center rounded-full bg-blue-50 border border-blue-100">
-                              <CheckCircle2 className="h-4 w-4 text-blue-500" />
+                            <div className="h-7 w-7 flex items-center justify-center rounded-full bg-primary/10 border border-primary/20">
+                              <CheckCircle2 className="h-4 w-4 text-primary" />
                             </div>
                           )}
                         </div>
@@ -609,7 +609,7 @@ function DaftarUlangPage() {
                                 <DropdownMenuSeparator />
                                 {item.teleponSiswa && (
                                   <DropdownMenuItem onClick={() => window.open(`https://wa.me/${item.teleponSiswa.replace(/\D/g, '').replace(/^0/, '62')}`, '_blank')}>
-                                    <MessageCircle className="mr-2 h-4 w-4 text-blue-500" />
+                                    <MessageCircle className="mr-2 h-4 w-4 text-primary" />
                                     <div className="flex flex-col text-xs">
                                       <span className="font-medium">WhatsApp Siswa</span>
                                       <span className="text-slate-500">{item.teleponSiswa}</span>
@@ -618,7 +618,7 @@ function DaftarUlangPage() {
                                 )}
                                 {item.teleponOrtu && (
                                   <DropdownMenuItem onClick={() => window.open(`https://wa.me/${item.teleponOrtu.replace(/\D/g, '').replace(/^0/, '62')}`, '_blank')}>
-                                    <MessageCircle className="mr-2 h-4 w-4 text-blue-500" />
+                                    <MessageCircle className="mr-2 h-4 w-4 text-primary" />
                                     <div className="flex flex-col text-xs">
                                       <span className="font-medium">WhatsApp Ortu</span>
                                       <span className="text-slate-500">{item.teleponOrtu}</span>
@@ -639,7 +639,7 @@ function DaftarUlangPage() {
                     {savingId === item.id ? (
                       <Loader2 className="h-4 w-4 animate-spin text-slate-300" />
                     ) : (
-                      <CheckCircle2 className="h-4 w-4 text-blue-500 opacity-50" />
+                      <CheckCircle2 className="h-4 w-4 text-primary opacity-50" />
                     )}
                   </div>
 
@@ -667,7 +667,7 @@ function DaftarUlangPage() {
                               studentId: item.id,
                               field: doc.id
                             })}
-                            className="mt-1 flex items-center justify-center p-1 bg-blue-50 rounded-md text-blue-600 active:scale-95 transition-transform"
+                            className="mt-1 flex items-center justify-center p-1 bg-primary/10 rounded-md text-primary active:scale-95 transition-transform"
                           >
                             <FileText className="h-3 w-3" />
                             <span className="text-[9px] font-bold ml-0.5">LIHAT</span>

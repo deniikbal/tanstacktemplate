@@ -46,18 +46,18 @@ function StudentLoginPage() {
         <div className="min-h-screen flex flex-col items-center justify-center bg-[#f8fafc] p-4 relative overflow-hidden">
             {/* Soft decorative background blobs */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
-                <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-50 blur-3xl opacity-50" />
-                <div className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] rounded-full bg-indigo-50 blur-3xl opacity-50" />
+                <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-3xl opacity-50" />
+                <div className="absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-3xl opacity-50" />
             </div>
 
-            <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-all font-medium text-sm">
+            <Link to="/" className="absolute top-8 left-8 flex items-center gap-2 text-slate-500 hover:text-primary transition-all font-medium text-sm">
                 <ArrowLeft className="w-4 h-4" />
                 Kembali
             </Link>
 
             <div className="w-full max-w-[400px] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="flex flex-col items-center space-y-4">
-                    <div className="w-12 h-12 bg-blue-600 rounded-sm flex items-center justify-center shadow-lg shadow-blue-200">
+                    <div className="w-12 h-12 bg-primary rounded-sm flex items-center justify-center shadow-lg shadow-primary/20">
                         <GraduationCap className="w-7 h-7 text-white" />
                     </div>
                     <div className="text-center space-y-1">
@@ -84,14 +84,14 @@ function StudentLoginPage() {
                                     placeholder="Masukkan 10 digit NISN"
                                     value={nisn}
                                     onChange={(e) => setNisn(e.target.value)}
-                                    className="h-11 border-slate-200 focus-visible:ring-blue-600 rounded-sm bg-slate-50/50"
+                                    className="h-11 border-slate-200 focus-visible:ring-primary rounded-sm bg-slate-50/50"
                                     maxLength={10}
                                     disabled={isLoading}
                                 />
                             </div>
                             <Button
                                 type="submit"
-                                className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-sm transition-all active:scale-[0.98] shadow-md shadow-blue-200/50"
+                                className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-bold rounded-sm transition-all active:scale-[0.98] shadow-md shadow-primary/20"
                                 disabled={isLoading}
                             >
                                 {isLoading ? (

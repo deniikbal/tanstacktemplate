@@ -168,22 +168,22 @@ function LandingPage() {
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-700 rounded-md flex items-center justify-center">
+            <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
               <GraduationCap className="text-white w-5 h-5" />
             </div>
-            <span className="font-bold text-xl tracking-tight">SPMB <span className="text-blue-700">SMANSABA</span></span>
+            <span className="font-bold text-xl tracking-tight">SPMB <span className="text-primary">SMANSABA</span></span>
           </div>
           <div className="hidden lg:flex items-center gap-8 text-sm font-medium text-slate-600">
-            <a href="#beranda" className="hover:text-blue-700 transition-colors">Beranda</a>
-            <a href="#alur" className="hover:text-blue-700 transition-colors">Alur</a>
-            <a href="#persyaratan" className="hover:text-blue-700 transition-colors">Persyaratan</a>
-            <a href="#jadwal" className="hover:text-blue-700 transition-colors">Jadwal</a>
-            <a href="#galeri" className="hover:text-blue-700 transition-colors">Galeri</a>
-            <a href="#kontak" className="hover:text-blue-700 transition-colors">Kontak</a>
+            <a href="#beranda" className="hover:text-primary transition-colors">Beranda</a>
+            <a href="#alur" className="hover:text-primary transition-colors">Alur</a>
+            <a href="#persyaratan" className="hover:text-primary transition-colors">Persyaratan</a>
+            <a href="#jadwal" className="hover:text-primary transition-colors">Jadwal</a>
+            <a href="#galeri" className="hover:text-primary transition-colors">Galeri</a>
+            <a href="#kontak" className="hover:text-primary transition-colors">Kontak</a>
           </div>
           <div className="hidden lg:flex items-center gap-3">
             <Link to="/pengumuman">
-              <Button className="bg-blue-700 hover:bg-blue-800 font-semibold shadow-lg shadow-blue-700/20 px-6">
+              <Button className="bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/20 px-6">
                 Pengumuman
               </Button>
             </Link>
@@ -200,10 +200,10 @@ function LandingPage() {
               <SheetContent side="right" className="w-[300px] sm:w-[400px] p-0">
                 <SheetHeader className="p-6 border-b text-left">
                   <SheetTitle className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-700 rounded-md flex items-center justify-center">
+                    <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
                       <GraduationCap className="text-white w-5 h-5" />
                     </div>
-                    <span className="font-bold text-xl tracking-tight">SPMB <span className="text-blue-700">SMANSABA</span></span>
+                    <span className="font-bold text-xl tracking-tight">SPMB <span className="text-primary">SMANSABA</span></span>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col py-6 px-4 gap-2">
@@ -216,7 +216,7 @@ function LandingPage() {
                 </div>
                 <div className="mt-auto p-6 border-t bg-slate-50/50 space-y-3">
                   <Link to="/pengumuman" onClick={() => setIsOpen(false)} className="block">
-                    <Button className="w-full h-11 bg-blue-700 hover:bg-blue-800 font-semibold shadow-lg shadow-blue-700/20">
+                    <Button className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/20">
                       Pengumuman
                     </Button>
                   </Link>
@@ -230,30 +230,30 @@ function LandingPage() {
       {/* Hero Section */}
       <section id="beranda" className="relative pt-32 pb-20 px-6 overflow-hidden">
         {/* Background blobs */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[500px] h-[500px] bg-blue-50 rounded-full blur-3xl opacity-50 -z-10"></div>
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] bg-blue-50 rounded-full blur-3xl opacity-40 -z-10"></div>
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl opacity-50 -z-10"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] bg-primary/5 rounded-full blur-3xl opacity-40 -z-10"></div>
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6 text-center lg:text-left">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight">
-              <span className="text-blue-700">SPMB</span>
+              <span className="text-primary">SPMB</span>
               <br />
-              <span className="text-blue-700">Online 2026</span>
+              <span className="text-primary">Online 2026</span>
             </h1>
             <p className="text-base md:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed">
               Sistem Penerimaan Murid Baru <span className="font-bold text-slate-900">SMAN 1 Bantarujeg</span> tahun ajaran 2026/2027.
               <br />
-              Daftar secara online dengan <span className="text-blue-700 font-bold">mudah & cepat</span>!
+              Daftar secara online dengan <span className="text-primary font-bold">mudah & cepat</span>!
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
               <Link to="/login">
-                <Button size="lg" className="bg-blue-700 hover:bg-blue-800 h-12 px-6 text-base font-bold shadow-xl shadow-blue-700/30 group">
-                  <UserPlus className="mr-2 w-5 h-5" />
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white h-12 px-6 text-base font-bold shadow-xl shadow-primary/30 group">
+                  <UserPlus className="mr-2 w-5 h-5 text-white" />
                   Daftar Sekarang
                 </Button>
               </Link>
               <Button variant="outline" size="lg" className="h-12 px-6 text-base font-bold border-2 hover:bg-slate-50">
-                <ClipboardList className="mr-2 w-5 h-5 text-blue-700" />
+                <ClipboardList className="mr-2 w-5 h-5 text-primary" />
                 Lihat Persyaratan
               </Button>
             </div>
@@ -266,9 +266,9 @@ function LandingPage() {
                 <div className="text-2xl md:text-3xl font-black text-slate-900">5</div>
                 <div className="text-xs md:text-sm text-slate-500 font-medium">Jalur Pendaftaran</div>
               </div>
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-4 text-center shadow-sm">
-                <div className="text-2xl md:text-3xl font-black text-blue-700">100%</div>
-                <div className="text-xs md:text-sm text-blue-700 font-medium">Digital</div>
+              <div className="bg-primary/5 border border-primary/20 rounded-md p-4 text-center shadow-sm">
+                <div className="text-2xl md:text-3xl font-black text-primary">100%</div>
+                <div className="text-xs md:text-sm text-primary font-medium">Digital</div>
               </div>
             </div>
           </div>
@@ -282,7 +282,7 @@ function LandingPage() {
               />
             </div>
             {/* Decorative elements around image */}
-            <div className="absolute -top-4 -right-4 w-24 h-24 bg-blue-100 rounded-md -z-10 animate-bounce transition-all duration-1000"></div>
+            <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary/10 rounded-md -z-10 animate-bounce transition-all duration-1000"></div>
             <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-slate-100 rounded-full -z-10 animate-pulse outline-dashed outline-slate-200 outline-offset-8"></div>
           </div>
         </div>
@@ -292,18 +292,18 @@ function LandingPage() {
       <section id="alur" className="py-12 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <h2 className="text-sm font-bold text-blue-700 uppercase tracking-[0.2em]">Langkah Mudah</h2>
+            <h2 className="text-sm font-bold text-primary uppercase tracking-[0.2em]">Langkah Mudah</h2>
             <h3 className="text-3xl md:text-4xl font-black text-slate-900">Alur Pendaftaran Online</h3>
             <p className="text-slate-500 text-lg">Ikuti 6 langkah sederhana untuk menjadi bagian dari SMAN 1 BANTARUJEG.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
             {steps.map((step, index) => (
-              <div key={index} className="bg-white p-6 rounded-md shadow-sm border-l-4 border-blue-600 flex gap-4 items-start group hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 bg-blue-700 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+              <div key={index} className="bg-white p-6 rounded-md shadow-sm border-l-4 border-primary flex gap-4 items-start group hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                   {step.icon}
                 </div>
                 <div className="space-y-1.5 text-left">
-                  <div className="inline-block px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-bold uppercase tracking-wider">
+                  <div className="inline-block px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
                     Langkah {step.id}
                   </div>
                   <h4 className="text-xl font-bold text-slate-900 leading-tight">
@@ -323,7 +323,7 @@ function LandingPage() {
       <section id="persyaratan" className="py-8 md:py-16 px-4 md:px-6 bg-slate-50/50">
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12 space-y-4">
-            <h3 className="text-2xl md:text-4xl font-black text-blue-700 underline underline-offset-8 decoration-4">
+            <h3 className="text-2xl md:text-4xl font-black text-primary underline underline-offset-8 decoration-4">
               Persyaratan Pendaftaran
             </h3>
             <p className="text-slate-500 text-base md:text-lg">
@@ -343,7 +343,7 @@ function LandingPage() {
                   <TabsTrigger
                     key={tab.id}
                     value={tab.id}
-                    className="rounded-md px-3 sm:px-5 md:px-7 py-2 md:py-2.5 data-[state=active]:bg-blue-700 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-700/20 bg-white border border-slate-100 text-slate-500 font-bold hover:border-blue-200 hover:text-blue-700 transition-all text-xs sm:text-sm data-[state=inactive]:hover:-translate-y-0.5 whitespace-nowrap"
+                    className="rounded-md px-3 sm:px-5 md:px-7 py-2 md:py-2.5 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-primary/20 bg-white border border-slate-100 text-slate-500 font-bold hover:border-primary/20 hover:text-primary transition-all text-xs sm:text-sm data-[state=inactive]:hover:-translate-y-0.5 whitespace-nowrap"
                   >
                     {tab.label}
                   </TabsTrigger>
@@ -373,10 +373,10 @@ function LandingPage() {
               <TabsContent key={tab.id} value={tab.id} className="focus-visible:outline-none focus:outline-none">
                 <div className="bg-white rounded-md p-5 md:p-8 border border-slate-100 shadow-xl shadow-slate-200/40 relative overflow-hidden transition-all duration-500 animate-in fade-in zoom-in-95">
                   {/* Decorative Gradient Background */}
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50 to-transparent rounded-full blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-3xl -z-10 translate-x-1/3 -translate-y-1/3"></div>
 
                   <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
-                    <div className="w-12 h-12 md:w-14 md:h-14 bg-blue-700 rounded-md flex items-center justify-center text-white shadow-lg shadow-blue-700/20 shrink-0 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <div className="w-12 h-12 md:w-14 md:h-14 bg-primary rounded-md flex items-center justify-center text-white shadow-lg shadow-primary/20 shrink-0 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
                       {tab.icon}
                     </div>
                     <h4 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight leading-tight">{tab.title}</h4>
@@ -384,11 +384,11 @@ function LandingPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6 md:mb-8">
                     {tab.items.map((item, idx) => (
-                      <div key={idx} className="group flex items-center gap-3 p-3 md:p-4 bg-slate-50/80 rounded-md border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-md hover:shadow-blue-900/5 transition-all duration-300 cursor-default">
-                        <div className="w-9 h-9 md:w-10 md:h-10 rounded-md bg-white text-blue-600 flex items-center justify-center shrink-0 shadow-sm border border-slate-100 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 group-hover:scale-110 transition-all duration-300">
+                      <div key={idx} className="group flex items-center gap-3 p-3 md:p-4 bg-slate-50/80 rounded-md border border-slate-100 hover:border-primary/20 hover:bg-primary/5 hover:shadow-md hover:shadow-primary/5 transition-all duration-300 cursor-default">
+                        <div className="w-9 h-9 md:w-10 md:h-10 rounded-md bg-white text-primary flex items-center justify-center shrink-0 shadow-sm border border-slate-100 group-hover:bg-primary group-hover:text-white group-hover:border-primary group-hover:scale-110 transition-all duration-300">
                           <ClipboardList className="w-4 h-4 md:w-5 md:h-5" />
                         </div>
-                        <span className="text-slate-700 font-semibold text-sm group-hover:text-blue-950 transition-colors">
+                        <span className="text-slate-700 font-semibold text-sm group-hover:text-primary transition-colors">
                           {item}
                         </span>
                       </div>
@@ -396,17 +396,17 @@ function LandingPage() {
                   </div>
 
                   {/* Catatan Alert Box - Tema Biru */}
-                  <div className="p-4 md:p-6 bg-gradient-to-r from-blue-700 via-blue-800 to-blue-900 rounded-md flex flex-col sm:flex-row items-start sm:items-center gap-4 text-white shadow-xl shadow-blue-900/20 relative overflow-hidden group">
+                  <div className="p-4 md:p-6 bg-gradient-to-r from-primary via-primary/90 to-primary/80 rounded-md flex flex-col sm:flex-row items-start sm:items-center gap-4 text-white shadow-xl shadow-primary/20 relative overflow-hidden group">
                     <div className="absolute right-0 top-0 w-40 h-40 bg-white opacity-5 rounded-full blur-2xl translate-x-1/2 -translate-y-1/2 group-hover:scale-150 transition-transform duration-700"></div>
-                    <div className="absolute left-0 bottom-0 w-20 h-20 bg-blue-400 opacity-20 rounded-full blur-xl -translate-x-1/2 translate-y-1/2"></div>
+                    <div className="absolute left-0 bottom-0 w-20 h-20 bg-primary/20 opacity-20 rounded-full blur-xl -translate-x-1/2 translate-y-1/2"></div>
 
                     <div className="p-2.5 md:p-3 bg-white/10 backdrop-blur-md rounded-md shrink-0 border border-white/10 shadow-inner">
-                      <Upload className="w-5 h-5 md:w-6 md:h-6 text-blue-100" />
+                      <Upload className="w-5 h-5 md:w-6 md:h-6 text-white" />
                     </div>
                     <div className="relative z-10 w-full">
                       <h6 className="font-bold text-base md:text-lg mb-2 text-white">Format Dokumen Digital</h6>
-                      <p className="text-blue-100 text-sm leading-8 md:leading-8 max-w-2xl">
-                        Semua persyaratan wajib di-scan jelas dalam format <strong className="text-blue-900 bg-blue-100 px-2 py-1 rounded-md inline-flex leading-none align-baseline">PDF</strong> dengan ukuran maksimum <strong className="text-blue-900 bg-blue-100 px-2 py-1 rounded-md inline-flex leading-none align-baseline">1 MB</strong> per file.
+                      <p className="text-white/90 text-sm leading-8 md:leading-8 max-w-2xl">
+                        Semua persyaratan wajib di-scan jelas dalam format <strong className="text-primary bg-white px-2 py-1 rounded-md inline-flex leading-none align-baseline">PDF</strong> dengan ukuran maksimum <strong className="text-primary bg-white px-2 py-1 rounded-md inline-flex leading-none align-baseline">1 MB</strong> per file.
                       </p>
                     </div>
                   </div>
@@ -421,7 +421,7 @@ function LandingPage() {
       <section id="jadwal" className="py-8 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-8 md:mb-16 space-y-4">
-            <h3 className="text-2xl md:text-4xl font-black text-blue-700">Jadwal SPMB</h3>
+            <h3 className="text-2xl md:text-4xl font-black text-primary">Jadwal SPMB</h3>
           </div>
 
           <Tabs defaultValue="tahap1" className="w-full">
@@ -429,14 +429,14 @@ function LandingPage() {
               <TabsList className="bg-white border p-1 h-auto gap-1 md:gap-2 rounded-md flex-wrap">
                 <TabsTrigger
                   value="tahap1"
-                  className="rounded-md px-4 md:px-8 py-2 md:py-3 data-[state=active]:bg-blue-700 data-[state=active]:text-white border border-transparent data-[state=active]:border-blue-800 transition-all flex flex-col items-start text-left gap-0.5 md:gap-1"
+                  className="rounded-md px-4 md:px-8 py-2 md:py-3 data-[state=active]:bg-primary data-[state=active]:text-white border border-transparent data-[state=active]:border-primary/20 transition-all flex flex-col items-start text-left gap-0.5 md:gap-1"
                 >
                   <span className="font-bold text-sm md:text-base">SPMB Tahap 1</span>
                   <span className="text-[9px] md:text-[10px] opacity-80 font-medium hidden sm:block">Proses pendaftaran SPMB SMA, SMK, SLB.</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value="tahap2"
-                  className="rounded-lg px-4 md:px-8 py-2 md:py-3 data-[state=active]:bg-blue-700 data-[state=active]:text-white border border-transparent data-[state=active]:border-blue-800 transition-all flex flex-col items-start text-left gap-0.5 md:gap-1"
+                  className="rounded-lg px-4 md:px-8 py-2 md:py-3 data-[state=active]:bg-primary data-[state=active]:text-white border border-transparent data-[state=active]:border-primary/20 transition-all flex flex-col items-start text-left gap-0.5 md:gap-1"
                 >
                   <span className="font-bold text-sm md:text-base">SPMB Tahap 2</span>
                   <span className="text-[9px] md:text-[10px] opacity-80 font-medium hidden sm:block">Proses pendaftaran SPMB SMA, SMK, SLB.</span>
@@ -449,7 +449,7 @@ function LandingPage() {
                 {/* Information Column (Left) */}
                 <div className="lg:col-span-4 space-y-4 md:space-y-8">
                   {/* SMA Quota Card */}
-                  <div className="bg-blue-700 rounded-md p-4 md:p-6 text-white shadow-xl shadow-blue-700/20">
+                  <div className="bg-primary rounded-md p-4 md:p-6 text-white shadow-xl shadow-primary/20">
                     <h4 className="text-center font-bold text-base md:text-lg mb-4 md:mb-6 leading-tight">Jalur & Kuota SMA Tahap 1</h4>
                     <div className="space-y-3">
                       {[
@@ -458,10 +458,10 @@ function LandingPage() {
                         { title: 'Mutasi', quota: '5%' },
                       ].map((item, i) => (
                         <div key={i} className="flex gap-2 text-sm italic">
-                          <div className="flex-1 bg-white text-blue-700 font-bold px-4 py-2.5 rounded-md">
+                          <div className="flex-1 bg-white text-primary font-bold px-4 py-2.5 rounded-md">
                             {item.title}
                           </div>
-                          <div className="w-20 bg-white text-blue-700 font-bold px-3 py-2.5 rounded-md text-right">
+                          <div className="w-20 bg-white text-primary font-bold px-3 py-2.5 rounded-md text-right">
                             {item.quota}
                           </div>
                         </div>
@@ -478,11 +478,11 @@ function LandingPage() {
 
                   <div className="space-y-4 md:space-y-6 relative">
                     {/* Vertical line connector */}
-                    <div className="absolute left-[0.9rem] md:left-[1.2rem] top-8 md:top-10 bottom-8 w-0.5 bg-blue-600/30"></div>
+                    <div className="absolute left-[0.9rem] md:left-[1.2rem] top-8 md:top-10 bottom-8 w-0.5 bg-primary/30"></div>
 
                     {jadwalTahap1.map((step: any, i: number) => (
                       <div key={i} className="flex gap-3 md:gap-6 relative group">
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-700 text-white rounded-full flex items-center justify-center font-bold text-sm md:text-base relative z-10 shrink-0 shadow-lg shadow-blue-700/30 group-hover:scale-110 transition-transform">
+                        <div className="w-8 h-8 md:w-10 md:h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-sm md:text-base relative z-10 shrink-0 shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform">
                           {i + 1}
                         </div>
                         <div className="space-y-1 md:space-y-2">
@@ -502,7 +502,7 @@ function LandingPage() {
                             )}
                           </div>
                           <div className="pt-0.5 md:pt-1">
-                            <Badge className={`font-semibold px-1.5 md:px-2.5 py-0 md:py-0.5 text-[10px] md:text-xs rounded-md ${step.status === 'Aktif' ? 'bg-emerald-600 hover:bg-emerald-700' : step.status === 'Akan Datang' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-700 hover:bg-blue-800'}`}>
+                            <Badge className={`font-semibold px-1.5 md:px-2.5 py-0 md:py-0.5 text-[10px] md:text-xs rounded-md ${step.status === 'Aktif' ? 'bg-emerald-600 hover:bg-emerald-700' : step.status === 'Akan Datang' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-primary hover:bg-primary/90'}`}>
                               {step.status || 'Selesai'}
                             </Badge>
                           </div>
@@ -519,24 +519,24 @@ function LandingPage() {
                 {/* Information Column (Left) */}
                 <div className="lg:col-span-4 space-y-4 md:space-y-8">
                   {/* SMA Quota Card Tahap 2 */}
-                  <div className="bg-blue-700 rounded-md p-4 md:p-6 text-white shadow-xl shadow-blue-700/20">
+                  <div className="bg-primary rounded-md p-4 md:p-6 text-white shadow-xl shadow-primary/20">
                     <h4 className="text-center font-bold text-base md:text-lg mb-4 md:mb-6 leading-tight">Jalur & Kuota SMA Tahap 2</h4>
                     <div className="grid grid-cols-2 gap-2">
                       <div className="space-y-2">
-                        <div className="bg-white text-blue-700 font-bold px-4 py-3 rounded-md text-sm flex items-center justify-center text-center leading-tight">
+                        <div className="bg-white text-primary font-bold px-4 py-3 rounded-md text-sm flex items-center justify-center text-center leading-tight">
                           Prestasi Nilai Rapor
                         </div>
-                        <div className="bg-white text-blue-700 font-bold px-4 py-3 rounded-md text-sm flex items-center justify-center text-center leading-tight">
+                        <div className="bg-white text-primary font-bold px-4 py-3 rounded-md text-sm flex items-center justify-center text-center leading-tight">
                           Kejuaraan Akademik
                         </div>
-                        <div className="bg-white text-blue-700 font-bold px-4 py-3 rounded-md text-sm flex items-center justify-center text-center leading-tight">
+                        <div className="bg-white text-primary font-bold px-4 py-3 rounded-md text-sm flex items-center justify-center text-center leading-tight">
                           Kejuaraan Non-Akademik
                         </div>
-                        <div className="bg-white text-blue-700 font-bold px-4 py-3 rounded-md text-sm flex items-center justify-center text-center leading-tight">
+                        <div className="bg-white text-primary font-bold px-4 py-3 rounded-md text-sm flex items-center justify-center text-center leading-tight">
                           Prestasi Kepemimpinan (OSIS, dll)
                         </div>
                       </div>
-                      <div className="bg-white text-blue-700 font-bold px-4 py-4 rounded-md flex flex-col items-center justify-center text-center gap-1">
+                      <div className="bg-white text-primary font-bold px-4 py-4 rounded-md flex flex-col items-center justify-center text-center gap-1">
                         <span className="text-2xl">30%</span>
                         <span className="text-[10px] leading-tight font-medium">ditetapkan satuan pendidikan</span>
                       </div>
@@ -552,11 +552,11 @@ function LandingPage() {
 
                   <div className="space-y-4 md:space-y-6 relative">
                     {/* Vertical line connector */}
-                    <div className="absolute left-[0.9rem] md:left-[1.2rem] top-8 md:top-10 bottom-8 w-0.5 bg-blue-600/30"></div>
+                    <div className="absolute left-[0.9rem] md:left-[1.2rem] top-8 md:top-10 bottom-8 w-0.5 bg-primary/30"></div>
 
                     {jadwalTahap2.map((step: any, i: number) => (
                       <div key={i} className="flex gap-3 md:gap-6 relative group">
-                        <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-700 text-white rounded-full flex items-center justify-center font-bold text-sm md:text-base relative z-10 shrink-0 shadow-lg shadow-blue-700/30 group-hover:scale-110 transition-transform">
+                        <div className="w-8 h-8 md:w-10 md:h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-sm md:text-base relative z-10 shrink-0 shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform">
                           {i + 1}
                         </div>
                         <div className="space-y-1 md:space-y-2">
@@ -574,7 +574,7 @@ function LandingPage() {
                             )}
                           </div>
                           <div className="pt-0.5 md:pt-1">
-                            <Badge className={`font-semibold px-1.5 md:px-2.5 py-0 md:py-0.5 text-[10px] md:text-xs rounded-md ${step.status === 'Aktif' ? 'bg-emerald-600 hover:bg-emerald-700' : step.status === 'Akan Datang' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-blue-700 hover:bg-blue-800'}`}>
+                            <Badge className={`font-semibold px-1.5 md:px-2.5 py-0 md:py-0.5 text-[10px] md:text-xs rounded-md ${step.status === 'Aktif' ? 'bg-emerald-600 hover:bg-emerald-700' : step.status === 'Akan Datang' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-primary hover:bg-primary/90'}`}>
                               {step.status || 'Selesai'}
                             </Badge>
                           </div>
@@ -593,7 +593,7 @@ function LandingPage() {
       <section id="galeri" className="py-12 md:py-20 px-4 md:px-6 bg-slate-50/50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-10 md:mb-16 space-y-4">
-            <h2 className="text-sm font-bold text-blue-700 uppercase tracking-[0.2em]">Dokumentasi</h2>
+            <h2 className="text-sm font-bold text-primary uppercase tracking-[0.2em]">Dokumentasi</h2>
             <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Galeri Kegiatan</h3>
             <p className="text-slate-500 text-lg">Momen-momen inspiratif dan kegiatan seru siswa/siswi SMAN 1 Bantarujeg.</p>
           </div>
@@ -669,30 +669,30 @@ function LandingPage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="space-y-6">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-700 rounded-md flex items-center justify-center">
+              <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
                 <GraduationCap className="text-white w-5 h-5" />
               </div>
-              <span className="font-bold text-xl tracking-tight text-white">SPMB <span className="text-blue-600">SMANSABA</span></span>
+              <span className="font-bold text-xl tracking-tight text-white">SPMB <span className="text-primary">SMANSABA</span></span>
             </div>
             <p className="text-sm leading-relaxed text-slate-400">
               Sistem Penerimaan Murid Baru (SPMB) online SMA Negeri 1 Bantarujeg. Sekolah Unggul, Berkarakter, dan Berdaya Saing Global.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-blue-700 hover:text-white transition-all"><Facebook className="w-5 h-5" /></a>
-              <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-blue-700 hover:text-white transition-all"><Instagram className="w-5 h-5" /></a>
-              <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-blue-700 hover:text-white transition-all"><Twitter className="w-5 h-5" /></a>
+              <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all"><Facebook className="w-5 h-5" /></a>
+              <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all"><Instagram className="w-5 h-5" /></a>
+              <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all"><Twitter className="w-5 h-5" /></a>
             </div>
           </div>
 
           <div className="space-y-6">
             <h4 className="text-white font-bold text-lg uppercase tracking-wider">Navigasi</h4>
             <ul className="space-y-3 text-sm">
-              <li><a href="#beranda" className="hover:text-blue-600 transition-colors">Beranda</a></li>
-              <li><a href="#alur" className="hover:text-blue-600 transition-colors">Alur</a></li>
-              <li><a href="#persyaratan" className="hover:text-blue-600 transition-colors">Persyaratan</a></li>
-              <li><a href="#jadwal" className="hover:text-blue-600 transition-colors">Jadwal</a></li>
-              <li><a href="#galeri" className="hover:text-blue-600 transition-colors">Galeri</a></li>
-              <li><a href="/login" className="hover:text-blue-600 transition-colors">Masuk Akun</a></li>
+              <li><a href="#beranda" className="hover:text-primary transition-colors">Beranda</a></li>
+              <li><a href="#alur" className="hover:text-primary transition-colors">Alur</a></li>
+              <li><a href="#persyaratan" className="hover:text-primary transition-colors">Persyaratan</a></li>
+              <li><a href="#jadwal" className="hover:text-primary transition-colors">Jadwal</a></li>
+              <li><a href="#galeri" className="hover:text-primary transition-colors">Galeri</a></li>
+              <li><a href="/login" className="hover:text-primary transition-colors">Masuk Akun</a></li>
             </ul>
           </div>
 
@@ -700,15 +700,15 @@ function LandingPage() {
             <h4 className="text-white font-bold text-lg uppercase tracking-wider">Kontak Kami</h4>
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-blue-600 shrink-0" />
+                <MapPin className="w-5 h-5 text-primary shrink-0" />
                 <span>Jl. Siliwangi No.119, Bantarujeg, Majalengka, Jawa Barat</span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-blue-600 shrink-0" />
+                <Phone className="w-5 h-5 text-primary shrink-0" />
                 <span>(0233) 281000</span>
               </li>
               <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-blue-600 shrink-0" />
+                <Mail className="w-5 h-5 text-primary shrink-0" />
                 <span>info@sman1bantarujeg.sch.id</span>
               </li>
             </ul>
@@ -718,14 +718,14 @@ function LandingPage() {
             <h4 className="text-white font-bold text-lg uppercase tracking-wider">Jam Layanan</h4>
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
-                <Calendar className="w-5 h-5 text-blue-600 shrink-0" />
+                <Calendar className="w-5 h-5 text-primary shrink-0" />
                 <div>
                   <p className="font-semibold text-white">Senin - Jumat</p>
                   <p className="text-slate-400">08:00 - 15:00 WIB</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
-                <Calendar className="w-5 h-5 text-blue-600 shrink-0" />
+                <Calendar className="w-5 h-5 text-primary shrink-0" />
                 <div>
                   <p className="font-semibold text-white">Sabtu</p>
                   <p className="text-slate-400">08:00 - 12:00 WIB</p>
@@ -738,8 +738,8 @@ function LandingPage() {
         <div className="max-w-7xl mx-auto pt-12 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
           <p>© 2026 SMAN 1 BANTARUJEG. All rights reserved.</p>
           <div className="flex gap-6 uppercase tracking-widest font-bold">
-            <a href="#" className="hover:text-blue-600 transition-colors">Kebijakan Privasi</a>
-            <a href="#" className="hover:text-blue-600 transition-colors">Syarat & Ketentuan</a>
+            <a href="#" className="hover:text-primary transition-colors">Kebijakan Privasi</a>
+            <a href="#" className="hover:text-primary transition-colors">Syarat & Ketentuan</a>
           </div>
         </div>
       </footer>

@@ -49,7 +49,7 @@ function DashboardIndexPage() {
           </p>
         </div>
         <div className="hidden sm:flex items-center gap-2 bg-white px-4 py-2 rounded-md border border-slate-300 shadow-sm">
-          <School className="h-4 w-4 text-blue-600" />
+          <School className="h-4 w-4 text-primary" />
           <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">
             TA {activeTA || '2026/2027'}
           </span>
@@ -77,13 +77,13 @@ function DashboardIndexPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-300 shadow-sm rounded-md overflow-hidden group hover:border-blue-400 transition-all bg-white">
+        <Card className="border-slate-300 shadow-sm rounded-md overflow-hidden group hover:border-primary/50 transition-all bg-white">
           <CardContent className="p-0">
             <div className="flex items-stretch h-20">
-              <div className="w-1.5 bg-blue-500 group-hover:bg-blue-600 transition-colors" />
+              <div className="w-1.5 bg-primary group-hover:bg-primary/90 transition-colors" />
               <div className="flex-1 p-3 flex items-center gap-3">
-                <div className="p-2 bg-blue-50 rounded-lg">
-                  <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <CheckCircle2 className="h-5 w-5 text-primary" />
                 </div>
                 <div>
                   <p className="text-xs font-medium text-slate-500">Sudah Verifikasi</p>
@@ -137,9 +137,9 @@ function DashboardIndexPage() {
 
       <div className="grid grid-cols-1 gap-6">
         <Card className="border-slate-300 shadow-sm bg-white rounded-md overflow-hidden">
-          <CardHeader className="bg-blue-50/50 border-b border-blue-100 pb-4">
+          <CardHeader className="bg-primary/5 border-b border-primary/10 pb-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-600 rounded-lg">
+              <div className="p-2 bg-primary rounded-lg">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -156,12 +156,12 @@ function DashboardIndexPage() {
                 </div>
               ) : (
                 jalurStats.map((item, idx) => (
-                  <div key={idx} className="flex flex-col p-4 rounded-md bg-slate-50 border border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all group">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 group-hover:text-blue-500 transition-colors">
+                  <div key={idx} className="flex flex-col p-4 rounded-md bg-slate-50 border border-slate-200 hover:border-primary/20 hover:bg-primary/5 transition-all group">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 group-hover:text-primary transition-colors">
                       {item.jalur || 'TIDAK ADA JALUR'}
                     </span>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-slate-800 group-hover:text-blue-700 transition-colors">
+                      <span className="text-2xl font-black text-slate-800 group-hover:text-primary transition-colors">
                         {item.count}
                       </span>
                       <span className="text-xs font-medium text-slate-500">Siswa</span>
@@ -180,8 +180,8 @@ function DashboardIndexPage() {
             <CardHeader className="pb-2 border-b border-slate-50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-blue-50 rounded-lg">
-                    <TrendingUp className="h-4 w-4 text-blue-600" />
+                  <div className="p-1.5 bg-primary/10 rounded-lg">
+                    <TrendingUp className="h-4 w-4 text-primary" />
                   </div>
                   <div>
                     <CardTitle className="text-sm font-bold text-slate-800">Trend Pendaftaran</CardTitle>
@@ -197,8 +197,8 @@ function DashboardIndexPage() {
                     <AreaChart data={chartData.trendData}>
                       <defs>
                         <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.1} />
+                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -220,7 +220,7 @@ function DashboardIndexPage() {
                       <Area
                         type="monotone"
                         dataKey="count"
-                        stroke="#3b82f6"
+                        stroke="#f59e0b"
                         strokeWidth={2}
                         fillOpacity={1}
                         fill="url(#colorCount)"
@@ -304,13 +304,13 @@ function DashboardIndexPage() {
         <div className="col-span-3 min-h-[400px] rounded-md bg-white border border-slate-300 p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-slate-900 mb-4">Informasi Sistem</h3>
           <div className="space-y-4">
-            <div className="p-4 rounded-md bg-blue-50 border border-blue-200">
-              <p className="text-sm font-medium text-blue-800">Status Server</p>
-              <p className="text-xs text-blue-600 mt-1">Berjalan normal melalui database Neon.tech</p>
+            <div className="p-4 rounded-md bg-primary/5 border border-primary/10">
+              <p className="text-sm font-medium text-primary">Status Server</p>
+              <p className="text-xs text-primary/80 mt-1">Berjalan normal melalui database Neon.tech</p>
             </div>
-            <div className="p-4 rounded-md bg-blue-50 border border-blue-200">
-              <p className="text-sm font-medium text-blue-800">Periode Pendaftaran</p>
-              <p className="text-xs text-blue-600 mt-1">Januari 2026 - Juli 2026</p>
+            <div className="p-4 rounded-md bg-primary/5 border border-primary/10">
+              <p className="text-sm font-medium text-primary">Periode Pendaftaran</p>
+              <p className="text-xs text-primary/80 mt-1">Januari 2026 - Juli 2026</p>
             </div>
             <div className="p-4 rounded-md bg-slate-50 border border-slate-300">
               <p className="text-sm font-medium text-slate-800">Versi Aplikasi</p>

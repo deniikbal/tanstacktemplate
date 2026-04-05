@@ -67,7 +67,7 @@ type JadwalData = {
 const STATUS_OPTIONS = [
     { value: 'Akan Datang', label: 'Akan Datang', color: 'bg-orange-100 text-orange-700 border border-orange-200' },
     { value: 'Aktif', label: 'Aktif', color: 'bg-emerald-100 text-emerald-700 border border-emerald-200' },
-    { value: 'Selesai', label: 'Selesai', color: 'bg-blue-100 text-blue-700 border border-blue-200' },
+    { value: 'Selesai', label: 'Selesai', color: 'bg-primary/10 text-primary border border-primary/20' },
 ]
 
 function getStatusBadge(status: string) {
@@ -259,7 +259,7 @@ function JadwalSpmbPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         )
     }
@@ -268,8 +268,8 @@ function JadwalSpmbPage() {
         <div className="p-6 space-y-6">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-md">
-                    <CalendarDays className="w-6 h-6 text-blue-600" />
+                <div className="p-2 bg-primary/10 rounded-md">
+                    <CalendarDays className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Jadwal SPMB</h1>
@@ -319,7 +319,7 @@ function JadwalSpmbPage() {
                 <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 bg-slate-50/50">
                     <div>
                         <CardTitle className="flex items-center gap-2 text-xl font-bold text-slate-800">
-                            <CalendarDays className="w-5 h-5 text-blue-600" />
+                            <CalendarDays className="w-5 h-5 text-primary" />
                             Daftar Jadwal
                         </CardTitle>
                         <CardDescription className="text-slate-500 font-medium">
@@ -334,13 +334,13 @@ function JadwalSpmbPage() {
                                 placeholder="Cari jadwal..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-9 w-56 rounded-md border-slate-300 focus:ring-blue-500 transition-all font-medium"
+                                className="pl-9 w-56 rounded-md border-slate-300 focus:ring-1 focus:ring-primary transition-all font-medium"
                             />
                         </div>
                         {/* Tombol Tambah */}
                         <Dialog open={isAddOpen} onOpenChange={(open) => { setIsAddOpen(open); if (!open) resetAddForm() }}>
                             <DialogTrigger asChild>
-                                <Button className="bg-blue-600 hover:bg-blue-700 rounded-md font-bold shadow-sm transition-all active:scale-95">
+                                <Button className="bg-primary hover:bg-primary/90 rounded-md font-bold shadow-sm transition-all active:scale-95">
                                     <Plus className="w-4 h-4 mr-2" />
                                     Tambah Jadwal
                                 </Button>
@@ -353,7 +353,7 @@ function JadwalSpmbPage() {
                                 <JadwalForm form={addForm} setForm={setAddForm} />
                                 <DialogFooter className="gap-2 sm:gap-0 border-t pt-4 mt-2">
                                     <Button variant="outline" onClick={() => setIsAddOpen(false)} className="rounded-md border-slate-300">Batal</Button>
-                                    <Button onClick={handleAdd} disabled={isAdding} className="bg-blue-600 hover:bg-blue-700 rounded-md font-bold text-white shadow-sm">
+                                    <Button onClick={handleAdd} disabled={isAdding} className="bg-primary hover:bg-primary/90 rounded-md font-bold text-white shadow-sm">
                                         {isAdding ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
                                         Tambah
                                     </Button>
@@ -390,7 +390,7 @@ function JadwalSpmbPage() {
                                 filteredList.map((item, idx) => (
                                     <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors group">
                                         <TableCell className="text-center text-slate-400 font-medium">{(idx + 1).toString().padStart(2, '0')}</TableCell>
-                                        <TableCell className="font-bold text-slate-700 group-hover:text-blue-600 transition-colors uppercase tracking-tight">{item.title}</TableCell>
+                                        <TableCell className="font-bold text-slate-700 group-hover:text-primary transition-colors uppercase tracking-tight">{item.title}</TableCell>
                                         <TableCell>
                                             {item.tahap ? (
                                                 <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 font-medium rounded-sm">
@@ -417,7 +417,7 @@ function JadwalSpmbPage() {
                                                     size="sm" 
                                                     onClick={() => openEditDialog(item)} 
                                                     title="Edit"
-                                                    className="h-8 w-8 p-0 text-slate-400 hover:text-blue-600 hover:bg-blue-50"
+                                                    className="h-8 w-8 p-0 text-slate-400 hover:text-primary hover:bg-primary/10"
                                                 >
                                                     <Pencil className="w-4 h-4" />
                                                 </Button>
@@ -450,7 +450,7 @@ function JadwalSpmbPage() {
                     <JadwalForm form={editForm} setForm={setEditForm} />
                     <DialogFooter className="gap-2 sm:gap-0 border-t pt-4 mt-2">
                         <Button variant="outline" onClick={() => setEditItem(null)} className="rounded-md border-slate-300">Batal</Button>
-                        <Button onClick={handleEdit} disabled={isEditing} className="bg-blue-600 hover:bg-blue-700 rounded-md font-bold text-white shadow-sm">
+                        <Button onClick={handleEdit} disabled={isEditing} className="bg-primary hover:bg-primary/90 rounded-md font-bold text-white shadow-sm">
                             {isEditing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
                             Simpan Perubahan
                         </Button>
@@ -574,8 +574,8 @@ function JadwalForm({ form, setForm }: { form: FormState; setForm: React.Dispatc
 
             {/* Preview tanggal */}
             {form.startDate && form.endDate && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                    <p className="text-sm text-blue-800">
+                <div className="p-3 bg-primary/5 border border-primary/20 rounded-md">
+                    <p className="text-sm text-primary">
                         <strong>Preview:</strong>{' '}
                         {formatDateDisplay(form.startDate)} — {formatDateDisplay(form.endDate)}
                         {form.timeDetails ? `, ${form.timeDetails}` : ''}
