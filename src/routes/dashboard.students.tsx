@@ -30,7 +30,9 @@ import {
     X,
     ChevronLeft,
     ChevronRight,
-    GraduationCap
+    GraduationCap,
+    CheckCircle2,
+    XCircle
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -114,6 +116,8 @@ interface Student {
     tahunAjaran: string | null
     // Meta
     createdAt: Date | null
+    // Kelulusan
+    statusKelulusan: string | null
 }
 
 interface ImportStudent {
@@ -482,6 +486,7 @@ function StudentsPage() {
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">NISN</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Jalur</TableHead>
                                     <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Asal Sekolah</TableHead>
+                                    <TableHead className="font-semibold text-slate-700 px-6 py-2 h-10">Status</TableHead>
                                     <TableHead className="w-[70px] px-6 py-2 h-10"></TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -507,6 +512,9 @@ function StudentsPage() {
                                             <TableCell className="px-6 py-2">
                                                 <Skeleton className="h-5 w-[200px] bg-slate-200" />
                                             </TableCell>
+                                            <TableCell className="px-6 py-2">
+                                                <Skeleton className="h-5 w-[70px] bg-slate-200" />
+                                            </TableCell>
                                             <TableCell className="px-6 py-2 text-right">
                                                 <Skeleton className="ml-auto h-7 w-7 rounded-sm bg-slate-200" />
                                             </TableCell>
@@ -514,7 +522,7 @@ function StudentsPage() {
                                     ))
                                 ) : !studentsInfo || studentsInfo.students.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={7} className="h-32 text-center text-slate-500 italic">
+                                        <TableCell colSpan={8} className="h-32 text-center text-slate-500 italic">
                                             Tidak ada data siswa ditemukan.
                                         </TableCell>
                                     </TableRow>
@@ -539,6 +547,23 @@ function StudentsPage() {
                                                 ) : '-'}
                                             </TableCell>
                                             <TableCell className="text-slate-600 px-6 py-2">{s.sekolahAsal || "-"}</TableCell>
+                                            <TableCell className="px-6 py-2">
+                                                {s.statusKelulusan ? (
+                                                    s.statusKelulusan.toUpperCase() === 'LULUS' ? (
+                                                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200 flex w-fit gap-1 items-center px-2 py-0.5 shadow-none text-[10px] font-bold">
+                                                            <CheckCircle2 className="h-3 w-3" />
+                                                            LULUS
+                                                        </Badge>
+                                                    ) : (
+                                                        <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100 border-rose-200 flex w-fit gap-1 items-center px-2 py-0.5 shadow-none text-[10px] font-bold">
+                                                            <XCircle className="h-3 w-3" />
+                                                            TIDAK LULUS
+                                                        </Badge>
+                                                    )
+                                                ) : (
+                                                    <span className="text-xs text-slate-300 italic">-</span>
+                                                )}
+                                            </TableCell>
                                             <TableCell className="px-6 py-2">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>

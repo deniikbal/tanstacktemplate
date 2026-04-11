@@ -160,6 +160,17 @@ export const bulkDeleteKelulusan = createServerFn({ method: "POST" })
         return { success: true };
     });
 
+export const bulkUpdateKelulusanStatus = createServerFn({ method: "POST" })
+    .inputValidator((d: { ids: number[], status: string }) => d)
+    .handler(async ({ data }) => {
+        const { ids, status } = data;
+        if (!ids || ids.length === 0) return { updated: 0 };
+        await db.update(kelulusan)
+            .set({ status, updatedAt: new Date() })
+            .where(inArray(kelulusan.id, ids));
+        return { updated: ids.length };
+    });
+
 export const getJalurStats = createServerFn({ method: "GET" })
     .inputValidator((d: { tahunAjaran?: string }) => d)
     .handler(async ({ data }) => {
@@ -187,3 +198,31 @@ export const getJalurStats = createServerFn({ method: "GET" })
         }
     });
 
+export const getAcceptedSchoolStats = createServerFn({ method: "GET" })
+    .inputValidator((d: { tahunAjaran?: string }) => d || {})
+    .handler(async ({ data }) => {
+        const { tahunAjaran } = (data || {}) as any;
+        try {
+            const results = await db
+                .select({
+                    name: sql<string>`COALESCE(${student.sekolahAsal}, 'Tidak Diketahui')`,
+                    count: sql<number>`CAST(count(*) AS INTEGER)`,
+                })
+                .from(kelulusan)
+                .leftJoin(student, eq(kelulusan.studentId, student.id))
+                .where(and(
+                    eq(sql`upper(${kelulusan.status})`, "LULUS"),
+                    tahunAjaran && tahunAjaran !== "semua"
+                        ? eq(student.tahunAjaran, tahunAjaran)
+                        : sql`true`
+                ))
+                .groupBy(student.sekolahAsal)
+                .orderBy(sql`count(*) DESC`)
+                .limit(15);
+
+            return results;
+        } catch (error) {
+            console.error("Error fetching accepted school stats:", error);
+            throw error;
+        }
+    });

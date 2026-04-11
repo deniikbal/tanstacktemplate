@@ -325,7 +325,6 @@ function DashboardPendaftarPage() {
                   <TableHead className="font-semibold text-slate-700 px-4">Antrian</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">Nama Lengkap</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">Asal Sekolah</TableHead>
-                  <TableHead className="font-semibold text-slate-700 px-4">Tahun Ajaran</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">Tahap/Jalur</TableHead>
                   <TableHead className="font-semibold text-slate-700 px-4">No. HP</TableHead>
                   <TableHead className="w-[100px] text-right px-4">Aksi</TableHead>
@@ -383,13 +382,7 @@ function DashboardPendaftarPage() {
                       </TableCell>
                       <TableCell className="font-medium text-slate-900 px-4">{p.nmLengkap}</TableCell>
                       <TableCell className="px-4">{p.asalSekolah || '-'}</TableCell>
-                      <TableCell className="px-4">
-                        {p.tahunAjaran ? (
-                          <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-600 border-indigo-100 font-medium">
-                            {p.tahunAjaran}
-                          </Badge>
-                        ) : '-'}
-                      </TableCell>
+
                       <TableCell className="px-4">
                         <div className="flex flex-col gap-1">
                           <span className={`w-fit px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${p.tahap === '1' ? 'bg-primary/10 text-primary' : 'bg-purple-100 text-purple-700'}`}>

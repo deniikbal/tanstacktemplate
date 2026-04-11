@@ -174,6 +174,30 @@ export const getRegistrationChartData = createServerFn({
         }
     })
 
+export const getSchoolRegistrationStats = createServerFn({
+    method: 'GET',
+})
+    .inputValidator((d: { tahunAjaran?: string }) => d || {})
+    .handler(async ({ data }) => {
+        const { tahunAjaran: filterTA } = (data || {}) as any
+        const filters = []
+        if (filterTA && filterTA !== 'semua') {
+            filters.push(eq(pendaftar.tahunAjaran, filterTA))
+        }
+
+        const schoolStats = await db
+            .select({
+                name: sql<string>`COALESCE(${pendaftar.asalSekolah}, 'Tidak Diketahui')`,
+                count: sql<number>`count(*)`
+            })
+            .from(pendaftar)
+            .where(filters.length > 0 ? and(...filters) : undefined)
+            .groupBy(pendaftar.asalSekolah)
+            .orderBy(sql`count(*) DESC`)
+            .limit(15)
+
+        return schoolStats
+    })
 
 
 export const deletePendaftar = createServerFn({ method: 'POST' })

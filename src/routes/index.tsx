@@ -259,7 +259,7 @@ function LandingPage() {
             </div>
             <div className="grid grid-cols-3 gap-3 pt-4">
               <div className="bg-white border border-slate-200 rounded-md p-4 text-center shadow-sm">
-                <div className="text-2xl md:text-3xl font-black text-slate-900">432</div>
+                <div className="text-2xl md:text-3xl font-black text-slate-900">480</div>
                 <div className="text-xs md:text-sm text-slate-500 font-medium">Siswa Diterima</div>
               </div>
               <div className="bg-white border border-slate-200 rounded-md p-4 text-center shadow-sm">

@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { getPendaftarStats, getRegistrationChartData } from '@/lib/server/pendaftar'
-import { getJalurStats } from '@/lib/server/kelulusan'
+import { getPendaftarStats, getRegistrationChartData, getSchoolRegistrationStats } from '@/lib/server/pendaftar'
+import { getJalurStats, getAcceptedSchoolStats } from '@/lib/server/kelulusan'
 import { getActiveTahunAjaran } from '@/lib/server/tahun-ajaran'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Users, CheckCircle2, Clock, ArrowUpCircle, GraduationCap, School, TrendingUp, PieChart as PieChartIcon, Activity } from "lucide-react"
+import { Users, CheckCircle2, Clock, ArrowUpCircle, GraduationCap, School, TrendingUp, PieChart as PieChartIcon, Activity, Building2 } from "lucide-react"
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, BarChart, Bar
@@ -23,6 +23,8 @@ function DashboardIndexPage() {
     statusData: { name: string, value: number }[]
   } | null>(null)
   const [activeTA, setActiveTA] = useState<string | null>(null)
+  const [schoolStats, setSchoolStats] = useState<{ name: string, count: number }[]>([])
+  const [acceptedSchoolStats, setAcceptedSchoolStats] = useState<{ name: string, count: number }[]>([])
 
   useEffect(() => {
     getActiveTahunAjaran().then((res) => {
@@ -35,6 +37,8 @@ function DashboardIndexPage() {
     getPendaftarStats({ data: { tahunAjaran: ta } }).then(setStats)
     getJalurStats({ data: { tahunAjaran: ta } }).then(setJalurStats as any)
     getRegistrationChartData({ data: { tahunAjaran: ta } }).then(setChartData as any)
+    getSchoolRegistrationStats({ data: { tahunAjaran: ta } }).then(setSchoolStats as any)
+    getAcceptedSchoolStats({ data: { tahunAjaran: ta } }).then(setAcceptedSchoolStats as any)
   }, [activeTA])
 
   const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']
@@ -135,7 +139,7 @@ function DashboardIndexPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="border-slate-300 shadow-sm bg-white rounded-md overflow-hidden">
           <CardHeader className="bg-primary/5 border-b border-primary/10 pb-4">
             <div className="flex items-center gap-3">
@@ -149,25 +153,145 @@ function DashboardIndexPage() {
             </div>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="h-[320px] w-full">
               {jalurStats.length === 0 ? (
-                <div className="col-span-full py-8 text-center text-slate-400 italic text-sm">
-                  Belum ada data siswa yang diterima.
+                <div className="h-full w-full flex flex-col items-center justify-center gap-2">
+                  <GraduationCap className="h-10 w-10 text-slate-300" />
+                  <p className="text-sm text-slate-400 italic">Belum ada data siswa yang diterima.</p>
                 </div>
               ) : (
-                jalurStats.map((item, idx) => (
-                  <div key={idx} className="flex flex-col p-4 rounded-md bg-slate-50 border border-slate-200 hover:border-primary/20 hover:bg-primary/5 transition-all group">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 group-hover:text-primary transition-colors">
-                      {item.jalur || 'TIDAK ADA JALUR'}
-                    </span>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-slate-800 group-hover:text-primary transition-colors">
-                        {item.count}
-                      </span>
-                      <span className="text-xs font-medium text-slate-500">Siswa</span>
-                    </div>
-                  </div>
-                ))
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <defs>
+                      {COLORS.map((color, i) => (
+                        <linearGradient key={`grad-jalur-${i}`} id={`gradJalur${i}`} x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stopColor={color} stopOpacity={0.9} />
+                          <stop offset="100%" stopColor={color} stopOpacity={0.65} />
+                        </linearGradient>
+                      ))}
+                    </defs>
+                    <Pie
+                      data={jalurStats.map(s => ({ name: s.jalur || 'Tidak Ada Jalur', value: s.count }))}
+                      innerRadius={60}
+                      outerRadius={95}
+                      paddingAngle={4}
+                      dataKey="value"
+                      stroke="none"
+                      label={({ name, value, cx, cy, midAngle, outerRadius: oR }) => {
+                        const RADIAN = Math.PI / 180
+                        const radius = oR + 18
+                        const x = cx + radius * Math.cos(-midAngle * RADIAN)
+                        const y = cy + radius * Math.sin(-midAngle * RADIAN)
+                        return (
+                          <text x={x} y={y} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" fontSize={10} fontWeight={600} fill="#334155">
+                            {name} ({value})
+                          </text>
+                        )
+                      }}
+                    >
+                      {jalurStats.map((_entry, index) => (
+                        <Cell key={`cell-jalur-${index}`} fill={`url(#gradJalur${index % COLORS.length})`} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0',
+                        boxShadow: '0 4px 12px rgb(0 0 0 / 0.1)',
+                        padding: '8px 12px'
+                      }}
+                      formatter={(value: number) => [`${value} siswa`, 'Jumlah']}
+                    />
+                    <text x="50%" y="46%" textAnchor="middle" dominantBaseline="central" fontSize={26} fontWeight={800} fill="#1e293b">
+                      {jalurStats.reduce((sum, s) => sum + s.count, 0)}
+                    </text>
+                    <text x="50%" y="56%" textAnchor="middle" dominantBaseline="central" fontSize={10} fill="#94a3b8">
+                      Total Diterima
+                    </text>
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-300 shadow-sm bg-white rounded-md overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
+                <Building2 className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-sm font-bold text-slate-800">Sekolah Asal Pendaftar</CardTitle>
+                <CardDescription className="text-[10px]">Top 15 sekolah pendaftar terbanyak</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="h-[320px] w-full overflow-y-auto">
+              {schoolStats.length > 0 ? (
+                <ResponsiveContainer width="100%" height={Math.max(300, schoolStats.length * 36)}>
+                  <BarChart data={schoolStats} layout="vertical" margin={{ left: 0, right: 35, top: 5, bottom: 5 }}>
+                    <defs>
+                      <linearGradient id="schoolBarGradient" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#3b82f6" />
+                        <stop offset="100%" stopColor="#6366f1" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                    <XAxis type="number" fontSize={9} tickLine={false} axisLine={false} />
+                    <YAxis dataKey="name" type="category" width={130} fontSize={8} tickLine={false} axisLine={false} tick={{ fill: '#475569', fontWeight: 500 }} />
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgb(0 0 0 / 0.1)', padding: '8px 12px' }} formatter={(value: number) => [`${value} pendaftar`, 'Jumlah']} cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }} />
+                    <Bar dataKey="count" fill="url(#schoolBarGradient)" radius={[0, 6, 6, 0]} barSize={18} name="Jumlah Pendaftar" label={{ position: 'right', fontSize: 9, fontWeight: 700, fill: '#334155', formatter: (value: number) => value }} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full w-full flex flex-col items-center justify-center gap-2">
+                  <Building2 className="h-10 w-10 text-slate-300" />
+                  <p className="text-sm text-slate-400 italic">Belum ada data sekolah pendaftar.</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
+        <Card className="border-slate-300 shadow-sm bg-white rounded-md overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-slate-200 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg">
+                <GraduationCap className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-lg font-bold text-slate-800">Sekolah Asal Siswa Diterima</CardTitle>
+                <CardDescription className="text-xs">Top 15 sekolah asal siswa dengan status Lulus</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="h-[400px] w-full overflow-y-auto">
+              {acceptedSchoolStats.length > 0 ? (
+                <ResponsiveContainer width="100%" height={Math.max(380, acceptedSchoolStats.length * 36)}>
+                  <BarChart data={acceptedSchoolStats} layout="vertical" margin={{ left: 10, right: 40, top: 5, bottom: 5 }}>
+                    <defs>
+                      <linearGradient id="acceptedSchoolGradient" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#10b981" />
+                        <stop offset="100%" stopColor="#14b8a6" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                    <XAxis type="number" fontSize={10} tickLine={false} axisLine={false} />
+                    <YAxis dataKey="name" type="category" width={180} fontSize={10} tickLine={false} axisLine={false} tick={{ fill: '#475569', fontWeight: 500 }} />
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgb(0 0 0 / 0.1)', padding: '8px 12px' }} formatter={(value: number) => [`${value} siswa`, 'Diterima']} cursor={{ fill: 'rgba(16, 185, 129, 0.05)' }} />
+                    <Bar dataKey="count" fill="url(#acceptedSchoolGradient)" radius={[0, 6, 6, 0]} barSize={22} name="Siswa Diterima" label={{ position: 'right', fontSize: 10, fontWeight: 700, fill: '#334155', formatter: (value: number) => value }} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full w-full flex flex-col items-center justify-center gap-2">
+                  <GraduationCap className="h-10 w-10 text-slate-300" />
+                  <p className="text-sm text-slate-400 italic">Belum ada data sekolah siswa diterima.</p>
+                </div>
               )}
             </div>
           </CardContent>

@@ -3,6 +3,7 @@ import {
   updateKelulusan,
   deleteKelulusan,
   bulkDeleteKelulusan,
+  bulkUpdateKelulusanStatus,
   syncKelulusan,
   getJalurStats,
 } from '@/lib/server/kelulusan'
@@ -173,6 +174,24 @@ function KelulusanPage() {
     }
   }
 
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false)
+
+  const executeBulkStatusUpdate = async (newStatus: string) => {
+    if (selectedIds.size === 0) return
+    setIsBulkUpdating(true)
+    try {
+      const result = await bulkUpdateKelulusanStatus({ data: { ids: Array.from(selectedIds), status: newStatus } })
+      toast.success(`${result.updated} data berhasil diubah menjadi ${newStatus}`)
+      setSelectedIds(new Set())
+      fetchKelulusan()
+      fetchStats()
+    } catch (err) {
+      toast.error('Gagal mengubah status masal')
+    } finally {
+      setIsBulkUpdating(false)
+    }
+  }
+
   const totalPages = Math.ceil(total / Number(limit))
 
   const handleCopy = (text: string, label: string) => {
@@ -292,15 +311,33 @@ function KelulusanPage() {
             </div>
             <div className="flex flex-wrap items-center gap-3">
               {selectedIds.size > 0 && (
-                <Button
-                  variant="destructive"
-                  onClick={handleBulkDelete}
-                  disabled={isBulkDeleting}
-                  className="rounded-md px-6 font-bold shadow-sm transition-all hover:scale-105"
-                >
-                  {isBulkDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
-                  Hapus ({selectedIds.size})
-                </Button>
+                <>
+                  <Button
+                    onClick={() => executeBulkStatusUpdate('LULUS')}
+                    disabled={isBulkUpdating}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-md px-4 shadow-sm transition-all hover:scale-105"
+                  >
+                    {isBulkUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}
+                    Set LULUS ({selectedIds.size})
+                  </Button>
+                  <Button
+                    onClick={() => executeBulkStatusUpdate('TIDAK LULUS')}
+                    disabled={isBulkUpdating}
+                    className="bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-md px-4 shadow-sm transition-all hover:scale-105"
+                  >
+                    {isBulkUpdating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <XCircle className="mr-2 h-4 w-4" />}
+                    Set TIDAK LULUS ({selectedIds.size})
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleBulkDelete}
+                    disabled={isBulkDeleting}
+                    className="rounded-md px-4 font-bold shadow-sm transition-all hover:scale-105"
+                  >
+                    {isBulkDeleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                    Hapus ({selectedIds.size})
+                  </Button>
+                </>
               )}
               <Button
                 onClick={() => setIsSyncModalOpen(true)}
@@ -844,14 +881,14 @@ function SyncModal({
           </div>
         </div>
 
-        <DialogFooter className="sm:justify-between gap-2 border-t pt-4">
-          <Button variant="outline" onClick={onClose} disabled={loading} className="flex-1 sm:flex-none">
+        <DialogFooter className="flex-row gap-2 justify-end border-t pt-4">
+          <Button variant="outline" onClick={onClose} disabled={loading} className="h-11 rounded-md">
             Batal
           </Button>
           <Button
             onClick={handleSync}
             disabled={loading}
-            className="w-full bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-md"
+            className="bg-primary hover:bg-primary/90 text-white font-bold h-11 rounded-md"
           >
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
             Mulai Sinkronisasi

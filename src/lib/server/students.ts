@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { student } from '@/lib/db/student-schema'
 import { tahunAjaran } from '@/lib/db/tahun-ajaran-schema'
 import { eq, ilike, or, sql, asc, inArray, and } from 'drizzle-orm'
+import { kelulusan } from '@/lib/db/kelulusan-schema'
 
 export const getStudents = createServerFn({
     method: 'GET',
@@ -42,8 +43,42 @@ export const getStudents = createServerFn({
         const whereClause = filters.length > 0 ? and(...filters) : undefined
 
         const studentsData = await db
-            .select()
+            .select({
+                id: student.id,
+                nmSiswa: student.nmSiswa,
+                noDaftar: student.noDaftar,
+                nis: student.nis,
+                nisn: student.nisn,
+                tempatLahir: student.tempatLahir,
+                tanggalLahir: student.tanggalLahir,
+                jenisKelamin: student.jenisKelamin,
+                agama: student.agama,
+                alamatSiswa: student.alamatSiswa,
+                teleponSiswa: student.teleponSiswa,
+                nmAyah: student.nmAyah,
+                nmIbu: student.nmIbu,
+                pekerjaanAyah: student.pekerjaanAyah,
+                pekerjaanIbu: student.pekerjaanIbu,
+                nmWali: student.nmWali,
+                pekerjaanWali: student.pekerjaanWali,
+                alamatOrtu: student.alamatOrtu,
+                teleponOrtu: student.teleponOrtu,
+                alamatWali: student.alamatWali,
+                teleponWali: student.teleponWali,
+                statusDalamKel: student.statusDalamKel,
+                anakKe: student.anakKe,
+                sekolahAsal: student.sekolahAsal,
+                diterimaKelas: student.diterimaKelas,
+                diterimaTanggal: student.diterimaTanggal,
+                noIjasahnas: student.noIjasahnas,
+                noTranskrip: student.noTranskrip,
+                jalur: student.jalur,
+                tahunAjaran: student.tahunAjaran,
+                createdAt: student.createdAt,
+                statusKelulusan: kelulusan.status,
+            })
             .from(student)
+            .leftJoin(kelulusan, eq(student.id, kelulusan.studentId))
             .where(whereClause)
             .limit(limit)
             .offset(offset)
@@ -67,7 +102,7 @@ export const deleteStudent = createServerFn({ method: 'POST' })
         return { success: true }
     })
 
-import { kelulusan } from '@/lib/db/kelulusan-schema'
+
 
 export const checkAnnouncement = createServerFn({ method: 'GET' })
     .inputValidator((d: { nisn: string }) => d)
