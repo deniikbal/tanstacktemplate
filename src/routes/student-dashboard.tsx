@@ -31,7 +31,13 @@ import {
   User,
   Users,
   ChevronRight,
-  ChevronLeft
+  ChevronLeft,
+  CalendarDays,
+  ClipboardCheck,
+  MapPin,
+  Phone,
+  Sparkles,
+  Clock
 } from 'lucide-react'
 
 import {
@@ -69,6 +75,7 @@ function StudentDashboard() {
   const [isSaving, setIsSaving] = useState(false)
   const [activeStep, setActiveStep] = useState(1)
   const [uploadingField, setUploadingField] = useState<string | null>(null)
+  const [justUploaded, setJustUploaded] = useState<string | null>(null)
 
   const [formData, setFormData] = useState<any>({
     nmSiswa: '',
@@ -187,6 +194,11 @@ function StudentDashboard() {
   }
 
   const handleSaveBiodata = async () => {
+    // Step 1: just navigate
+    if (activeStep === 1) {
+      setActiveStep(2)
+      return
+    }
     // Validation for Step 2: Biodata Diri
     if (activeStep === 2) {
       const requiredFields = [
@@ -255,6 +267,8 @@ function StudentDashboard() {
     try {
       await uploadStudentFile({ data: formDataUpload })
       toast.success(`Berkas ${type.toUpperCase()} berhasil diunggah`)
+      setJustUploaded(type)
+      setTimeout(() => setJustUploaded(null), 2000)
       await fetchProfile()
     } catch (error: any) {
       toast.error(error.message || 'Gagal mengunggah berkas')
@@ -275,6 +289,8 @@ function StudentDashboard() {
     try {
       await uploadStudentFile({ data: formDataUpload })
       toast.success(`Berkas ${type.toUpperCase()} berhasil di-scan dan diunggah`)
+      setJustUploaded(type)
+      setTimeout(() => setJustUploaded(null), 2000)
       await fetchProfile()
     } catch (error: any) {
       toast.error(error.message || 'Gagal mengunggah berkas hasil scan')
@@ -305,12 +321,62 @@ function StudentDashboard() {
   const uploadedDocsCount = docTypes.filter(d => profile.daftarUlang?.[d.field]).length
   const totalDocs = docTypes.length
 
+  // === Progress Calculation ===
+  const biodataFields = ['nmSiswa', 'tempatLahir', 'tanggalLahir', 'jenisKelamin', 'agama', 'teleponSiswa', 'sekolahAsal', 'statusDalamKel', 'anakKe', 'alamatSiswa']
+  const parentFields = ['nmAyah', 'nmIbu', 'pekerjaanAyah', 'pekerjaanIbu', 'teleponOrtu', 'alamatOrtu']
+  const biodataFilled = biodataFields.filter(f => !!formData[f]).length
+  const parentFilled = parentFields.filter(f => !!formData[f]).length
+  const totalItems = biodataFields.length + parentFields.length + totalDocs
+  const filledItems = biodataFilled + parentFilled + uploadedDocsCount
+  const progressPercent = Math.round((filledItems / totalItems) * 100)
+
+  // === Status Daftar Ulang ===
+  const getRegistrationStatus = () => {
+    if (filledItems === 0) return { label: 'Belum Mulai', color: 'bg-slate-100 text-slate-500 border-slate-200' }
+    if (filledItems === totalItems) return { label: 'Lengkap', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' }
+    return { label: 'Sedang Proses', color: 'bg-amber-50 text-amber-700 border-amber-200' }
+  }
+  const regStatus = getRegistrationStatus()
+
   const steps = [
     { id: 1, label: 'Informasi', icon: Info },
     { id: 2, label: 'Biodata Diri', icon: User },
     { id: 3, label: 'Orang Tua', icon: Users },
     { id: 4, label: 'Upload Berkas', icon: Upload },
-    { id: 5, label: 'Selesai', icon: CheckCircle2 },
+    { id: 5, label: 'Ringkasan', icon: ClipboardCheck },
+    { id: 6, label: 'Selesai', icon: CheckCircle2 },
+  ]
+
+  // Timeline data
+  const timelineItems = [
+    { date: '14 - 30 Juni 2026', label: 'Periode Daftar Ulang', status: 'active' as const },
+    { date: '1 - 3 Juli 2026', label: 'Verifikasi Berkas', status: 'upcoming' as const },
+    { date: '7 Juli 2026', label: 'Pengumuman Hasil', status: 'upcoming' as const },
+    { date: '14 Juli 2026', label: 'Masuk Sekolah', status: 'upcoming' as const },
+  ]
+
+  // Review data helper
+  const reviewBiodata = [
+    { label: 'Nama Lengkap', value: formData.nmSiswa },
+    { label: 'NISN', value: formData.nisn },
+    { label: 'Tempat Lahir', value: formData.tempatLahir },
+    { label: 'Tanggal Lahir', value: formData.tanggalLahir ? new Date(formData.tanggalLahir).toLocaleDateString('id-ID', { dateStyle: 'long' }) : '-' },
+    { label: 'Jenis Kelamin', value: formData.jenisKelamin },
+    { label: 'Agama', value: formData.agama },
+    { label: 'Status Dalam Keluarga', value: formData.statusDalamKel },
+    { label: 'Anak Ke', value: formData.anakKe },
+    { label: 'No. HP Siswa', value: formData.teleponSiswa },
+    { label: 'Asal Sekolah', value: formData.sekolahAsal },
+    { label: 'Alamat Siswa', value: formData.alamatSiswa },
+  ]
+
+  const reviewOrtu = [
+    { label: 'Nama Ayah', value: formData.nmAyah },
+    { label: 'Pekerjaan Ayah', value: formData.pekerjaanAyah },
+    { label: 'Nama Ibu', value: formData.nmIbu },
+    { label: 'Pekerjaan Ibu', value: formData.pekerjaanIbu },
+    { label: 'No. Telepon Ortu', value: formData.teleponOrtu },
+    { label: 'Alamat Orang Tua', value: formData.alamatOrtu },
   ]
 
   return (
@@ -332,14 +398,47 @@ function StudentDashboard() {
 
       <main className="max-w-4xl mx-auto px-3 sm:px-4 py-3 sm:py-4 space-y-2 sm:space-y-3">
 
+        {/* === 1. Progress Bar === */}
+        <div className="bg-white border border-slate-200 rounded-md shadow-sm p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Progres Daftar Ulang</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Badge className={`text-[9px] font-bold px-1.5 py-0 border ${regStatus.color}`}>{regStatus.label}</Badge>
+              <span className="text-xs font-black text-primary">{progressPercent}%</span>
+            </div>
+          </div>
+          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-700 ease-out"
+              style={{
+                width: `${progressPercent}%`,
+                background: progressPercent === 100
+                  ? 'linear-gradient(90deg, #10b981, #059669)'
+                  : 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--primary) / 0.7))'
+              }}
+            />
+          </div>
+          <div className="flex justify-between mt-1.5 text-[9px] text-slate-400 font-medium">
+            <span>Biodata {biodataFilled}/{biodataFields.length}</span>
+            <span>Ortu {parentFilled}/{parentFields.length}</span>
+            <span>Berkas {uploadedDocsCount}/{totalDocs}</span>
+          </div>
+        </div>
+
         {/* Step Indicator */}
         <div className="flex items-center justify-between bg-white p-1.5 sm:p-2 border border-slate-200 rounded-md shadow-sm overflow-x-auto no-scrollbar scroll-smooth">
           {steps.map((step, idx) => (
             <div key={step.id} className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md border transition-all ${activeStep === step.id ? 'bg-primary/10 border-primary/20 text-primary font-bold' : activeStep > step.id ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-transparent border-transparent text-slate-400'}`}>
+              <button
+                onClick={() => setActiveStep(step.id)}
+                className={`flex items-center gap-1.5 px-2 py-1 rounded-md border transition-all ${activeStep === step.id ? 'bg-primary/10 border-primary/20 text-primary font-bold' : activeStep > step.id ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-transparent border-transparent text-slate-400'}`}
+              >
                 <step.icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5`} />
                 <span className="text-[9px] sm:text-[10px] whitespace-nowrap">{step.label}</span>
-              </div>
+              </button>
               {idx < steps.length - 1 && <ChevronRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-200" />}
             </div>
           ))}
@@ -352,21 +451,23 @@ function StudentDashboard() {
                 <CardTitle className="text-base sm:text-lg font-black text-slate-900 leading-tight">
                   {steps.find(s => s.id === activeStep)?.label}
                 </CardTitle>
-                <CardDescription className="text-[10px] font-medium text-slate-500">Tahap {activeStep} dari 5</CardDescription>
+                <CardDescription className="text-[10px] font-medium text-slate-500">Tahap {activeStep} dari 6</CardDescription>
               </div>
               <div className="w-8 h-8 sm:w-9 sm:h-9 bg-primary/10 rounded-md flex items-center justify-center">
                 {activeStep === 1 && <Info className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
                 {activeStep === 2 && <User className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
                 {activeStep === 3 && <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
                 {activeStep === 4 && <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
-                {activeStep === 5 && <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
+                {activeStep === 5 && <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
+                {activeStep === 6 && <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />}
               </div>
             </div>
           </CardHeader>
           <CardContent className="p-3 sm:p-5">
-            {/* Step 1: Welcome & Status */}
+            {/* Step 1: Welcome & Status - ENHANCED */}
             {activeStep === 1 && (
               <div className="space-y-4 animate-in fade-in duration-500">
+                {/* Welcome Banner */}
                 <div className="bg-primary rounded-md p-4 sm:p-6 text-white relative overflow-hidden">
                   <div className="absolute -right-10 -bottom-10 opacity-10">
                     <GraduationCap className="w-32 h-32 sm:w-64 sm:h-64 rotate-12" />
@@ -379,26 +480,75 @@ function StudentDashboard() {
                     </p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+
+                {/* === 5. Card Ringkasan Informatif === */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   <div className="p-3 rounded-md border border-slate-100 bg-slate-50/50 flex items-start gap-2">
                     <div className="w-8 h-8 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0">
                       <User className="w-4 h-4 text-primary" />
                     </div>
-                    <div>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Nama Lengkap</p>
-                      <p className="font-bold text-slate-900 text-xs">{profile.student.nmSiswa}</p>
+                    <div className="min-w-0">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Nama</p>
+                      <p className="font-bold text-slate-900 text-xs truncate">{profile.student.nmSiswa}</p>
                     </div>
                   </div>
                   <div className="p-3 rounded-md border border-slate-100 bg-slate-50/50 flex items-start gap-2">
                     <div className="w-8 h-8 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0">
                       <FileDigit className="w-4 h-4 text-primary" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">NISN</p>
                       <p className="font-bold text-slate-900 text-xs">{profile.student.nisn}</p>
                     </div>
                   </div>
+                  <div className="p-3 rounded-md border border-slate-100 bg-slate-50/50 flex items-start gap-2">
+                    <div className="w-8 h-8 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0">
+                      <GraduationCap className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Jalur Masuk</p>
+                      <p className="font-bold text-slate-900 text-xs truncate">{profile.kelulusan.jalur || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-md border border-slate-100 bg-slate-50/50 flex items-start gap-2">
+                    <div className="w-8 h-8 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0">
+                      <Building2 className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Sekolah Asal</p>
+                      <p className="font-bold text-slate-900 text-xs truncate">{profile.student.sekolahAsal || '-'}</p>
+                    </div>
+                  </div>
                 </div>
+
+                {/* === 3. Status Daftar Ulang === */}
+                <div className="p-3 rounded-md border border-slate-200 bg-white">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ClipboardCheck className="w-4 h-4 text-primary" />
+                      <span className="text-xs font-bold text-slate-700">Status Daftar Ulang</span>
+                    </div>
+                    <Badge className={`text-[10px] font-bold px-2 py-0.5 border ${regStatus.color}`}>
+                      {regStatus.label}
+                    </Badge>
+                  </div>
+                  <div className="mt-2 grid grid-cols-3 gap-2">
+                    <div className="text-center p-2 rounded-md bg-slate-50">
+                      <p className="text-lg font-black text-primary">{biodataFilled}/{biodataFields.length}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase">Biodata</p>
+                    </div>
+                    <div className="text-center p-2 rounded-md bg-slate-50">
+                      <p className="text-lg font-black text-primary">{parentFilled}/{parentFields.length}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase">Ortu</p>
+                    </div>
+                    <div className="text-center p-2 rounded-md bg-slate-50">
+                      <p className="text-lg font-black text-primary">{uploadedDocsCount}/{totalDocs}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase">Berkas</p>
+                    </div>
+                  </div>
+                </div>
+
+
               </div>
             )}
 
@@ -567,7 +717,7 @@ function StudentDashboard() {
               </div>
             )}
 
-            {/* Step 4: Documents */}
+            {/* Step 4: Documents - with micro-animation */}
             {activeStep === 4 && (
               <div className="space-y-3 animate-in slide-in-from-right-4 duration-500">
                 <div className="p-3 bg-amber-50 border border-amber-100 rounded-md flex items-start gap-2">
@@ -578,20 +728,45 @@ function StudentDashboard() {
                   {docTypes.map((doc) => {
                     const driveId = profile.daftarUlang?.[doc.field]
                     const isUploading = uploadingField === doc.id
+                    const isJustUploaded = justUploaded === doc.id
                     return (
-                      <div key={doc.id} className="p-3 border border-slate-200 rounded-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-primary/30 transition-colors">
+                      <div
+                        key={doc.id}
+                        className={`p-3 border rounded-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all duration-500 ${
+                          isJustUploaded
+                            ? 'border-emerald-400 bg-emerald-50 scale-[1.01] shadow-md shadow-emerald-100'
+                            : driveId
+                              ? 'border-emerald-200 bg-emerald-50/30 hover:border-emerald-300'
+                              : 'border-slate-200 hover:border-primary/30'
+                        }`}
+                      >
                         <div className="flex items-center gap-2">
-                          <div className={`w-8 h-8 rounded-md flex items-center justify-center ${driveId ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}`}>
-                            <doc.icon className="w-4 h-4" />
+                          <div className={`w-8 h-8 rounded-md flex items-center justify-center transition-all duration-500 ${
+                            isJustUploaded
+                              ? 'bg-emerald-500 text-white scale-110'
+                              : driveId
+                                ? 'bg-emerald-50 text-emerald-600'
+                                : 'bg-slate-50 text-slate-400'
+                          }`}>
+                            {isJustUploaded ? (
+                              <CheckCircle2 className="w-4 h-4 animate-in zoom-in duration-300" />
+                            ) : (
+                              <doc.icon className="w-4 h-4" />
+                            )}
                           </div>
                           <div>
                             <h4 className="text-sm font-bold text-slate-900">{doc.label}</h4>
-                            {driveId ? <span className="text-[9px] text-emerald-600 font-bold">Terupload</span> : <span className="text-[9px] text-slate-400">Belum diisi</span>}
+                            {isJustUploaded ? (
+                              <span className="text-[9px] text-emerald-600 font-bold animate-in fade-in duration-300">✓ Berhasil diupload!</span>
+                            ) : driveId ? (
+                              <span className="text-[9px] text-emerald-600 font-bold">Terupload</span>
+                            ) : (
+                              <span className="text-[9px] text-slate-400">Belum diisi</span>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           {driveId && <Button size="sm" variant="ghost" onClick={() => setPreviewConfig({ isOpen: true, driveId, label: doc.label })} className="h-7 rounded-md text-slate-500 hover:text-primary"><Eye className="w-3.5 h-3.5" /></Button>}
-                          <Button size="sm" variant="outline" onClick={() => setScannerConfig({ isOpen: true, type: doc.id, label: doc.label })} className="h-7 rounded-md text-xs"><Camera className="w-3.5 h-3.5 sm:mr-1" /><span className="hidden sm:inline"> Foto</span></Button>
                           <label className="cursor-pointer">
                             <input type="file" className="hidden" accept=".pdf" onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleUpload(e, doc.id)} />
                             <div className="h-7 px-2 border border-slate-200 rounded-md flex items-center justify-center text-xs font-bold hover:bg-slate-50 transition-all">
@@ -607,8 +782,100 @@ function StudentDashboard() {
               </div>
             )}
 
-            {/* Step 5: Success */}
+            {/* === 2. Step 5: Review / Ringkasan === */}
             {activeStep === 5 && (
+              <div className="space-y-4 animate-in slide-in-from-right-4 duration-500">
+                {/* Biodata Review */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <User className="w-3.5 h-3.5 text-primary" />
+                    <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Biodata Diri</h3>
+                    <Button variant="ghost" size="sm" className="ml-auto h-5 text-[9px] text-primary hover:text-primary/90 px-1.5" onClick={() => setActiveStep(2)}>
+                      Edit
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 p-3 rounded-md border border-slate-100 bg-slate-50/50">
+                    {reviewBiodata.map((item, idx) => (
+                      <div key={idx} className={`flex flex-col py-1 ${item.label === 'Alamat Siswa' ? 'sm:col-span-2' : ''}`}>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{item.label}</span>
+                        <span className={`text-xs font-medium ${item.value ? 'text-slate-900' : 'text-red-400 italic'}`}>
+                          {item.value || 'Belum diisi'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Orang Tua Review */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Users className="w-3.5 h-3.5 text-primary" />
+                    <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Data Orang Tua</h3>
+                    <Button variant="ghost" size="sm" className="ml-auto h-5 text-[9px] text-primary hover:text-primary/90 px-1.5" onClick={() => setActiveStep(3)}>
+                      Edit
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 p-3 rounded-md border border-slate-100 bg-slate-50/50">
+                    {reviewOrtu.map((item, idx) => (
+                      <div key={idx} className={`flex flex-col py-1 ${item.label === 'Alamat Orang Tua' ? 'sm:col-span-2' : ''}`}>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{item.label}</span>
+                        <span className={`text-xs font-medium ${item.value ? 'text-slate-900' : 'text-red-400 italic'}`}>
+                          {item.value || 'Belum diisi'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Berkas Review */}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Upload className="w-3.5 h-3.5 text-primary" />
+                    <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Berkas Dokumen</h3>
+                    <Button variant="ghost" size="sm" className="ml-auto h-5 text-[9px] text-primary hover:text-primary/90 px-1.5" onClick={() => setActiveStep(4)}>
+                      Edit
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-1 gap-1.5 p-3 rounded-md border border-slate-100 bg-slate-50/50">
+                    {docTypes.map((doc) => {
+                      const driveId = profile.daftarUlang?.[doc.field]
+                      return (
+                        <div key={doc.id} className="flex items-center justify-between py-1">
+                          <div className="flex items-center gap-2">
+                            <doc.icon className={`w-3.5 h-3.5 ${driveId ? 'text-emerald-600' : 'text-slate-400'}`} />
+                            <span className="text-xs font-medium text-slate-700">{doc.label}</span>
+                          </div>
+                          {driveId ? (
+                            <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[9px] font-bold px-1.5 py-0">
+                              <CheckCircle2 className="w-2.5 h-2.5 mr-1" />
+                              Terupload
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-red-50 text-red-500 border-red-200 text-[9px] font-bold px-1.5 py-0">
+                              <AlertCircle className="w-2.5 h-2.5 mr-1" />
+                              Belum
+                            </Badge>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Warning if not complete */}
+                {filledItems < totalItems && (
+                  <div className="p-3 bg-amber-50 border border-amber-100 rounded-md flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-800 font-medium leading-relaxed">
+                      Masih ada <span className="font-bold">{totalItems - filledItems} data</span> yang belum diisi. Lengkapi terlebih dahulu agar proses daftar ulang bisa diselesaikan.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Step 6: Success */}
+            {activeStep === 6 && (
               <div className="py-8 flex flex-col items-center text-center space-y-4 animate-in zoom-in duration-500">
                 <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
                   <CheckCircle2 className="w-8 h-8 shadow-lg" />
@@ -631,16 +898,25 @@ function StudentDashboard() {
               <ChevronLeft className="w-3.5 h-3.5 mr-1" /> <span className="hidden sm:inline">Kembali</span>
             </Button>
 
-            {activeStep < 4 ? (
+            {activeStep === 1 ? (
+              <Button onClick={() => setActiveStep(2)} className="bg-primary hover:bg-primary/90 rounded-md px-3 sm:px-6 h-8 font-bold shadow-lg shadow-primary/20 active:scale-[0.98] flex-1 sm:flex-none justify-center text-xs">
+                Mulai Sekarang
+                <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            ) : activeStep < 4 ? (
               <Button onClick={handleSaveBiodata} disabled={isSaving} className="bg-primary hover:bg-primary/90 rounded-md px-3 sm:px-6 h-8 font-bold shadow-lg shadow-primary/20 active:scale-[0.98] flex-1 sm:flex-none justify-center text-xs">
                 {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : null}
-                <span className="hidden sm:inline">{activeStep === 1 ? 'Mulai Sekarang' : 'Simpan & Lanjut'}</span>
-                <span className="sm:hidden">{activeStep === 1 ? 'Mulai' : 'Lanjut'}</span>
+                <span className="hidden sm:inline">Simpan & Lanjut</span>
+                <span className="sm:hidden">Lanjut</span>
                 <ChevronRight className="w-3.5 h-3.5 ml-1" />
               </Button>
             ) : activeStep === 4 ? (
-              <Button onClick={() => setActiveStep(5)} disabled={uploadedDocsCount < totalDocs} className="bg-emerald-600 hover:bg-emerald-700 rounded-md px-3 sm:px-6 h-8 font-bold shadow-lg shadow-emerald-200 flex-1 sm:flex-none justify-center text-xs">
-                Selesaikan <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              <Button onClick={() => setActiveStep(5)} className="bg-primary hover:bg-primary/90 rounded-md px-3 sm:px-6 h-8 font-bold shadow-lg shadow-primary/20 flex-1 sm:flex-none justify-center text-xs">
+                Lihat Ringkasan <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            ) : activeStep === 5 ? (
+              <Button onClick={() => setActiveStep(6)} disabled={filledItems < totalItems} className="bg-emerald-600 hover:bg-emerald-700 rounded-md px-3 sm:px-6 h-8 font-bold shadow-lg shadow-emerald-200 flex-1 sm:flex-none justify-center text-xs">
+                Selesaikan Daftar Ulang <CheckCircle2 className="w-3.5 h-3.5 ml-1" />
               </Button>
             ) : (
               <div className="text-[8px] sm:text-[9px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1.5">
@@ -696,5 +972,3 @@ function StudentDashboard() {
     </div>
   )
 }
-
-

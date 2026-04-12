@@ -127,8 +127,8 @@ function SekolahManagement() {
         <div className="p-6 space-y-6">
             {/* Page Header with Icon */}
             <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                    <Building2 className="w-6 h-6 text-blue-600" />
+                <div className="p-2 bg-primary/10 rounded-lg">
+                    <Building2 className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900">Data Sekolah</h1>
@@ -140,14 +140,14 @@ function SekolahManagement() {
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle className="flex items-center gap-2">
-                            <Building2 className="w-5 h-5 text-blue-600" />
+                            <Building2 className="w-5 h-5 text-primary" />
                             Daftar Sekolah
                         </CardTitle>
                         <CardDescription>
                             Database sekolah SMP/MTS untuk referensi pendaftaran.
                         </CardDescription>
                     </div>
-                    <Button onClick={() => { setEditingSekolah(null); setIsDialogOpen(true) }} className="bg-blue-600 hover:bg-blue-700 rounded-md">
+                    <Button onClick={() => { setEditingSekolah(null); setIsDialogOpen(true) }} className="bg-primary hover:bg-primary/90 text-white rounded-md">
                         <Plus className="w-4 h-4 mr-2" />
                         Tambah
                     </Button>
@@ -159,7 +159,7 @@ function SekolahManagement() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input
                                 placeholder="Cari sekolah, NPSN, atau kecamatan..."
-                                className="pl-9 bg-white h-9 border-slate-300 rounded-md focus:border-blue-400 transition-all"
+                                className="pl-9 bg-white h-9 border-slate-300 rounded-md focus:ring-1 focus:ring-primary transition-all"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -205,7 +205,7 @@ function SekolahManagement() {
                                 {loading ? (
                                     <TableRow>
                                         <TableCell colSpan={6} className="h-24 text-center">
-                                            <Loader2 className="h-6 w-6 animate-spin mx-auto text-blue-600" />
+                                            <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
                                         </TableCell>
                                     </TableRow>
                                 ) : data.sekolah.length === 0 ? (
@@ -216,13 +216,13 @@ function SekolahManagement() {
                                     </TableRow>
                                 ) : (
                                     data.sekolah.map((item) => (
-                                        <TableRow key={item.id} className="hover:bg-blue-50+/50 transition-colors">
+                                        <TableRow key={item.id} className="hover:bg-primary/5 transition-colors">
                                             <TableCell className="font-medium px-4">{item.sekolah}</TableCell>
                                             <TableCell className="px-4">{item.npsn || '-'}</TableCell>
                                             <TableCell className="px-4">{item.bentuk || '-'}</TableCell>
                                             <TableCell className="px-4">{item.kecamatan || '-'}</TableCell>
                                             <TableCell className="px-4">
-                                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${item.status === 'N' ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-amber-50 text-amber-700 border border-amber-100'}`}>
+                                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${item.status === 'N' ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-amber-50 text-amber-700 border border-amber-100'}`}>
                                                     {item.status === 'N' ? 'Negeri' : 'Swasta'}
                                                 </span>
                                             </TableCell>
@@ -272,7 +272,7 @@ function SekolahManagement() {
                                             setPageSize(e.target.value)
                                             setPage(1)
                                         }}
-                                        className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        className="text-xs border border-slate-200 rounded px-1 py-0.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-primary"
                                     >
                                         <option value="10">10</option>
                                         <option value="25">25</option>
@@ -314,7 +314,7 @@ function SekolahManagement() {
                                                     key={p}
                                                     onClick={() => setPage(p as number)}
                                                     className={`min-w-[32px] h-8 px-3 py-1.5 text-sm rounded-md transition-colors ${page === p
-                                                        ? 'bg-blue-600 text-white font-medium'
+                                                        ? 'bg-primary text-white font-medium'
                                                         : 'text-slate-600 hover:bg-slate-100'
                                                         }`}
                                                 >
@@ -448,7 +448,7 @@ function SekolahDialog({ open, onOpenChange, initialData, onSuccess }: {
                     </div>
                     <DialogFooter className="pt-4 border-t">
                         <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={loading} className="rounded-md">Batal</Button>
-                        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 rounded-md">
+                        <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90 text-white rounded-md">
                             {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                             Simpan Perubahan
                         </Button>
