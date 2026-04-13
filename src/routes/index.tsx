@@ -54,6 +54,11 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@/components/ui/avatar"
 
 const getJadwalSpmb = createServerFn({ method: "GET" }).handler(async () => {
   try {
@@ -69,7 +74,7 @@ const getJadwalSpmb = createServerFn({ method: "GET" }).handler(async () => {
   }
 })
 
-export const Route = createFileRoute('/')(  {
+export const Route = createFileRoute('/')({
   component: LandingPage,
   loader: async () => {
     const jadwal = await getJadwalSpmb()
@@ -180,7 +185,7 @@ function LandingPage() {
       icon: Building2,
     },
   ]
-  
+
   const faqItems = [
     {
       question: "Kapan pendaftaran SPMB 2026 dibuka?",
@@ -207,21 +212,21 @@ function LandingPage() {
   const testimonials = [
     {
       name: "Pratama Ardiansyah",
-      role: "Alumni 2023 - Mahasiswa ITB",
+      role: "Alumni 2023 - Mahasiswa UPI",
       content: "SMAN 1 Bantarujeg memberikan landasan akademik yang sangat kuat. Lingkungan belajarnya kompetitif namun tetap suportif.",
       image: "https://i.pravatar.cc/150?u=pratama",
     },
     {
-      name: "Siti Nurhaliza",
+      name: "WARIS ALJU MANATUSI",
       role: "Siswa Kelas XII - Ketua OSIS",
       content: "Fasilitas laboratorium dan perpustakaan digitalnya sangat membantu kami dalam riset dan tugas sekolah sehari-hari.",
-      image: "https://i.pravatar.cc/150?u=siti",
+      image: "/osis.jpeg",
     },
     {
-      name: "Budi Santoso",
+      name: "Uhum Humaidil Aripin",
       role: "Orang Tua Siswa",
       content: "Sistem pendaftaran online ini sangat memudahkan kami. Prosesnya transparan dan panitianya sangat responsif di WhatsApp.",
-      image: "https://i.pravatar.cc/150?u=budi",
+      image: "/ortu.jpg",
     },
   ]
 
@@ -247,11 +252,10 @@ function LandingPage() {
       {/* ── Navbar ─────────────────────────────────────────── */}
       <header>
         <nav
-          className={`fixed top-0 w-full z-50 transition-all duration-300 border-b ${
-            scrolled
-              ? 'bg-white/90 backdrop-blur-lg border-slate-200 shadow-sm'
-              : 'bg-white border-slate-100'
-          }`}
+          className={`fixed top-0 w-full z-50 transition-all duration-300 border-b ${scrolled
+            ? 'bg-white/90 backdrop-blur-lg border-slate-200 shadow-sm'
+            : 'bg-white border-slate-100'
+            }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
             {/* Logo */}
@@ -505,7 +509,12 @@ function LandingPage() {
                 <div key={i} className="bg-slate-50 p-8 rounded-2xl border border-slate-100 relative group hover:bg-white hover:shadow-xl hover:border-amber-200 transition-all duration-300">
                   <Quote className="absolute top-6 right-8 w-10 h-10 text-amber-100 group-hover:text-amber-200 transition-colors" />
                   <div className="flex items-center gap-4 mb-6">
-                    <img src={t.image} alt={t.name} className="w-12 h-12 rounded-full border-2 border-white shadow-sm" />
+                    <Avatar className="w-16 h-16 border-2 border-white shadow-sm ring-2 ring-amber-100">
+                      <AvatarImage src={t.image} alt={t.name} className="object-cover object-top" />
+                      <AvatarFallback className="bg-amber-100 text-amber-700 font-bold">
+                        {t.name.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <h4 className="font-bold text-slate-900">{t.name}</h4>
                       <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider">{t.role}</p>
@@ -722,13 +731,12 @@ function LandingPage() {
                               )}
                             </div>
                             <div className="pt-1">
-                              <Badge className={`font-semibold px-2.5 py-0.5 text-xs rounded-md ${
-                                step.status === 'Aktif'
-                                  ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
-                                  : step.status === 'Akan Datang'
-                                    ? 'bg-amber-100 text-amber-600 hover:bg-amber-200'
-                                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                              }`}>
+                              <Badge className={`font-semibold px-2.5 py-0.5 text-xs rounded-md ${step.status === 'Aktif'
+                                ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
+                                : step.status === 'Akan Datang'
+                                  ? 'bg-amber-100 text-amber-600 hover:bg-amber-200'
+                                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                }`}>
                                 {step.status || 'Selesai'}
                               </Badge>
                             </div>
@@ -786,13 +794,12 @@ function LandingPage() {
                               )}
                             </div>
                             <div className="pt-1">
-                              <Badge className={`font-semibold px-2.5 py-0.5 text-xs rounded-md ${
-                                step.status === 'Aktif'
-                                  ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
-                                  : step.status === 'Akan Datang'
-                                    ? 'bg-amber-100 text-amber-600 hover:bg-amber-200'
-                                    : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                              }`}>
+                              <Badge className={`font-semibold px-2.5 py-0.5 text-xs rounded-md ${step.status === 'Aktif'
+                                ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
+                                : step.status === 'Akan Datang'
+                                  ? 'bg-amber-100 text-amber-600 hover:bg-amber-200'
+                                  : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                                }`}>
                                 {step.status || 'Selesai'}
                               </Badge>
                             </div>
@@ -820,32 +827,28 @@ function LandingPage() {
               {faqItems.map((item, i) => (
                 <div
                   key={i}
-                  className={`border rounded-2xl transition-all duration-300 ${
-                    activeFaq === i
-                      ? 'border-amber-400 bg-amber-50/30'
-                      : 'border-slate-200 hover:border-amber-300 bg-white'
-                  }`}
+                  className={`border rounded-2xl transition-all duration-300 ${activeFaq === i
+                    ? 'border-amber-400 bg-amber-50/30'
+                    : 'border-slate-200 hover:border-amber-300 bg-white'
+                    }`}
                 >
                   <button
                     onClick={() => setActiveFaq(activeFaq === i ? null : i)}
                     className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
                     aria-expanded={activeFaq === i}
                   >
-                    <span className={`text-lg font-bold transition-colors ${
-                      activeFaq === i ? 'text-amber-700' : 'text-slate-900'
-                    }`}>
+                    <span className={`text-lg font-bold transition-colors ${activeFaq === i ? 'text-amber-700' : 'text-slate-900'
+                      }`}>
                       {item.question}
                     </span>
-                    <div className={`shrink-0 ml-4 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                      activeFaq === i ? 'bg-amber-500 text-white rotate-180' : 'bg-slate-100 text-slate-500'
-                    }`}>
+                    <div className={`shrink-0 ml-4 w-8 h-8 rounded-full flex items-center justify-center transition-all ${activeFaq === i ? 'bg-amber-500 text-white rotate-180' : 'bg-slate-100 text-slate-500'
+                      }`}>
                       {activeFaq === i ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                     </div>
                   </button>
                   <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      activeFaq === i ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
-                    }`}
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${activeFaq === i ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'
+                      }`}
                   >
                     <div className="p-6 pt-0 text-slate-600 leading-relaxed border-t border-amber-100/50 mt-2">
                       {item.answer}
@@ -854,7 +857,7 @@ function LandingPage() {
                 </div>
               ))}
             </div>
-            
+
             <div className="mt-16 p-8 bg-slate-900 rounded-3xl text-center space-y-6">
               <h4 className="text-xl font-bold text-white">Masih punya pertanyaan lainnya?</h4>
               <p className="text-slate-400">Tim kami siap membantu Anda melalui grup WhatsApp informasi.</p>
