@@ -63,6 +63,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
+import { TableSkeleton } from "@/components/table-skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import {
   AlertDialog,
@@ -322,26 +323,17 @@ function DashboardPendaftarPage() {
             <Table>
               <TableHeader className="bg-slate-50/50">
                 <TableRow>
-                  <TableHead className="font-semibold text-slate-700 px-4">Antrian</TableHead>
-                  <TableHead className="font-semibold text-slate-700 px-4">Nama Lengkap</TableHead>
-                  <TableHead className="font-semibold text-slate-700 px-4">Asal Sekolah</TableHead>
-                  <TableHead className="font-semibold text-slate-700 px-4">Tahap/Jalur</TableHead>
-                  <TableHead className="font-semibold text-slate-700 px-4">No. HP</TableHead>
-                  <TableHead className="w-[100px] text-right px-4">Aksi</TableHead>
+                  <TableHead className="font-semibold text-slate-700 px-2.5 py-2 h-9 text-[11px] uppercase tracking-wider">Antrian</TableHead>
+                  <TableHead className="font-semibold text-slate-700 px-2.5 py-2 h-9 text-[11px] uppercase tracking-wider">Nama Lengkap</TableHead>
+                  <TableHead className="font-semibold text-slate-700 px-2.5 py-2 h-9 text-[11px] uppercase tracking-wider">Asal Sekolah</TableHead>
+                  <TableHead className="font-semibold text-slate-700 px-2.5 py-2 h-9 text-[11px] uppercase tracking-wider">Tahap/Jalur</TableHead>
+                  <TableHead className="font-semibold text-slate-700 px-2.5 py-2 h-9 text-[11px] uppercase tracking-wider">No. HP</TableHead>
+                  <TableHead className="w-[100px] text-right px-2.5 py-2 h-9 text-[11px] uppercase tracking-wider">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isPending ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell><Skeleton className="h-5 w-[200px]" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-[150px]" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-[50px]" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-[100px]" /></TableCell>
-                      <TableCell><Skeleton className="h-5 w-[120px]" /></TableCell>
-                      <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto rounded-full" /></TableCell>
-                    </TableRow>
-                  ))
+                  <TableSkeleton columnCount={5} />
                 ) : !pendaftarInfo || pendaftarInfo.pendaftar.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="h-32 text-center text-slate-500 italic">
@@ -349,50 +341,50 @@ function DashboardPendaftarPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  pendaftarInfo.pendaftar.map((p) => (
-                    <TableRow key={p.id} className="hover:bg-slate-50 transition-colors">
-                      <TableCell className="px-4">
+                   pendaftarInfo.pendaftar.map((p) => (
+                    <TableRow key={p.id} className="hover:bg-slate-50 transition-colors border-b border-slate-100/50">
+                      <TableCell className="px-2.5 py-1.5">
                         {p.noAntrian && p.tglAntrian === getJakartaDate() ? (
-                          <div className="flex flex-col gap-1">
+                          <div className="flex flex-col gap-0.5">
                             <Badge className={`${p.statusAntrian === 'CALLING' ? 'bg-amber-500 animate-pulse' :
                               p.statusAntrian === 'IN_ROOM' ? 'bg-primary' :
                                 p.statusAntrian === 'SKIPPED' ? 'bg-red-500' :
                                   p.statusAntrian === 'DONE' ? 'bg-slate-400' :
-                                    'bg-primary'} hover:opacity-90 text-white font-black px-3 py-1 text-sm shadow-sm w-fit`}>
+                                    'bg-primary'} hover:opacity-90 text-white font-black px-2 py-0.5 text-xs shadow-sm w-fit`}>
                               #{p.noAntrian}
                             </Badge>
-                            <span className="text-[10px] font-bold text-slate-500 uppercase">
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
                               {p.statusAntrian === 'WAITING' ? 'Menunggu' :
-                                p.statusAntrian === 'CALLING' ? 'Mendekat/Dipanggil' :
-                                  p.statusAntrian === 'IN_ROOM' ? 'Di Ruangan' :
-                                    p.statusAntrian === 'SKIPPED' ? 'Terlewat' :
+                                p.statusAntrian === 'CALLING' ? 'Mendekat' :
+                                  p.statusAntrian === 'IN_ROOM' ? 'Di Ruang' :
+                                    p.statusAntrian === 'SKIPPED' ? 'Lewat' :
                                       p.statusAntrian === 'DONE' ? 'Selesai' : p.statusAntrian}
                             </span>
                           </div>
                         ) : p.noAntrian ? (
                           <div className="flex flex-col">
-                            <Badge variant="outline" className="text-slate-400 border-slate-200 font-bold px-2 py-0.5 text-[10px] w-fit">
+                            <Badge variant="outline" className="text-slate-400 border-slate-200 font-bold px-1.5 py-0 text-[10px] w-fit">
                               #{p.noAntrian}
                             </Badge>
-                            <span className="text-[10px] text-slate-400 mt-0.5">Lama</span>
+                            <span className="text-[9px] text-slate-300 mt-0.5">Lama</span>
                           </div>
                         ) : (
-                          <span className="text-slate-300 text-xs italic">Belum Ada</span>
+                          <span className="text-slate-300 text-[11px] italic">Belum Ada</span>
                         )}
                       </TableCell>
-                      <TableCell className="font-medium text-slate-900 px-4">{p.nmLengkap}</TableCell>
-                      <TableCell className="px-4">{p.asalSekolah || '-'}</TableCell>
+                      <TableCell className="font-semibold text-slate-900 px-2.5 py-1.5 text-[13px]">{p.nmLengkap}</TableCell>
+                      <TableCell className="px-2.5 py-1.5 text-slate-600 text-xs">{p.asalSekolah || '-'}</TableCell>
 
-                      <TableCell className="px-4">
-                        <div className="flex flex-col gap-1">
-                          <span className={`w-fit px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${p.tahap === '1' ? 'bg-primary/10 text-primary' : 'bg-purple-100 text-purple-700'}`}>
+                      <TableCell className="px-2.5 py-1.5">
+                        <div className="flex flex-col gap-0.5">
+                          <span className={`w-fit px-1.5 py-0 rounded-full text-[9px] font-bold uppercase ${p.tahap === '1' ? 'bg-primary/10 text-primary' : 'bg-purple-100 text-purple-700'}`}>
                             Tahap {p.tahap}
                           </span>
-                          <span className="text-xs text-slate-600 font-medium">{p.jalurMasuk || '-'}</span>
+                          <span className="text-[11px] text-slate-600 font-medium tracking-tight line-clamp-1">{p.jalurMasuk || '-'}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-slate-600 px-4">{p.noHandphone || '-'}</TableCell>
-                      <TableCell className="text-right px-4">
+                      <TableCell className="text-slate-500 px-2.5 py-1.5 text-xs font-medium">{p.noHandphone || '-'}</TableCell>
+                      <TableCell className="text-right px-2.5 py-1.5">
                         <div className="flex items-center justify-end gap-0.5">
                           <TooltipProvider delayDuration={300}>
                             {p.noAntrian && p.tglAntrian === getJakartaDate() ? (

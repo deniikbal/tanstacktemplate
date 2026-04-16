@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from 'sonner'
 import { Loader2, ClipboardList, Search, CheckCircle2, AlertCircle, XCircle, Phone, MessageCircle, ChevronLeft, ChevronRight, FileText, X, User, Users, GraduationCap } from 'lucide-react'
+import { TableSkeleton } from '@/components/table-skeleton'
 import { getDaftarUlangList, upsertDaftarUlang } from '@/lib/server/daftar-ulang'
 
 export const Route = createFileRoute('/dashboard/daftar-ulang')({
@@ -339,15 +340,8 @@ function DaftarUlangPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isPending && !data.length ? (
-                  <TableRow>
-                    <TableCell colSpan={11} className="text-center h-32">
-                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                        <Loader2 className="h-8 w-8 animate-spin opacity-20" />
-                        <p>Memuat data...</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                {isPending ? (
+                  <TableSkeleton columnCount={10} />
                 ) : data.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={11} className="text-center h-32 text-muted-foreground">
@@ -579,11 +573,8 @@ function DaftarUlangPage() {
 
           {/* Mobile Card View */}
           <div className="md:hidden divide-y divide-slate-100">
-            {isPending && !data.length ? (
-              <div className="p-8 text-center flex flex-col items-center gap-2 text-slate-400">
-                <Loader2 className="h-8 w-8 animate-spin opacity-20" />
-                <p className="text-sm">Memuat data siswa...</p>
-              </div>
+            {isPending ? (
+              <TableSkeleton columnCount={3} showActions={false} rowCount={3} />
             ) : data.length === 0 ? (
               <div className="p-8 text-center text-slate-400">
                 <p className="text-sm">Tidak ada data siswa yang ditemukan.</p>

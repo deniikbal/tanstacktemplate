@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Search, Loader2, Trash2, Pencil, GraduationCap, AlertCircle, CheckCircle2, XCircle, ChevronLeft, ChevronRight, MoreHorizontal, RefreshCw } from 'lucide-react'
+import { TableSkeleton } from '@/components/table-skeleton'
 import React, { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
@@ -466,15 +467,8 @@ function KelulusanPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isPending && !data.length ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center h-32">
-                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                        <Loader2 className="h-8 w-8 animate-spin opacity-20" />
-                        <p>Memuat data...</p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                {isPending ? (
+                  <TableSkeleton columnCount={5} showCheckbox={true} />
                 ) : data.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center h-32 text-muted-foreground">
@@ -583,10 +577,7 @@ function KelulusanPage() {
           {/* Mobile Card View */}
           <div className="md:hidden divide-y divide-slate-100">
             {isPending && !data.length ? (
-              <div className="p-8 text-center flex flex-col items-center gap-3">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500/20" />
-                <p className="text-sm text-slate-400 font-medium">Memuat data kelulusan...</p>
-              </div>
+              <TableSkeleton columnCount={3} showActions={false} rowCount={3} />
             ) : data.length === 0 ? (
               <div className="p-12 text-center text-slate-400">
                 <AlertCircle className="h-10 w-10 mx-auto mb-2 opacity-20" />

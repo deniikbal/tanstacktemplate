@@ -56,6 +56,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
+import { TableSkeleton } from "@/components/table-skeleton"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -279,25 +280,7 @@ function UsersPage() {
               </TableHeader>
               <TableBody>
                 {isPending ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell className="px-6 py-2">
-                        <Skeleton className="h-5 w-[150px] bg-slate-200" />
-                      </TableCell>
-                      <TableCell className="px-6 py-2">
-                        <Skeleton className="h-5 w-[200px] bg-slate-200" />
-                      </TableCell>
-                      <TableCell className="px-6 py-2">
-                        <Skeleton className="h-5 w-[60px] rounded-full bg-slate-200" />
-                      </TableCell>
-                      <TableCell className="px-6 py-2">
-                        <Skeleton className="h-4 w-[80px] bg-slate-200" />
-                      </TableCell>
-                      <TableCell className="px-6 py-2 text-right">
-                        <Skeleton className="ml-auto h-7 w-7 rounded-sm bg-slate-200" />
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  <TableSkeleton columnCount={4} />
                 ) : !usersInfo || usersInfo.users.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="h-32 text-center text-slate-500 italic">

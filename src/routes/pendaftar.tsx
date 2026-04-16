@@ -57,6 +57,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
+import { TableSkeleton } from "@/components/table-skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import {
     AlertDialog,
@@ -407,16 +408,7 @@ function PendaftaranPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {isPending ? (
-                                        Array.from({ length: 5 }).map((_, i) => (
-                                            <TableRow key={i}>
-                                                <TableCell><Skeleton className="h-5 w-[200px]" /></TableCell>
-                                                <TableCell><Skeleton className="h-5 w-[150px]" /></TableCell>
-                                                <TableCell><Skeleton className="h-5 w-[50px]" /></TableCell>
-                                                <TableCell><Skeleton className="h-5 w-[100px]" /></TableCell>
-                                                <TableCell><Skeleton className="h-5 w-[120px]" /></TableCell>
-                                                <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto rounded-full" /></TableCell>
-                                            </TableRow>
-                                        ))
+                                        <TableSkeleton columnCount={5} />
                                     ) : !pendaftarInfo || pendaftarInfo.pendaftar.length === 0 ? (
                                         <TableRow>
                                             <TableCell colSpan={6} className="h-32 text-center text-slate-500 italic">
@@ -596,16 +588,7 @@ function PendaftaranPage() {
                         {/* Mobile Card View */}
                         <div className="md:hidden space-y-3 p-4 bg-slate-50/50">
                             {isPending ? (
-                                Array.from({ length: 3 }).map((_, i) => (
-                                    <div key={i} className="p-4 bg-white border border-slate-200 rounded-md shadow-sm space-y-3">
-                                        <div className="flex justify-between">
-                                            <Skeleton className="h-10 w-16" />
-                                            <Skeleton className="h-8 w-8 rounded-full" />
-                                        </div>
-                                        <Skeleton className="h-4 w-3/4" />
-                                        <Skeleton className="h-4 w-1/2" />
-                                    </div>
-                                ))
+                                <TableSkeleton columnCount={3} showActions={false} rowCount={3} />
                             ) : !pendaftarInfo || pendaftarInfo.pendaftar.length === 0 ? (
                                 <div className="p-8 text-center text-slate-400 italic text-sm">
                                     Belum ada data pendaftar.

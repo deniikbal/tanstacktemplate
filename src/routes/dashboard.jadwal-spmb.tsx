@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/select'
 import { toast } from 'sonner'
 import { CalendarDays, Plus, Trash2, Pencil, Loader2, Save, Search } from 'lucide-react'
+import { TableSkeleton } from '@/components/table-skeleton'
 import {
     getJadwalSpmbList,
     createJadwalSpmb,
@@ -256,13 +257,6 @@ function JadwalSpmbPage() {
         item.status.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-        )
-    }
 
     return (
         <div className="p-6 space-y-6">
@@ -377,7 +371,9 @@ function JadwalSpmbPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredList.length === 0 ? (
+                            {isLoading ? (
+                                <TableSkeleton columnCount={7} />
+                            ) : filteredList.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={8} className="text-center text-slate-500 py-16">
                                         <div className="flex flex-col items-center gap-2 opacity-50">
