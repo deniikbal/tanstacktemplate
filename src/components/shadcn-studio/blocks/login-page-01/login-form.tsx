@@ -34,21 +34,21 @@ const LoginForm = () => {
   }
 
   return (
-    <form className='space-y-6' onSubmit={handleLogin}>
+    <form className='space-y-4' onSubmit={handleLogin}>
       {/* Email */}
-      <div className='space-y-2'>
-        <Label htmlFor='userEmail' className='text-sm font-bold text-slate-700 ml-1'>
+      <div className='space-y-1.5'>
+        <Label htmlFor='userEmail' className='text-xs font-bold text-slate-700 ml-1'>
           Email address
         </Label>
         <div className="relative group">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Mail className="h-5 w-5 text-slate-400 group-focus-within:text-amber-500 transition-colors" />
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+            <Mail className="h-4.5 w-4.5 text-slate-400 group-focus-within:text-amber-500 transition-colors" />
           </div>
           <Input
             type='email'
             id='userEmail'
             placeholder='nama@email.com'
-            className='pl-11 h-12 bg-slate-50 border-slate-200 rounded-2xl focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all'
+            className='pl-10 h-11 bg-slate-50 border-slate-200 rounded-xl focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all text-sm'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -57,21 +57,21 @@ const LoginForm = () => {
       </div>
 
       {/* Password */}
-      <div className='w-full space-y-2'>
+      <div className='w-full space-y-1.5'>
         <div className="flex items-center justify-between ml-1">
-          <Label htmlFor='password' title='Password' className="text-sm font-bold text-slate-700">
+          <Label htmlFor='password' title='Password' className="text-xs font-bold text-slate-700">
             Password
           </Label>
         </div>
         <div className='relative group'>
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Lock className="h-5 w-5 text-slate-400 group-focus-within:text-amber-500 transition-colors" />
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+            <Lock className="h-4.5 w-4.5 text-slate-400 group-focus-within:text-amber-500 transition-colors" />
           </div>
           <Input
             id='password'
             type={isVisible ? 'text' : 'password'}
             placeholder='••••••••••••'
-            className='pl-11 pr-12 h-12 bg-slate-50 border-slate-200 rounded-2xl focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all'
+            className='pl-10 pr-10 h-11 bg-slate-50 border-slate-200 rounded-xl focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all text-sm'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -79,16 +79,16 @@ const LoginForm = () => {
           <button
             type="button"
             onClick={() => setIsVisible(prevState => !prevState)}
-            className='absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-amber-600 transition-colors focus:outline-none'
+            className='absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-amber-600 transition-colors focus:outline-none'
             aria-label={isVisible ? 'Hide password' : 'Show password'}
           >
-            {isVisible ? <EyeOffIcon size={20} /> : <EyeIcon size={20} />}
+            {isVisible ? <EyeOffIcon size={18} /> : <EyeIcon size={18} />}
           </button>
         </div>
       </div>
 
       <Button 
-        className='w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black h-14 rounded-2xl shadow-xl shadow-amber-500/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed group' 
+        className='w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black h-12 rounded-xl shadow-lg shadow-amber-500/10 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed group text-sm' 
         type='submit' 
         disabled={loading}
       >

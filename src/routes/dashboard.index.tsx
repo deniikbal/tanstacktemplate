@@ -140,15 +140,15 @@ function DashboardIndexPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-slate-300 shadow-sm bg-white rounded-md overflow-hidden">
-          <CardHeader className="bg-primary/5 border-b border-primary/10 pb-4">
-            <div className="flex items-center gap-3">
+        <Card className="border-slate-300 shadow-sm bg-white rounded-md overflow-hidden py-0">
+          <CardHeader className="bg-primary/5 border-b border-primary/10 p-0">
+            <div className="flex items-center gap-3 px-6 py-3">
               <div className="p-2 bg-primary rounded-lg">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
-              <div>
-                <CardTitle className="text-lg font-bold text-slate-800">Statistik Siswa Diterima</CardTitle>
-                <CardDescription className="text-xs">Rincian siswa dengan status Lulus berdasarkan jalur pendaftaran.</CardDescription>
+              <div className="flex flex-col justify-center">
+                <CardTitle className="text-lg font-bold text-slate-800 leading-tight">Statistik Siswa Diterima</CardTitle>
+                <CardDescription className="text-xs leading-tight">Rincian siswa dengan status Lulus berdasarkan jalur pendaftaran.</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -215,15 +215,15 @@ function DashboardIndexPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-slate-300 shadow-sm bg-white rounded-md overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200 pb-4">
-            <div className="flex items-center gap-3">
+        <Card className="border-slate-300 shadow-sm bg-white rounded-md overflow-hidden py-0">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-slate-200 p-0">
+            <div className="flex items-center gap-3 px-6 py-3">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
                 <Building2 className="h-5 w-5 text-white" />
               </div>
-              <div>
-                <CardTitle className="text-sm font-bold text-slate-800">Sekolah Asal Pendaftar</CardTitle>
-                <CardDescription className="text-[10px]">Top 15 sekolah pendaftar terbanyak</CardDescription>
+              <div className="flex flex-col justify-center">
+                <CardTitle className="text-lg font-bold text-slate-800 leading-tight">Sekolah Asal Pendaftar</CardTitle>
+                <CardDescription className="text-xs leading-tight">Top 15 sekolah pendaftar terbanyak</CardDescription>
               </div>
             </div>
           </CardHeader>

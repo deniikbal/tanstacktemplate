@@ -52,7 +52,7 @@ export function NavMain({
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         tooltip={item.title}
-                        className={isItemActive ? "text-primary font-medium" : ""}
+                        className={isItemActive ? "relative text-primary font-medium before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:bg-primary before:rounded-r-full" : ""}
                       >
                         {item.icon && <item.icon />}
                         <span>{item.title}</span>
@@ -68,7 +68,7 @@ export function NavMain({
                               <SidebarMenuSubButton asChild isActive={isSubItemActive}>
                                 <Link
                                   to={subItem.url}
-                                  className={isSubItemActive ? "text-primary font-medium" : ""}
+                                  className={isSubItemActive ? "relative text-primary font-medium before:absolute before:left-0 before:top-1 before:bottom-1 before:w-0.5 before:bg-primary before:rounded-r-full" : ""}
                                 >
                                   <span>{subItem.title}</span>
                                 </Link>
@@ -84,7 +84,7 @@ export function NavMain({
                     asChild
                     tooltip={item.title}
                     isActive={pathname === item.url}
-                    className={pathname === item.url ? "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary font-medium" : ""}
+                    className={pathname === item.url ? "relative bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary font-medium before:absolute before:left-0 before:top-1.5 before:bottom-1.5 before:w-1 before:bg-primary before:rounded-r-full" : ""}
                   >
                     <Link to={item.url}>
                       {item.icon && <item.icon />}

@@ -18,79 +18,53 @@ function LoginPage() {
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] pointer-events-none" />
       </div>
 
-      <div className="w-full max-w-5xl px-4 grid lg:grid-cols-5 gap-0 items-center animate-in fade-in zoom-in duration-700">
+      <div className="w-full max-w-[440px] px-4 flex flex-col animate-in fade-in zoom-in duration-700">
         
-        {/* ── Left Branding (lg only) ─────────────────────── */}
-        <div className="hidden lg:flex lg:col-span-2 flex-col justify-center p-12 space-y-8">
-          <Link to="/" className="flex items-center gap-3 w-fit group">
-            <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-amber-500/40 group-hover:scale-110 transition-transform duration-500 transform -rotate-6 group-hover:rotate-0">
-              <GraduationCap className="text-white w-7 h-7" />
+        {/* ── Top Branding ────────────────────────────────── */}
+        <div className="flex flex-col items-center mb-8 gap-3">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center shadow-xl shadow-amber-500/20 group-hover:scale-110 transition-transform duration-500 transform -rotate-3 group-hover:rotate-0">
+              <GraduationCap className="text-white w-6 h-6" />
             </div>
-            <span className="font-black text-3xl tracking-tighter text-slate-900">
+            <span className="font-black text-2xl tracking-tighter text-slate-900">
               SPMB <span className="text-amber-500">2026</span>
             </span>
           </Link>
+          <p className="text-slate-500 font-medium text-sm text-center">
+            Pendaftaran Resmi SMAN 1 Bantarujeg
+          </p>
+        </div>
 
-          <div className="space-y-4">
-            <h1 className="text-5xl font-black text-slate-900 leading-[1.1] tracking-tight">
-              Gerbang <br /> 
-              <span className="text-amber-500">Masa Depan</span> <br />
-              Dimulai Di Sini.
-            </h1>
-            <p className="text-slate-500 font-medium text-lg max-w-xs leading-relaxed">
-              Masuk ke sistem pendaftaran resmi SMAN 1 Bantarujeg.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3 text-slate-400 group">
-              <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:bg-amber-50 group-hover:border-amber-200 transition-colors">
-                <ShieldCheck className="w-4 h-4 text-slate-400 group-hover:text-amber-600" />
+        {/* ── Login Card ──────────────────────────────────── */}
+        <Card className="relative z-10 border-white/60 bg-white/80 backdrop-blur-2xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.1)] rounded-[32px] overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600" />
+          
+          <CardContent className="p-6 sm:p-10">
+            <div className="flex items-center justify-between gap-4 mb-8">
+              <div className="space-y-0.5">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Login Akun</h2>
+                <p className="text-slate-400 text-xs font-medium">Masuk untuk melanjutkan</p>
               </div>
-              <span className="text-xs font-bold uppercase tracking-widest">Sistem Terenkripsi & Aman</span>
+              
+              <Link 
+                to="/" 
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-amber-600 transition-colors group px-3 py-1.5 bg-slate-100/50 rounded-full hover:bg-amber-50"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+                Beranda
+              </Link>
             </div>
-          </div>
-        </div>
 
-        {/* ── Right Login Card ────────────────────────────── */}
-        <div className="col-span-1 lg:col-span-3">
-          <Card className="relative z-10 border-white/40 bg-white/70 backdrop-blur-3xl shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] rounded-[40px] overflow-hidden">
-            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600" />
-            
-            <CardContent className="p-8 sm:p-12 md:p-16">
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-                <div className="space-y-2">
-                  <div className="lg:hidden flex items-center gap-2 mb-4">
-                    <GraduationCap className="w-6 h-6 text-amber-500" />
-                    <span className="font-black text-xl text-slate-900">SPMB 2026</span>
-                  </div>
-                  <h2 className="text-4xl font-black text-slate-900 tracking-tight">Login Akun</h2>
-                  <p className="text-slate-500 font-medium italic">Silakan lengkapi formulir di bawah ini</p>
-                </div>
-                
-                <Link 
-                  to="/" 
-                  className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-amber-600 transition-colors group px-4 py-2 bg-slate-100 rounded-full hover:bg-amber-50"
-                >
-                  <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                  Beranda
-                </Link>
-              </div>
+            <LoginForm />
 
-              <LoginForm />
-
-              <div className="mt-12 pt-8 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-[0.2em]">
-                  SMAN 1 BANTARUJEG
-                </p>
-                <div className="flex gap-4">
-                  <a href="#" className="text-xs font-bold text-amber-600 hover:text-amber-700 underline underline-offset-4">Butuh Bantuan?</a>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
+            <div className="mt-8 pt-6 border-t border-slate-200/60 flex items-center justify-between">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                SMAN 1 BANTARUJEG
+              </p>
+              <a href="#" className="text-xs font-bold text-amber-600 hover:text-amber-700 underline underline-offset-4">Bantuan?</a>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
