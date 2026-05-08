@@ -1,13 +1,28 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { GraduationCap, ArrowLeft, ShieldCheck, Mail, Lock } from 'lucide-react'
 import LoginForm from '@/components/shadcn-studio/blocks/login-page-01/login-form'
+import { authClient } from '@/lib/auth-client'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
 })
 
 function LoginPage() {
+  const navigate = useNavigate()
+  const { data: session, isPending } = authClient.useSession()
+
+  useEffect(() => {
+    if (!isPending && session) {
+      navigate({ to: '/dashboard', replace: true })
+    }
+  }, [session, isPending, navigate])
+
+  if (isPending) return <LoadingSpinner />
+  if (session) return null
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-slate-50 overflow-hidden">
       {/* ── Aurora Mesh Gradient Background ──────────────── */}

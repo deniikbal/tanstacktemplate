@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +32,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { toast } from 'sonner'
-import { Loader2, ClipboardList, Search, CheckCircle2, AlertCircle, XCircle, Phone, MessageCircle, ChevronLeft, ChevronRight, FileText, X, User, Users, GraduationCap } from 'lucide-react'
+import { Loader2, ClipboardList, Search, CheckCircle2, AlertCircle, XCircle, Phone, MessageCircle, ChevronLeft, ChevronRight, ChevronDown, FileText, X, User, Users, GraduationCap } from 'lucide-react'
 import { TableSkeleton } from '@/components/table-skeleton'
 import { getDaftarUlangList, upsertDaftarUlang } from '@/lib/server/daftar-ulang'
 
@@ -775,11 +776,11 @@ function DaftarUlangPage() {
       {/* Detail Siswa Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="w-[95vw] md:max-w-7xl max-h-[90vh] flex flex-col p-0 overflow-hidden" showCloseButton={false}>
-          <DialogHeader className="p-6 pb-4 border-b shrink-0">
+          <DialogHeader className="p-4 border-b shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <FileText className="w-6 h-6 text-blue-600" />
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
                   <DialogTitle className="text-lg font-black text-slate-900">Detail Siswa</DialogTitle>
@@ -792,69 +793,83 @@ function DaftarUlangPage() {
             </div>
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-4">
             {detailStudent && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                 {/* Kolom Kiri */}
-                <div className="space-y-8">
+                <div className="space-y-4">
                   {/* Data Jalur */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-black text-indigo-600 border-b-2 border-indigo-100 pb-2 flex items-center gap-2">
-                      <GraduationCap className="w-5 h-5" />
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-black text-indigo-600 border-b-2 border-indigo-100 pb-1.5 flex items-center gap-2">
+                      <GraduationCap className="w-4 h-4" />
                       INFORMASI PENDAFTARAN
                     </h4>
-                    <div className="space-y-2">
+                    <div className="space-y-0">
                       <DetailRow label="Jalur Pendaftaran" value={detailStudent.jalur} />
                       <DetailRow label="Tahap" value={detailStudent.tahap} />
                     </div>
                   </div>
 
                   {/* Data Pribadi */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-black text-blue-600 border-b-2 border-blue-100 pb-2 flex items-center gap-2">
-                      <User className="w-5 h-5" />
-                      DATA PRIBADI SISWA
-                    </h4>
-                    <div className="grid grid-cols-1 gap-2">
-                      <DetailRow label="Nama Lengkap" value={detailStudent.nmSiswa} />
-                      <DetailRow label="NISN" value={detailStudent.nisn || '-'} />
-                      <DetailRow label="Tempat, Tanggal Lahir" value={`${detailStudent.tempatLahir || '-'}, ${detailStudent.tanggalLahir || '-'}`} />
-                      <DetailRow label="Jenis Kelamin" value={detailStudent.jenisKelamin === 'L' || detailStudent.jenisKelamin === 'Laki-laki' ? 'Laki-laki' : detailStudent.jenisKelamin === 'P' || detailStudent.jenisKelamin === 'Perempuan' ? 'Perempuan' : '-'} />
-                      <DetailRow label="Agama" value={detailStudent.agama || '-'} />
-                      <DetailRow label="No. HP Siswa" value={detailStudent.teleponSiswa || '-'} />
-                      <DetailRow label="Alamat Siswa" value={detailStudent.alamatSiswa || '-'} />
-                      <DetailRow label="Asal Sekolah" value={detailStudent.sekolahAsal || '-'} />
-                      <DetailRow label="Status Keluarga" value={detailStudent.statusDalamKel || '-'} />
-                      <DetailRow label="Anak Ke" value={detailStudent.anakKe || '-'} />
-                    </div>
-                  </div>
+                  <Collapsible defaultOpen className="overflow-hidden rounded-md border border-blue-100">
+                    <CollapsibleTrigger className="group flex w-full items-center justify-between bg-blue-50/60 px-3 py-2 text-left">
+                      <h4 className="text-xs font-black text-blue-600 flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        DATA PRIBADI SISWA
+                      </h4>
+                      <ChevronDown className="h-4 w-4 text-blue-500 transition-transform group-data-[state=open]:rotate-180" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <Table>
+                        <TableBody>
+                          <DetailTableRow label="Nama Lengkap" value={detailStudent.nmSiswa} />
+                          <DetailTableRow label="NISN" value={detailStudent.nisn || '-'} />
+                          <DetailTableRow label="Tempat, Tanggal Lahir" value={`${detailStudent.tempatLahir || '-'}, ${detailStudent.tanggalLahir || '-'}`} />
+                          <DetailTableRow label="Jenis Kelamin" value={detailStudent.jenisKelamin === 'L' || detailStudent.jenisKelamin === 'Laki-laki' ? 'Laki-laki' : detailStudent.jenisKelamin === 'P' || detailStudent.jenisKelamin === 'Perempuan' ? 'Perempuan' : '-'} />
+                          <DetailTableRow label="Agama" value={detailStudent.agama || '-'} />
+                          <DetailTableRow label="No. HP Siswa" value={detailStudent.teleponSiswa || '-'} />
+                          <DetailTableRow label="Alamat Siswa" value={detailStudent.alamatSiswa || '-'} />
+                          <DetailTableRow label="Asal Sekolah" value={detailStudent.sekolahAsal || '-'} />
+                          <DetailTableRow label="Status Keluarga" value={detailStudent.statusDalamKel || '-'} />
+                          <DetailTableRow label="Anak Ke" value={detailStudent.anakKe || '-'} />
+                        </TableBody>
+                      </Table>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </div>
 
                 {/* Kolom Kanan */}
-                <div className="space-y-8">
+                <div className="space-y-4">
                   {/* Data Orang Tua */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-black text-slate-800 border-b-2 border-slate-200 pb-2 flex items-center gap-2">
-                      <Users className="w-5 h-5" />
-                      DATA ORANG TUA / WALI
-                    </h4>
-                    <div className="space-y-2">
-                      <DetailRow label="Nama Ayah" value={detailStudent.nmAyah || '-'} />
-                      <DetailRow label="Pekerjaan Ayah" value={detailStudent.pekerjaanAyah || '-'} />
-                      <DetailRow label="Nama Ibu" value={detailStudent.nmIbu || '-'} />
-                      <DetailRow label="Pekerjaan Ibu" value={detailStudent.pekerjaanIbu || '-'} />
-                      <DetailRow label="No. Telp Orang Tua" value={detailStudent.teleponOrtu || '-'} />
-                      <DetailRow label="Alamat Orang Tua" value={detailStudent.alamatOrtu || '-'} />
-                    </div>
-                  </div>
+                  <Collapsible defaultOpen className="overflow-hidden rounded-md border border-slate-200">
+                    <CollapsibleTrigger className="group flex w-full items-center justify-between bg-slate-50 px-3 py-2 text-left">
+                      <h4 className="text-xs font-black text-slate-800 flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        DATA ORANG TUA / WALI
+                      </h4>
+                      <ChevronDown className="h-4 w-4 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <Table>
+                        <TableBody>
+                          <DetailTableRow label="Nama Ayah" value={detailStudent.nmAyah || '-'} />
+                          <DetailTableRow label="Pekerjaan Ayah" value={detailStudent.pekerjaanAyah || '-'} />
+                          <DetailTableRow label="Nama Ibu" value={detailStudent.nmIbu || '-'} />
+                          <DetailTableRow label="Pekerjaan Ibu" value={detailStudent.pekerjaanIbu || '-'} />
+                          <DetailTableRow label="No. Telp Orang Tua" value={detailStudent.teleponOrtu || '-'} />
+                          <DetailTableRow label="Alamat Orang Tua" value={detailStudent.alamatOrtu || '-'} />
+                        </TableBody>
+                      </Table>
+                    </CollapsibleContent>
+                  </Collapsible>
 
                   {/* Status Berkas */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-black text-emerald-600 border-b-2 border-emerald-100 pb-2 flex items-center gap-2">
-                      <ClipboardList className="w-5 h-5" />
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-black text-emerald-600 border-b-2 border-emerald-100 pb-1.5 flex items-center gap-2">
+                      <ClipboardList className="w-4 h-4" />
                       STATUS BERKAS DAFTAR ULANG
                     </h4>
-                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
                       <FileStatusItem
                         label="SKL"
                         checked={detailStudent.daftarUlang.skl}
@@ -920,7 +935,7 @@ function DaftarUlangPage() {
 
                   {/* Kontak */}
                   {(detailStudent.teleponSiswa || detailStudent.teleponOrtu) && (
-                    <div className="flex gap-4 pt-6 mt-4 border-t border-slate-100">
+                    <div className="flex gap-3 pt-4 mt-3 border-t border-slate-100">
                       {detailStudent.teleponSiswa && (
                         <Button
                           size="lg"
@@ -955,7 +970,7 @@ function DaftarUlangPage() {
               </div>
             )}
           </div>
-          <DialogFooter className="p-4 border-t bg-slate-50/50 shrink-0">
+          <DialogFooter className="p-3 border-t bg-slate-50/50 shrink-0">
             <DialogClose asChild>
               <Button type="button" variant="secondary" className="w-full sm:w-auto font-bold px-8">
                 TUTUP
@@ -969,14 +984,28 @@ function DaftarUlangPage() {
 }
 
 // Helper Components
+function DetailTableRow({ label, value }: { label: string; value: string }) {
+  return (
+    <TableRow className="border-slate-100">
+      <TableCell className="h-auto w-32 py-1.5 pl-3 pr-2 text-[9px] font-bold uppercase tracking-wider text-slate-400 sm:w-36">
+        {label}
+      </TableCell>
+      <TableCell className="h-auto w-2 px-0 py-1.5 text-xs text-slate-300">:</TableCell>
+      <TableCell className="h-auto py-1.5 pl-2 pr-3 text-[11px] font-semibold leading-tight text-slate-700">
+        {value}
+      </TableCell>
+    </TableRow>
+  )
+}
+
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 border-b border-slate-50/50 pb-1">
-      <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider w-full sm:w-40 shrink-0">
+    <div className="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-2 border-b border-slate-50/50 py-0">
+      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider w-full sm:w-32 shrink-0 leading-tight">
         {label}
       </div>
       <div className="hidden sm:block text-slate-300">:</div>
-      <div className="text-sm font-semibold text-slate-700 flex-1">
+      <div className="text-[11px] font-semibold text-slate-700 flex-1 leading-tight">
         {value}
       </div>
     </div>
